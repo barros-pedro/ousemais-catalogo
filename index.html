@@ -608,7 +608,7 @@ function wireGals(root){
 function tagsHTML(p){
   const t = [];
   if (p.soldOut) t.push(`<span class="tag out">Esgotado</span>`);
-  else if (p.qty!=null && p.qty<=3) t.push(`<span class="tag last">Últimas unidades</span>`);
+  else if (p.lastUnits) t.push(`<span class="tag last">Últimas unidades</span>`);
   if (TOP.has(p.id)) t.push(`<span class="tag best">Mais vendido</span>`);
   if (p.tag) t.push(`<span class="tag${p.items?" kit":""}">${p.tag}</span>`);
   return t.length ? `<div class="tags">${t.join("")}</div>` : "";
@@ -809,7 +809,7 @@ function parseVariants(t){
 }
 function applyCatalog(rows){
   const [head,...body] = rows; if (!head) return false;
-  const I = {id:/^codigo/, tipo:/^tipo/, cat:/^categoria/, name:/^produto/, brand:/^marca/, tag:/^selo/, desc:/^descricao/, specs:/^detalhes/, opts:/^opcoes/, items:/^itens/, media:/^mais fotos/, img:/^foto$/, imgFull:/^foto ampliada/, price:/^preco$/, old:/^preco antigo/, qty:/^quantidade/, avail:/^disponivel/, show:/^mostrar/, rank:/^ranking/};
+  const I = {id:/^codigo/, tipo:/^tipo/, cat:/^categoria/, name:/^produto/, brand:/^marca/, tag:/^selo/, desc:/^descricao/, specs:/^detalhes/, opts:/^opcoes/, items:/^itens/, media:/^mais fotos/, last:/^ultimas unidades/, img:/^foto$/, imgFull:/^foto ampliada/, price:/^preco$/, old:/^preco antigo/, qty:/^quantidade/, avail:/^disponivel/, show:/^mostrar/, rank:/^ranking/};
   for (const k in I) I[k] = col(head, I[k]);
   if (I.id<0 || I.name<0) return false;
   const g = (r,k) => I[k]>=0 ? String(r[I[k]]||"").trim() : "";
@@ -826,6 +826,7 @@ function applyCatalog(rows){
       qty: q==="" || isNaN(qn) ? null : Math.max(0, Math.floor(qn)), vendidos:0};
     const rk = num(g(r,"rank")); if (rk) p.vendidos = 1000-rk;
     p.soldOut = /^n/.test(norm(g(r,"avail"))) || p.qty===0;
+    p.lastUnits = /^s/.test(norm(g(r,"last")));
     if (norm(g(r,"tipo"))==="kit" || g(r,"items")) p.items = g(r,"items").split(",").map(s=>s.trim()).filter(Boolean);
     const v = parseVariants(g(r,"opts")); if (v) p.variants = v;
     p.media = g(r,"media").split(/\s+/).filter(u=>/^(https?:\/\/|img\/)/.test(u));
