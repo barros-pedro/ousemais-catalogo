@@ -123,7 +123,7 @@ button{font-family:inherit}
 .sort select{appearance:none;-webkit-appearance:none;font:600 .92rem var(--body);color:var(--fg);background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235b0f7a' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 14px center;border:1.5px solid var(--line);border-radius:999px;padding:8px 38px 8px 16px;cursor:pointer}
 .sort select:focus-visible{outline:3px solid var(--magenta);outline-offset:2px}
 .tag.best{background:#f6b40e;color:#2a1430}
-.tags{position:absolute;top:10px;left:10px;display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.tags{position:absolute;top:10px;left:10px;z-index:3;display:flex;flex-direction:column;align-items:flex-start;gap:5px}
 .tags .tag{position:static}
 .section-h h2{font-family:var(--display);font-weight:700;font-size:1.25rem;letter-spacing:-.01em;margin:0}
 .count{color:var(--muted);font-size:.9rem;font-variant-numeric:tabular-nums}
@@ -157,6 +157,25 @@ button{font-family:inherit}
 .incart{font-size:.78rem;font-weight:600;color:var(--magenta)}
 .line .lv{font-size:.82rem;font-weight:600;color:var(--magenta)}
 .plate img.photo{object-fit:cover}
+/* Carrossel de fotos dos kits */
+.gal{position:relative;width:100%;height:100%;background:var(--plate)}
+.gal-track{display:flex;width:100%;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
+.gal-track::-webkit-scrollbar{display:none}
+.gal-slide{flex:0 0 100%;min-width:0;height:100%;scroll-snap-align:center;position:relative;cursor:zoom-in}
+.gal-slide img{width:100%;height:100%;object-fit:contain;display:block}
+.gal-cap{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);background:rgba(42,20,48,.82);color:#fff;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis}
+.gal-nav{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:var(--plum);font-size:1.15rem;line-height:1;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.15);opacity:0;transition:opacity .2s;z-index:2}
+.gal-nav.prev{left:8px}.gal-nav.next{right:8px}
+.gal:hover .gal-nav,.gal-nav:focus-visible{opacity:1}
+.gal-dots{position:absolute;left:0;right:0;bottom:10px;display:flex;justify-content:center;gap:5px;pointer-events:none}
+.gal-dots i{width:6px;height:6px;border-radius:999px;background:rgba(91,15,122,.25);transition:width .2s}
+.gal-dots i.on{width:16px;background:var(--magenta)}
+.plate.has-gal{cursor:default}
+.dlg .pimg:has(.gal){display:block;align-self:center;overflow:hidden}
+.dlg .pimg .gal{aspect-ratio:1/1;height:auto;width:100%}
+dialog{overflow-x:hidden}
+.dlg .pimg .gal-nav{opacity:1;width:38px;height:38px}
+@media (hover:none){.gal-nav{opacity:1}}
 .qty{display:flex;align-items:center;justify-content:space-between;gap:6px;border:1.5px solid var(--magenta);border-radius:999px;padding:3px}
 .qty button{width:34px;height:34px;border-radius:50%;border:0;background:var(--magenta-soft);color:var(--magenta);font-size:1.15rem;font-weight:700;cursor:pointer;line-height:1;flex:none}
 .qty output{font-weight:700;font-variant-numeric:tabular-nums;min-width:2ch;text-align:center}
@@ -238,6 +257,7 @@ dialog::backdrop{background:rgba(20,6,28,.6)}
   .info{padding:12px 12px 14px}
   .dlg{grid-template-columns:1fr}
   .dlg .pimg img{max-height:38vh}
+  .dlg .pimg .gal{max-height:none;max-width:38vh;margin-inline:auto}
   .age{display:none}
   .section-h{align-items:flex-start}
   .sort{width:100%;justify-content:space-between}
@@ -359,7 +379,7 @@ dialog::backdrop{background:rgba(20,6,28,.6)}
 <dialog id="dlg" aria-labelledby="d-name">
   <button type="button" class="close" data-close aria-label="Fechar">×</button>
   <div class="dlg">
-    <div class="pimg"><img id="d-img" alt=""></div>
+    <div class="pimg" id="d-pimg"></div>
     <div class="pbody">
       <div class="brand" id="d-brand"></div>
       <h3 id="d-name"></h3>
@@ -502,6 +522,22 @@ const SORTS = {
   menor:byPrice(1), maior:byPrice(-1),
   az:(a,b)=>a.name.localeCompare(b.name,"pt-BR"),
 };
+function galHTML(p, opener){
+  const slides = [{src:IMG(p), cap:"O kit completo"}, ...p.items.map(i=>({src:IMG(byId(i)), cap:byId(i).name}))];
+  return `<div class="gal" data-gal data-kit="${p.id}">
+    <div class="gal-track">${slides.map((s,i)=>`<div class="gal-slide"${opener?` data-open="${p.id}"`:""} role="group" aria-label="Foto ${i+1} de ${slides.length}: ${s.cap}"><img src="${s.src}" alt="${s.cap}" loading="lazy">${i?`<span class="gal-cap">${s.cap}</span>`:""}</div>`).join("")}</div>
+    <button type="button" class="gal-nav prev" data-gal-nav="-1" aria-label="Foto anterior">‹</button>
+    <button type="button" class="gal-nav next" data-gal-nav="1" aria-label="Próxima foto">›</button>
+    <div class="gal-dots" aria-hidden="true">${slides.map((_,i)=>`<i${i?"":' class="on"'}></i>`).join("")}</div>
+  </div>`;
+}
+function wireGals(root){
+  root.querySelectorAll("[data-gal]").forEach(g=>{
+    if (g.dataset.wired) return; g.dataset.wired = 1;
+    const t = g.querySelector(".gal-track"), dots = [...g.querySelectorAll(".gal-dots i")];
+    t.addEventListener("scroll", ()=>{ const i = Math.round(t.scrollLeft / t.clientWidth); dots.forEach((d,j)=>d.classList.toggle("on", j===i)); }, {passive:true});
+  });
+}
 function tagsHTML(p){
   const t = [];
   if (TOP.has(p.id)) t.push(`<span class="tag best">Mais vendido</span>`);
@@ -523,9 +559,12 @@ function renderGrid(){
     grid.innerHTML = `<div class="noresult"><strong>Nenhum produto encontrado</strong><p>Pode ser que a loja tenha e ele só não esteja no catálogo.</p><a class="btn" href="${wa(`Olá! Procurei por "${query.trim()}" no catálogo da Ouse Mais. Vocês têm?`)}" target="_blank" rel="noopener">Perguntar no WhatsApp</a></div>`;
     return;
   }
+  const keep = {}; grid.querySelectorAll("[data-gal]").forEach(g=>{ keep[g.dataset.kit] = g.querySelector(".gal-track").scrollLeft; });
   grid.innerHTML = list.map(p=>`
     <article class="card${keysOf(p).length?" in":""}">
-      <button type="button" class="plate" data-open="${p.id}" aria-label="Ver detalhes de ${p.name}">${tagsHTML(p)}<img src="${IMG(p)}" alt="" loading="lazy"${p.full?' class="photo"':''}></button>
+      ${p.items
+        ? `<div class="plate has-gal">${tagsHTML(p)}${galHTML(p,true)}</div>`
+        : `<button type="button" class="plate" data-open="${p.id}" aria-label="Ver detalhes de ${p.name}">${tagsHTML(p)}<img src="${IMG(p)}" alt="" loading="lazy"${p.full?' class="photo"':''}></button>`}
       <div class="info">
         <div class="brand">${p.brand}</div>
         <h3 class="name"><button type="button" data-open="${p.id}">${p.name}</button></h3>
@@ -538,6 +577,8 @@ function renderGrid(){
       <span>A loja tem moda íntima, outros sabores e muito mais.</span>
       <em>Perguntar no WhatsApp →</em>
     </a>`;
+  wireGals(grid);
+  grid.querySelectorAll("[data-gal]").forEach(g=>{ if(keep[g.dataset.kit]) g.querySelector(".gal-track").scrollLeft = keep[g.dataset.kit]; });
 }
 function renderBag(){
   const ids = Object.keys(cart), total = itemsCount();
@@ -575,7 +616,11 @@ function change(id, d){
 const dlg = $("dlg");
 function fillDialog(id){
   const p = byId(id); dlg.dataset.id = id;
-  $("d-img").src = p.full ? (typeof IMGS!=="undefined" ? IMGS[p.id+"-full"] : `img/${p.id}-full.jpg`) : IMG(p); $("d-img").alt = p.name;
+  if (dlg.dataset.shown !== id){
+    dlg.dataset.shown = id;
+    $("d-pimg").innerHTML = p.items ? galHTML(p,false) : `<img src="${p.full ? (typeof IMGS!=="undefined" ? IMGS[p.id+"-full"] : `img/${p.id}-full.jpg`) : IMG(p)}" alt="${p.name}">`;
+    wireGals($("d-pimg"));
+  }
   $("d-brand").textContent = p.brand; $("d-name").textContent = p.name; $("d-desc").textContent = p.desc;
   $("d-specs").innerHTML = p.specs.map(s=>`<li>${s}</li>`).join("");
   $("d-kit").innerHTML = p.items ? `<strong>Vem no kit</strong><ul>${p.items.map(i=>{const x=byId(i);return `<li><img src="${IMG(x)}" alt=""><span>${x.name}<small>${x.brand} · ${x.specs[0]}</small></span></li>`;}).join("")}</ul>` : "";
@@ -607,7 +652,10 @@ bn.addEventListener("touchstart", e=>{ sx = e.touches[0].clientX; stop(); }, {pa
 bn.addEventListener("touchend", e=>{ if(sx==null) return; const dx = e.changedTouches[0].clientX - sx; if(Math.abs(dx)>40) go(idx + (dx<0?1:-1)); sx=null; start(); });
 
 /* ---------- Cliques ---------- */
+dlg.addEventListener("close", ()=>{ delete dlg.dataset.shown; });
 document.addEventListener("click", e=>{
+  const gn = e.target.closest("[data-gal-nav]");
+  if (gn){ const t = gn.closest("[data-gal]").querySelector(".gal-track"); const n = t.children.length, i = Math.round(t.scrollLeft/t.clientWidth); const j = (i + +gn.dataset.galNav + n) % n; t.scrollTo({left:j*t.clientWidth, behavior:reduce?"auto":"smooth"}); return; }
   if (e.target.closest("[data-close]")){ e.target.closest("dialog").close(); return; }
   const dot = e.target.closest("[data-dot]");
   if (dot){ go(+dot.dataset.dot); start(); return; }
