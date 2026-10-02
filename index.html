@@ -588,7 +588,7 @@ dialog::backdrop{background:rgba(20,6,28,.6)}
     <details><summary>Como faço meu pedido?</summary><p>Escolha os produtos, coloque na sacola e toque em <b>Enviar pedido</b>. A mensagem chega pronta no WhatsApp da loja, e a gente confirma valores, estoque e entrega por lá.</p></details>
     <details><summary>A embalagem é sigilosa?</summary><p>Sim. Todos os pedidos vão em embalagem sem nenhuma identificação do que tem dentro.</p></details>
     <details><summary>Onde fica a loja? Vocês entregam na minha cidade?</summary><p>A Ouse Mais fica em Campestre, Alagoas. O frete e a entrega para a sua cidade são combinados no WhatsApp, junto com o pedido.</p></details>
-    <details><summary>Como é feito o pagamento?</summary><p>O pagamento é combinado com a loja no WhatsApp, na hora de confirmar o pedido.</p></details>
+    <details><summary>Como é feito o pagamento?</summary><p>O pagamento é combinado com a loja no WhatsApp, na hora de confirmar o pedido.<span id="faq-pag"></span></p></details>
     <details><summary>Não achei o produto que procuro. A loja tem?</summary><p>O catálogo mostra só uma parte da loja. Chame no WhatsApp para perguntar por outros produtos, sabores, tamanhos e cores.</p></details>
     <details><summary>Preciso ser maior de idade para comprar?</summary><p>Sim. A venda é proibida para menores de 18 anos.</p></details>
   </section>
@@ -1017,29 +1017,32 @@ function parseVariants(t){
   const isColor = /^cor/.test(norm(label));
   return {label, type:isColor?"swatch":"select", note:note||undefined, options:names.map(n=>({id:slug(n), name:n, color:SW[norm(n)]||"#c9b8c4"}))};
 }
+// Texto vindo da planilha nunca vira código na página
+const clean = v => String(v||"").replace(/[<>]/g,"").replace(/"/g,"”").replace(/`/g,"'").trim();
 function applyCatalog(rows){
   const [head,...body] = rows; if (!head) return false;
   const I = {id:/^codigo/, tipo:/^tipo/, cat:/^categoria/, name:/^produto/, brand:/^marca/, tag:/^selo/, desc:/^descricao/, specs:/^detalhes/, opts:/^opcoes/, items:/^itens/, media:/^mais fotos/, last:/^ultimas unidades/, img:/^foto$/, imgFull:/^foto ampliada/, price:/^preco$/, old:/^preco antigo/, qty:/^quantidade/, avail:/^disponivel/, show:/^mostrar/, rank:/^ranking/};
   for (const k in I) I[k] = col(head, I[k]);
   if (I.id<0 || I.name<0) return false;
-  const g = (r,k) => I[k]>=0 ? String(r[I[k]]||"").trim() : "";
+  const g = (r,k) => I[k]>=0 ? clean(r[I[k]]) : "";
+  const url = u => /^https:\/\/[^\s"'<>`\\]+$/.test(u) || /^img\/[\w.-]+$/.test(u) ? u : "";
   const list = [];
   body.forEach(r=>{
-    const id = g(r,"id"), name = g(r,"name"); if (!id || !name) return;
+    const id = g(r,"id"), name = g(r,"name"); if (!id || !name || !/^[\w-]+$/.test(id)) return;
     if (/^n/.test(norm(g(r,"show")))) return;
     const old = byId(id) || {};
     const c = CATS.find(x=>x.id!=="all" && norm(x.label)===norm(g(r,"cat")));
     const q = g(r,"qty"), qn = parseFloat(q.replace(/\./g,"").replace(",","."));
     const p = {id, name, cat: c ? c.id : (old.cat||"lub"), brand:g(r,"brand"), tag:g(r,"tag")||undefined, desc:g(r,"desc")||old.desc||"",
       specs: g(r,"specs") ? g(r,"specs").split(",").map(s=>s.trim()).filter(Boolean) : [],
-      price:num(g(r,"price")), oldPrice:num(g(r,"old")), img:g(r,"img"), imgFull:g(r,"imgFull"), full:!!old.full && !g(r,"imgFull"),
+      price:num(g(r,"price")), oldPrice:num(g(r,"old")), img:url(g(r,"img")), imgFull:url(g(r,"imgFull")), full:!!old.full && !g(r,"imgFull"),
       qty: q==="" || isNaN(qn) ? null : Math.max(0, Math.floor(qn)), vendidos:0};
     const rk = num(g(r,"rank")); if (rk) p.vendidos = 1000-rk;
     p.soldOut = /^n/.test(norm(g(r,"avail"))) || p.qty===0;
     p.lastUnits = /^s/.test(norm(g(r,"last")));
     if (norm(g(r,"tipo"))==="kit" || g(r,"items")) p.items = g(r,"items").split(",").map(s=>s.trim()).filter(Boolean);
     const v = parseVariants(g(r,"opts")); if (v) p.variants = v;
-    p.media = g(r,"media").split(/\s+/).filter(u=>/^(https?:\/\/|img\/)/.test(u));
+    p.media = g(r,"media").split(/\s+/).map(url).filter(Boolean);
     list.push(p);
   });
   if (!list.length) return false;
@@ -1072,10 +1075,11 @@ function applySheets(d){
   PRODUCTS.filter(k=>k.items).forEach(k=>{ if (full && k.oldPrice) return; const ps = k.items.map(i=>byId(i)?.price); k.oldPrice = ps.length && ps.every(x=>x!=null) ? ps.reduce((a,b)=>a+b,0) : null; });
   pruneCart();
   if (d.entrega){
-    const m = {}; d.entrega.slice(1).forEach(r=>{ m[norm(r[0]||"")] = (r[1]||"").trim(); });
+    const m = {}; d.entrega.slice(1).forEach(r=>{ m[norm(r[0]||"")] = clean(r[1]); });
     const get = re => { const k = Object.keys(m).find(x=>re.test(x)); return k ? m[k] : ""; };
     SHEETDATA.entrega = { pag:get(/^formas de pagamento/), parc:get(/^parcela/), freteLocal:get(/^frete em campestre/), freteFora:get(/^frete para outras/), gratis:num(get(/^frete gratis/)), prazo:get(/^prazo/) };
-    const ex = $("notice-extra"); if (ex) ex.textContent = SHEETDATA.entrega.gratis ? `Frete grátis acima de ${brl(SHEETDATA.entrega.gratis)}` : "";
+    const ex = $("notice-extra"); const fp = $("faq-pag"); if (fp) fp.textContent = SHEETDATA.entrega.pag ? ` Formas aceitas: ${SHEETDATA.entrega.pag}.` : "";
+    if (ex) ex.textContent = SHEETDATA.entrega.gratis ? `Frete grátis acima de ${brl(SHEETDATA.entrega.gratis)}` : "";
   }
   PRODUCTS.forEach(p=>HAY.set(p.id, norm([p.name,p.brand,p.desc,p.tag,...(p.specs||[]),CATS.find(c=>c.id===p.cat)?.label,...(p.items||[]).filter(byId).flatMap(i=>[byId(i).name,byId(i).desc]),...(p.variants?p.variants.options.map(o=>o.name):[]),p.cat==="calcinhas"?"calcinha lingerie moda intima":""].join(" "))));
   TOP = new Set([...PRODUCTS].filter(p=>p.vendidos>0).sort((a,b)=>b.vendidos-a.vendidos).slice(0,3).map(p=>p.id));
