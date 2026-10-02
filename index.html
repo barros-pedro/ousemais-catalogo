@@ -189,6 +189,9 @@ button{font-family:inherit}
 .gal-track::-webkit-scrollbar{display:none}
 .gal-slide{flex:0 0 100%;min-width:0;height:100%;scroll-snap-align:center;position:relative;cursor:zoom-in}
 .gal-slide img{width:100%;height:100%;object-fit:contain;display:block}
+.gal-slide iframe{width:100%;height:100%;border:0;display:block;background:#000}
+.gal-slide img.vthumb{object-fit:cover;background:#000}
+.vplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:58px;height:58px;border-radius:50%;background:rgba(212,19,111,.92);color:#fff;display:grid;place-items:center;font-size:1.4rem;padding-left:4px;box-shadow:0 6px 20px rgba(0,0,0,.3);pointer-events:none}
 .gal-cap{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);background:rgba(42,20,48,.82);color:#fff;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis}
 .gal-nav{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:var(--plum);font-size:1.15rem;line-height:1;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.15);opacity:0;transition:opacity .2s;z-index:2}
 .gal-nav.prev{left:8px}.gal-nav.next{right:8px}
@@ -558,14 +561,41 @@ const SORTS = {
   menor:byPrice(1), maior:byPrice(-1),
   az:(a,b)=>a.name.localeCompare(b.name,"pt-BR"),
 };
+const driveId = u => (String(u).match(/drive\.google\.com\/file\/d\/([\w-]+)/)||[])[1];
+const ytId = u => (String(u).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/|embed\/))([\w-]{6,})/)||[])[1];
+const hasGal = p => !!(p.items || (p.media && p.media.length));
+function slidesOf(p, big){
+  const out = [];
+  if (p.items){
+    const own = (typeof IMGS!=="undefined" && IMGS[p.id]) || p.img;
+    if (own) out.push({src:own, cap:"O kit completo", first:true});
+    p.items.filter(byId).forEach(i=>out.push({src:IMG(byId(i)), cap:byId(i).name}));
+  } else out.push({src: big ? FULL(p) : IMG(p), cap:p.name, first:true});
+  (p.media||[]).forEach(u=>{
+    const d = driveId(u), y = ytId(u);
+    if (y) out.push({video:`https://www.youtube-nocookie.com/embed/${y}?rel=0&playsinline=1`, thumb:`https://i.ytimg.com/vi/${y}/hqdefault.jpg`, cap:"Vídeo"});
+    else if (d) out.push({video:`https://drive.google.com/file/d/${d}/preview`, thumb:`https://drive.google.com/thumbnail?id=${d}&sz=w800`, cap:"Vídeo"});
+    else out.push({src:u, cap:p.name});
+  });
+  return out;
+}
 function galHTML(p, opener){
-  const own = (typeof IMGS!=="undefined" && IMGS[p.id]) || p.img;
-  const slides = [...(own?[{src:own, cap:"O kit completo"}]:[]), ...p.items.filter(byId).map(i=>({src:IMG(byId(i)), cap:byId(i).name}))];
+  const slides = slidesOf(p, !opener);
+  const kit = !!p.items;
+  const slide = (s,i) => {
+    const label = `${s.video?"Vídeo":"Foto"} ${i+1} de ${slides.length}${s.cap?": "+s.cap:""}`;
+    let inner;
+    if (s.video && !opener) inner = `<iframe src="${s.video}" title="Vídeo de ${p.name}" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+    else if (s.video) inner = `<img src="${s.thumb}" alt="Vídeo de ${p.name}" loading="lazy" class="vthumb"><span class="vplay" aria-hidden="true">▶</span>`;
+    else inner = `<img src="${s.src}" alt="${s.cap}" loading="lazy">`;
+    const cap = (kit && !s.first && !s.video) ? `<span class="gal-cap">${s.cap}</span>` : (s.video && opener ? `<span class="gal-cap">Ver vídeo</span>` : "");
+    return `<div class="gal-slide${s.video?" is-video":""}"${opener?` data-open="${p.id}"`:""} role="group" aria-label="${label}">${inner}${cap}</div>`;
+  };
   return `<div class="gal" data-gal data-kit="${p.id}">
-    <div class="gal-track">${slides.map((s,i)=>`<div class="gal-slide"${opener?` data-open="${p.id}"`:""} role="group" aria-label="Foto ${i+1} de ${slides.length}: ${s.cap}"><img src="${s.src}" alt="${s.cap}" loading="lazy">${i?`<span class="gal-cap">${s.cap}</span>`:""}</div>`).join("")}</div>
-    <button type="button" class="gal-nav prev" data-gal-nav="-1" aria-label="Foto anterior">‹</button>
-    <button type="button" class="gal-nav next" data-gal-nav="1" aria-label="Próxima foto">›</button>
-    <div class="gal-dots" aria-hidden="true">${slides.map((_,i)=>`<i${i?"":' class="on"'}></i>`).join("")}</div>
+    <div class="gal-track">${slides.map(slide).join("")}</div>
+    ${slides.length>1 ? `<button type="button" class="gal-nav prev" data-gal-nav="-1" aria-label="Anterior">‹</button>
+    <button type="button" class="gal-nav next" data-gal-nav="1" aria-label="Próxima">›</button>
+    <div class="gal-dots" aria-hidden="true">${slides.map((_,i)=>`<i${i?"":' class="on"'}></i>`).join("")}</div>` : ""}
   </div>`;
 }
 function wireGals(root){
@@ -606,7 +636,7 @@ function renderGrid(){
   const keep = {}; grid.querySelectorAll("[data-gal]").forEach(g=>{ keep[g.dataset.kit] = g.querySelector(".gal-track").scrollLeft; });
   grid.innerHTML = list.map(p=>`
     <article class="card${keysOf(p).length?" in":""}${p.soldOut?" sold":""}">
-      ${p.items
+      ${hasGal(p)
         ? `<div class="plate has-gal">${tagsHTML(p)}${galHTML(p,true)}</div>`
         : `<button type="button" class="plate" data-open="${p.id}" aria-label="Ver detalhes de ${p.name}">${tagsHTML(p)}<img src="${IMG(p)}" alt="${p.name}${p.brand && !p.items && !p.name.includes(p.brand)?` – ${p.brand}`:""}" loading="lazy"${p.full?' class="photo"':''}></button>`}
       <div class="info">
@@ -672,7 +702,7 @@ function fillDialog(id){
   const p = byId(id); dlg.dataset.id = id;
   if (dlg.dataset.shown !== id){
     dlg.dataset.shown = id;
-    $("d-pimg").innerHTML = p.items ? galHTML(p,false) : `<img src="${FULL(p)}" alt="${p.name}">`;
+    $("d-pimg").innerHTML = hasGal(p) ? galHTML(p,false) : `<img src="${FULL(p)}" alt="${p.name}">`;
     wireGals($("d-pimg"));
   }
   $("d-brand").textContent = p.brand; $("d-name").textContent = p.name; $("d-desc").textContent = p.desc;
@@ -779,7 +809,7 @@ function parseVariants(t){
 }
 function applyCatalog(rows){
   const [head,...body] = rows; if (!head) return false;
-  const I = {id:/^codigo/, tipo:/^tipo/, cat:/^categoria/, name:/^produto/, brand:/^marca/, tag:/^selo/, desc:/^descricao/, specs:/^detalhes/, opts:/^opcoes/, items:/^itens/, img:/^foto$/, imgFull:/^foto ampliada/, price:/^preco$/, old:/^preco antigo/, qty:/^quantidade/, avail:/^disponivel/, show:/^mostrar/, rank:/^ranking/};
+  const I = {id:/^codigo/, tipo:/^tipo/, cat:/^categoria/, name:/^produto/, brand:/^marca/, tag:/^selo/, desc:/^descricao/, specs:/^detalhes/, opts:/^opcoes/, items:/^itens/, media:/^mais fotos/, img:/^foto$/, imgFull:/^foto ampliada/, price:/^preco$/, old:/^preco antigo/, qty:/^quantidade/, avail:/^disponivel/, show:/^mostrar/, rank:/^ranking/};
   for (const k in I) I[k] = col(head, I[k]);
   if (I.id<0 || I.name<0) return false;
   const g = (r,k) => I[k]>=0 ? String(r[I[k]]||"").trim() : "";
@@ -798,6 +828,7 @@ function applyCatalog(rows){
     p.soldOut = /^n/.test(norm(g(r,"avail"))) || p.qty===0;
     if (norm(g(r,"tipo"))==="kit" || g(r,"items")) p.items = g(r,"items").split(",").map(s=>s.trim()).filter(Boolean);
     const v = parseVariants(g(r,"opts")); if (v) p.variants = v;
+    p.media = g(r,"media").split(/\s+/).filter(u=>/^(https?:\/\/|img\/)/.test(u));
     list.push(p);
   });
   if (!list.length) return false;
