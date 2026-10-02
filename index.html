@@ -670,8 +670,10 @@ function go(i){
   [...$("dots").children].forEach((b,j)=>b.setAttribute("aria-current", j===idx));
 }
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-function start(){ stop(); if(!reduce) timer = setInterval(()=>go(idx+1), 6000); }
-function stop(){ clearInterval(timer); }
+// tempo de cada banner: o 1º (instruções) fica mais tempo para dar tempo de ler
+const SLIDE_MS = i => i===0 ? 14000 : 6000;
+function start(){ stop(); if(!reduce) timer = setTimeout(()=>{ go(idx+1); start(); }, SLIDE_MS(idx)); }
+function stop(){ clearTimeout(timer); }
 $("prev").onclick = () => { go(idx-1); start(); };
 $("next").onclick = () => { go(idx+1); start(); };
 const bn = document.querySelector(".banners");
