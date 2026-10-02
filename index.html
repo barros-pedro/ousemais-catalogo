@@ -708,9 +708,9 @@ document.addEventListener("change", e=>{ const s = e.target.closest("[data-varse
 $("sort").addEventListener("change", e=>{ sortBy = e.target.value; renderGrid(); });
 /* ---------- Planilha do Google (preços, estoque, ranking, entrega) ---------- */
 const SHEETS = {
-  produtos: "",
-  kits: "",
-  entrega: "",
+  produtos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSPn1Ol7iSoSkxcpbZbTENz58C20TOy0tNjp-GkXeQHjNn7_6-4fpoS3NHwTycVT3GzdNTClAtunJu5/pub?single=true&output=csv&gid=953215427",
+  kits: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSPn1Ol7iSoSkxcpbZbTENz58C20TOy0tNjp-GkXeQHjNn7_6-4fpoS3NHwTycVT3GzdNTClAtunJu5/pub?single=true&output=csv&gid=793331616",
+  entrega: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSPn1Ol7iSoSkxcpbZbTENz58C20TOy0tNjp-GkXeQHjNn7_6-4fpoS3NHwTycVT3GzdNTClAtunJu5/pub?single=true&output=csv&gid=263919990",
 };
 let SHEETDATA = {};
 function parseCSV(t){
@@ -737,8 +737,9 @@ function num(s){
 const col = (head, re) => head.findIndex(x=>re.test(norm(x)));
 function applySheets(d){
   if (d.produtos){
-    const [head,...rows] = d.produtos, iId=col(head,/^codigo/), iP=col(head,/^preco \(/), iO=col(head,/^preco antigo/), iR=col(head,/^ranking/), iD=col(head,/^disponib/);
+    const [head,...rows] = d.produtos, iId=col(head,/^codigo/), iP=col(head,/^preco \(/), iO=col(head,/^preco antigo/), iR=col(head,/^ranking/), iD=col(head,/^disponib/), iC=col(head,/^categoria/);
     rows.forEach(r=>{ const p = byId((r[iId]||"").trim()); if(!p || p.items) return;
+      if (iC>=0){ const c = CATS.find(x=>x.id!=="all" && norm(x.label)===norm(r[iC]||"").trim()); if (c) p.cat = c.id; }
       if (iP>=0) p.price = num(r[iP]);
       if (iO>=0) p.oldPrice = num(r[iO]);
       if (iR>=0){ const rk = num(r[iR]); p.vendidos = rk ? 1000-rk : 0; }
@@ -760,12 +761,13 @@ function applySheets(d){
     SHEETDATA.entrega = { pag:get(/^formas de pagamento/), parc:get(/^parcela/), freteLocal:get(/^frete em campestre/), freteFora:get(/^frete para outras/), gratis:num(get(/^frete gratis/)), prazo:get(/^prazo/) };
     const ex = $("notice-extra"); if (ex) ex.textContent = SHEETDATA.entrega.gratis ? ` · Frete grátis acima de ${brl(SHEETDATA.entrega.gratis)}` : "";
   }
+  PRODUCTS.forEach(p=>HAY.set(p.id, norm([p.name,p.brand,p.desc,p.tag,...(p.specs||[]),CATS.find(c=>c.id===p.cat)?.label,...(p.items||[]).flatMap(i=>[byId(i).name,byId(i).desc]),...(p.variants?p.variants.options.map(o=>o.name):[])].join(" "))));
   TOP = new Set([...PRODUCTS].filter(p=>p.vendidos>0).sort((a,b)=>b.vendidos-a.vendidos).slice(0,3).map(p=>p.id));
 }
 async function loadSheets(){
   const keys = Object.keys(SHEETS).filter(k=>SHEETS[k]);
   if (!keys.length) return;
-  try{ const c = JSON.parse(localStorage.getItem("ousemais-planilha")||"null"); if (c){ applySheets(c); refresh(); } }catch(e){}
+  try{ const c = JSON.parse(localStorage.getItem("ousemais-planilha")||"null"); if (c){ applySheets(c); renderFilters(); refresh(); } }catch(e){}
   const got = {};
   await Promise.all(keys.map(async k=>{
     try{
@@ -775,7 +777,7 @@ async function loadSheets(){
     }catch(e){}
   }));
   if (!Object.keys(got).length) return;
-  applySheets(got); refresh();
+  applySheets(got); renderFilters(); refresh();
   try{ localStorage.setItem("ousemais-planilha", JSON.stringify(got)); }catch(e){}
 }
 
