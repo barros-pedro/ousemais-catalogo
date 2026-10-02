@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /painel/
+Sitemap: https://ousemaisoficial.com.br/sitemap.xml
