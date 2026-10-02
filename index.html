@@ -671,7 +671,7 @@ function go(i){
 }
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 // tempo de cada banner: o 1º (instruções) fica mais tempo para dar tempo de ler
-const SLIDE_MS = i => i===0 ? 14000 : 6000;
+const SLIDE_MS = i => i===0 ? 10000 : 6000;
 function start(){ stop(); if(!reduce) timer = setTimeout(()=>{ go(idx+1); start(); }, SLIDE_MS(idx)); }
 function stop(){ clearTimeout(timer); }
 $("prev").onclick = () => { go(idx-1); start(); };
