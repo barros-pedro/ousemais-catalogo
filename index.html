@@ -245,6 +245,16 @@ dialog{overflow-x:hidden}
 .foot a.ig{opacity:.85;font-size:.92rem}
 .fine{color:var(--muted);font-size:.82rem;text-align:center;margin-top:20px}
 
+/* Botão flutuante do WhatsApp */
+.wa-float{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:19;width:58px;height:58px;border-radius:50%;background:#25d366;color:#fff;display:grid;place-items:center;box-shadow:0 6px 20px rgba(20,0,30,.28);transition:transform .25s ease,bottom .25s ease;text-decoration:none}
+.wa-float:hover{transform:scale(1.06)}
+.wa-float:focus-visible{outline:3px solid var(--plum);outline-offset:3px}
+.wa-float .wa-tip{position:absolute;right:68px;top:50%;transform:translateY(-50%);background:#fff;color:var(--fg);font-weight:700;font-size:.86rem;white-space:nowrap;padding:8px 12px;border-radius:999px;box-shadow:0 4px 14px rgba(20,0,30,.15);opacity:0;pointer-events:none;transition:opacity .2s}
+.wa-float:hover .wa-tip,.wa-float:focus-visible .wa-tip{opacity:1}
+body.bag-on .wa-float{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+@media (hover:none){.wa-float .wa-tip{display:none}}
+@media (prefers-reduced-motion:reduce){.wa-float{transition:none}}
+
 /* Sacola fixa */
 .bag{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:var(--deep);color:var(--on-deep);box-shadow:0 -8px 30px rgba(20,0,30,.25);transform:translateY(110%);transition:transform .25s ease}
 .bag.show{transform:none}
@@ -607,6 +617,8 @@ dialog::backdrop{background:rgba(20,6,28,.6)}
   <p class="fine">Todos os pedidos são enviados em embalagem sigilosa. Venda proibida para menores de 18 anos. Imagens ilustrativas. Preços e estoque podem mudar sem aviso.</p>
 </div>
 
+<a class="wa-float" id="wa-float" href="#" target="_blank" rel="noopener" aria-label="Falar com a loja no WhatsApp"><svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" focusable="false"><path fill="currentColor" d="M16 3C8.8 3 3 8.7 3 15.8c0 2.5.7 4.9 2 7L3 29l6.4-2c2 1.1 4.3 1.7 6.6 1.7 7.2 0 13-5.7 13-12.9S23.2 3 16 3zm0 23.4c-2.1 0-4.1-.6-5.9-1.7l-.4-.3-3.8 1.2 1.2-3.7-.3-.4c-1.2-1.8-1.9-3.9-1.9-6.1C4.9 9.8 9.9 4.9 16 4.9s11.1 4.9 11.1 10.9S22.1 26.4 16 26.4zm6.1-8.1c-.3-.2-2-1-2.3-1.1-.3-.1-.5-.2-.8.2-.2.3-.9 1.1-1.1 1.3-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.7-1.7-1-.9-1.7-2-1.9-2.3-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.3.3-.6.1-.2.1-.4 0-.6-.1-.2-.8-1.8-1-2.5-.3-.7-.5-.6-.8-.6h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.8s1.2 3.2 1.4 3.5c.2.2 2.4 3.6 5.7 5 .8.3 1.4.5 1.9.7.8.3 1.6.2 2.2.1.7-.1 2-.8 2.3-1.6.3-.8.3-1.5.2-1.6-.1-.2-.3-.3-.6-.4z"/></svg><span class="wa-tip">Fale com a gente</span></a>
+
 <div class="bag" id="bag" aria-live="polite">
   <div class="bag-in">
     <button type="button" class="bag-sum" id="bag-sum"><strong id="bag-title">Sacola</strong><span id="bag-items"></span></button>
@@ -701,7 +713,7 @@ const brl = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 const wa = msg => `https://wa.me/${WHATS}?text=${encodeURIComponent(msg)}`;
 const byId = id => PRODUCTS.find(p=>p.id===id);
 const $ = id => document.getElementById(id);
-$("cta-bottom").href = wa("Olá! Vi o catálogo da Ouse Mais e quero tirar uma dúvida.");
+$("cta-bottom").href = $("wa-float").href = wa("Olá! Vi o catálogo da Ouse Mais e quero tirar uma dúvida.");
 
 /* ---------- Sacola ---------- */
 let cart = {};
@@ -866,7 +878,7 @@ function renderGrid(){
 }
 function renderBag(){
   const ids = Object.keys(cart), total = itemsCount();
-  $("bag").classList.toggle("show", total>0);
+  $("bag").classList.toggle("show", total>0); document.body.classList.toggle("bag-on", total>0);
   $("badge").textContent = total;
   $("bag-title").textContent = `Sacola · ${total} ${total===1?"item":"itens"}`;
   $("bag-items").textContent = ids.map(k=>`${cart[k]}× ${P(k).name}${optOf(P(k),k)?` ${optOf(P(k),k).name.toLowerCase()}`:""}`).join(", ");
