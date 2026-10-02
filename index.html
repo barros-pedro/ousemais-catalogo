@@ -143,7 +143,13 @@ button{font-family:inherit}
 .specs{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 0;padding:0;list-style:none}
 .specs li{font-size:.75rem;font-weight:600;background:var(--magenta-soft);color:var(--fg);padding:2px 8px;border-radius:6px}
 .buy{margin-top:auto;padding-top:12px;display:flex;flex-direction:column;gap:8px}
-.price{font-family:var(--display);font-weight:700;font-size:1.05rem;font-variant-numeric:tabular-nums}
+.price{font-family:var(--display);font-weight:700;font-size:1.05rem;font-variant-numeric:tabular-nums;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.price s{font-family:var(--body);font-weight:600;font-size:.85rem;color:var(--muted)}
+.save{font-size:.78rem;font-weight:700;color:#0f7a3a;background:#e3f6ea;border-radius:6px;padding:2px 8px;align-self:flex-start}
+.tag.out{background:#6b6170;color:#fff}
+.card.sold .plate img,.card.sold .gal{opacity:.55}
+.soon{display:block;text-align:center;border:1.5px solid var(--plum);color:var(--plum);border-radius:999px;padding:9px 12px;font-weight:700;font-size:.86rem;text-decoration:none}
+.notice .extra{opacity:.9;font-weight:500}
 .price.ask{font-family:var(--body);font-size:.85rem;font-weight:600;color:var(--muted)}
 .add{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;background:var(--magenta);color:var(--on-accent);border:0;border-radius:999px;padding:10px 12px;font-weight:700;font-size:.9rem;cursor:pointer}
 .add:hover{filter:brightness(1.08)}
@@ -271,7 +277,7 @@ dialog::backdrop{background:rgba(20,6,28,.6)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style></head><body>
 
-<div class="notice" role="note"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg><span><b>Embalagem sigilosa:</b> <span class="long">seu pedido chega sem nenhuma identificação do que tem dentro.</span><span class="short">ninguém sabe o que tem dentro.</span></span></div>
+<div class="notice" role="note"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg><span><b>Embalagem sigilosa:</b> <span class="long">seu pedido chega sem nenhuma identificação do que tem dentro.</span><span class="short">ninguém sabe o que tem dentro.</span></span><span class="extra" id="notice-extra"></span></div>
 <div class="wrap">
   <header class="top">
     <div class="mark" aria-label="Ouse Mais">OUSE<span>+</span></div>
@@ -493,7 +499,10 @@ function varHTML(p, ctx){
 }
 function buyHTML(p, ctx="c"){
   const k = curKey(p), q = cart[k]||0;
-  const price = p.price!=null ? `<span class="price">${brl(p.price)}</span>` : `<span class="price ask">Preço sob consulta</span>`;
+  const price = p.price!=null
+    ? `<span class="price">${p.oldPrice>p.price?`<s>${brl(p.oldPrice)}</s>`:""}${brl(p.price)}</span>${p.oldPrice>p.price?`<span class="save">Economize ${brl(p.oldPrice-p.price)}</span>`:""}`
+    : `<span class="price ask">Preço sob consulta</span>`;
+  if (p.soldOut && !q) return varHTML(p,ctx) + price + `<a class="soon" href="${wa(`Olá! Quero o ${p.name}, que está esgotado no catálogo. Me avisa quando chegar?`)}" target="_blank" rel="noopener">Avise-me quando chegar</a>`;
   return varHTML(p,ctx) + price + (q ? qtyHTML(k,q) : `<button type="button" class="add" data-act="inc" data-key="${k}">+ Adicionar</button>`);
 }
 function orderMsg(){
@@ -517,7 +526,7 @@ function renderFilters(){
 }
 let sortBy = "destaque";
 const ORDER = new Map(PRODUCTS.map((p,i)=>[p.id,i]));
-const TOP = new Set([...PRODUCTS].filter(p=>p.vendidos>0).sort((a,b)=>b.vendidos-a.vendidos).slice(0,3).map(p=>p.id));
+let TOP = new Set([...PRODUCTS].filter(p=>p.vendidos>0).sort((a,b)=>b.vendidos-a.vendidos).slice(0,3).map(p=>p.id));
 const byPrice = dir => (a,b)=>{
   if (a.price==null && b.price==null) return ORDER.get(a.id)-ORDER.get(b.id);
   if (a.price==null) return 1; if (b.price==null) return -1;
@@ -547,6 +556,7 @@ function wireGals(root){
 }
 function tagsHTML(p){
   const t = [];
+  if (p.soldOut) t.push(`<span class="tag out">Esgotado</span>`);
   if (TOP.has(p.id)) t.push(`<span class="tag best">Mais vendido</span>`);
   if (p.tag) t.push(`<span class="tag${p.items?" kit":""}">${p.tag}</span>`);
   return t.length ? `<div class="tags">${t.join("")}</div>` : "";
@@ -573,7 +583,7 @@ function renderGrid(){
   }
   const keep = {}; grid.querySelectorAll("[data-gal]").forEach(g=>{ keep[g.dataset.kit] = g.querySelector(".gal-track").scrollLeft; });
   grid.innerHTML = list.map(p=>`
-    <article class="card${keysOf(p).length?" in":""}">
+    <article class="card${keysOf(p).length?" in":""}${p.soldOut?" sold":""}">
       ${p.items
         ? `<div class="plate has-gal">${tagsHTML(p)}${galHTML(p,true)}</div>`
         : `<button type="button" class="plate" data-open="${p.id}" aria-label="Ver detalhes de ${p.name}">${tagsHTML(p)}<img src="${IMG(p)}" alt="" loading="lazy"${p.full?' class="photo"':''}></button>`}
@@ -615,7 +625,14 @@ function renderCart(){
   const sum = ids.reduce((s,k)=>s+(P(k).price||0)*cart[k],0);
   $("c-total").innerHTML = known ? `<span>Total</span><b>${brl(sum)}</b>` : "";
   $("c-total").hidden = !known;
-  $("c-note").textContent = known ? "O frete é combinado com a loja no WhatsApp." : "Valores, estoque e frete são confirmados pela loja no WhatsApp.";
+  const ent = SHEETDATA.entrega||{}, lines = [];
+  if (ent.pag) lines.push(`Pagamento: ${ent.pag}${ent.parc?` (${ent.parc})`:""}.`);
+  if (ent.freteLocal) lines.push(`Frete em Campestre: ${ent.freteLocal}.`);
+  if (ent.freteFora) lines.push(`Outras cidades: ${ent.freteFora}.`);
+  if (ent.gratis) lines.push(`Frete grátis acima de ${brl(ent.gratis)}.`);
+  if (ent.prazo) lines.push(`Prazo: ${ent.prazo}.`);
+  lines.push(known ? "O pagamento e a entrega são combinados com a loja no WhatsApp." : "Valores, estoque e frete são confirmados pela loja no WhatsApp.");
+  $("c-note").textContent = lines.join(" ");
 }
 function refresh(){ renderGrid(); renderBag(); if($("cart").open) renderCart(); if(dlg.open) fillDialog(dlg.dataset.id); }
 function change(id, d){
@@ -689,7 +706,81 @@ qIn.addEventListener("keydown", e=>{ if(e.key==="Enter"){ qIn.blur(); $("produto
 $("q-clear").onclick = () => { qIn.value = ""; query = ""; $("q-clear").hidden = true; renderGrid(); qIn.focus(); };
 document.addEventListener("change", e=>{ const s = e.target.closest("[data-varsel]"); if(!s) return; const id=s.id; selVar[s.dataset.varsel] = s.value; refresh(); const n=$(id); if(n) n.focus(); });
 $("sort").addEventListener("change", e=>{ sortBy = e.target.value; renderGrid(); });
+/* ---------- Planilha do Google (preços, estoque, ranking, entrega) ---------- */
+const SHEETS = {
+  produtos: "",
+  kits: "",
+  entrega: "",
+};
+let SHEETDATA = {};
+function parseCSV(t){
+  const rows=[]; let row=[], f="", q=false;
+  for (let i=0;i<t.length;i++){
+    const c=t[i];
+    if (q){ if (c==='"'){ if (t[i+1]==='"'){ f+='"'; i++; } else q=false; } else f+=c; }
+    else if (c==='"') q=true;
+    else if (c===','){ row.push(f); f=""; }
+    else if (c==='\n'){ row.push(f); rows.push(row); row=[]; f=""; }
+    else if (c!=='\r') f+=c;
+  }
+  if (f!=="" || row.length){ row.push(f); rows.push(row); }
+  return rows;
+}
+function num(s){
+  if (s==null) return null;
+  s = String(s).replace(/[^\d,.-]/g,"");
+  if (!s || s==="-") return null;
+  if (s.includes(",")) s = s.replace(/\./g,"").replace(",",".");
+  const n = parseFloat(s);
+  return isNaN(n) || n<=0 ? null : n;
+}
+const col = (head, re) => head.findIndex(x=>re.test(norm(x)));
+function applySheets(d){
+  if (d.produtos){
+    const [head,...rows] = d.produtos, iId=col(head,/^codigo/), iP=col(head,/^preco \(/), iO=col(head,/^preco antigo/), iR=col(head,/^ranking/), iD=col(head,/^disponib/);
+    rows.forEach(r=>{ const p = byId((r[iId]||"").trim()); if(!p || p.items) return;
+      if (iP>=0) p.price = num(r[iP]);
+      if (iO>=0) p.oldPrice = num(r[iO]);
+      if (iR>=0){ const rk = num(r[iR]); p.vendidos = rk ? 1000-rk : 0; }
+      if (iD>=0) p.soldOut = /esgot/.test(norm(r[iD]));
+    });
+  }
+  if (d.kits){
+    const [head,...rows] = d.kits, iId=col(head,/^codigo/), iP=col(head,/^preco do kit/), iD=col(head,/^disponib/);
+    rows.forEach(r=>{ const k = byId((r[iId]||"").trim()); if(!k || !k.items) return;
+      if (iP>=0) k.price = num(r[iP]);
+      if (iD>=0) k.soldOut = /esgot/.test(norm(r[iD]));
+    });
+  }
+  // kit: preço "de" = soma dos itens separados, quando todos têm preço
+  PRODUCTS.filter(k=>k.items).forEach(k=>{ const ps = k.items.map(i=>byId(i).price); k.oldPrice = ps.every(x=>x!=null) ? ps.reduce((a,b)=>a+b,0) : null; });
+  if (d.entrega){
+    const m = {}; d.entrega.slice(1).forEach(r=>{ m[norm(r[0]||"")] = (r[1]||"").trim(); });
+    const get = re => { const k = Object.keys(m).find(x=>re.test(x)); return k ? m[k] : ""; };
+    SHEETDATA.entrega = { pag:get(/^formas de pagamento/), parc:get(/^parcela/), freteLocal:get(/^frete em campestre/), freteFora:get(/^frete para outras/), gratis:num(get(/^frete gratis/)), prazo:get(/^prazo/) };
+    const ex = $("notice-extra"); if (ex) ex.textContent = SHEETDATA.entrega.gratis ? ` · Frete grátis acima de ${brl(SHEETDATA.entrega.gratis)}` : "";
+  }
+  TOP = new Set([...PRODUCTS].filter(p=>p.vendidos>0).sort((a,b)=>b.vendidos-a.vendidos).slice(0,3).map(p=>p.id));
+}
+async function loadSheets(){
+  const keys = Object.keys(SHEETS).filter(k=>SHEETS[k]);
+  if (!keys.length) return;
+  try{ const c = JSON.parse(localStorage.getItem("ousemais-planilha")||"null"); if (c){ applySheets(c); refresh(); } }catch(e){}
+  const got = {};
+  await Promise.all(keys.map(async k=>{
+    try{
+      const ctl = new AbortController(); const t = setTimeout(()=>ctl.abort(), 8000);
+      const r = await fetch(SHEETS[k], {signal:ctl.signal, cache:"no-store"}); clearTimeout(t);
+      if (r.ok) got[k] = parseCSV(await r.text());
+    }catch(e){}
+  }));
+  if (!Object.keys(got).length) return;
+  applySheets(got); refresh();
+  try{ localStorage.setItem("ousemais-planilha", JSON.stringify(got)); }catch(e){}
+}
+
 renderFilters(); refresh(); go(0); start();
+loadSheets();
 </script>
 
 </body></html>
