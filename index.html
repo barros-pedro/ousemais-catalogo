@@ -161,6 +161,9 @@ button{font-family:inherit}
 .price s{font-family:var(--body);font-weight:600;font-size:.85rem;color:var(--muted)}
 .save{font-size:.78rem;font-weight:700;color:#0f7a3a;background:#e3f6ea;border-radius:6px;padding:2px 8px;align-self:flex-start}
 .tag.out{background:#6b6170;color:#fff}
+.tag.last{background:#f6b40e;color:#2a1430}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#2a1430;color:#fff;padding:10px 16px;border-radius:999px;font-weight:600;font-size:.9rem;z-index:60;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.preview-flag{position:sticky;top:0;z-index:70;background:#f6b40e;color:#2a1430;text-align:center;font-weight:700;font-size:.85rem;padding:7px 12px;margin-inline:-16px}
 .card.sold .plate img,.card.sold .gal{opacity:.55}
 .soon{display:block;text-align:center;border:1.5px solid var(--plum);color:var(--plum);border-radius:999px;padding:9px 12px;font-weight:700;font-size:.86rem;text-decoration:none}
 .notice .extra{opacity:.9;font-weight:500}
@@ -479,7 +482,8 @@ const CATS = [
   {id:"fetiches", label:"Fetiches", title:"Fetiches"},
   {id:"cuidados", label:"Cuidados", title:"Cuidados"},
 ];
-const IMG = p => (typeof IMGS!=="undefined" ? IMGS[p.id] : `img/${p.id}.jpg`);
+const IMG = p => (typeof IMGS!=="undefined" && IMGS[p.id]) || p.img || (p.items && p.items.length && byId(p.items[0]) ? IMG(byId(p.items[0])) : `img/${p.id}.jpg`);
+const FULL = p => p.imgFull || (p.full ? ((typeof IMGS!=="undefined" && IMGS[p.id+"-full"]) || `img/${p.id}-full.jpg`) : IMG(p));
 const brl = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 const wa = msg => `https://wa.me/${WHATS}?text=${encodeURIComponent(msg)}`;
 const byId = id => PRODUCTS.find(p=>p.id===id);
@@ -555,7 +559,8 @@ const SORTS = {
   az:(a,b)=>a.name.localeCompare(b.name,"pt-BR"),
 };
 function galHTML(p, opener){
-  const slides = [{src:IMG(p), cap:"O kit completo"}, ...p.items.map(i=>({src:IMG(byId(i)), cap:byId(i).name}))];
+  const own = (typeof IMGS!=="undefined" && IMGS[p.id]) || p.img;
+  const slides = [...(own?[{src:own, cap:"O kit completo"}]:[]), ...p.items.filter(byId).map(i=>({src:IMG(byId(i)), cap:byId(i).name}))];
   return `<div class="gal" data-gal data-kit="${p.id}">
     <div class="gal-track">${slides.map((s,i)=>`<div class="gal-slide"${opener?` data-open="${p.id}"`:""} role="group" aria-label="Foto ${i+1} de ${slides.length}: ${s.cap}"><img src="${s.src}" alt="${s.cap}" loading="lazy">${i?`<span class="gal-cap">${s.cap}</span>`:""}</div>`).join("")}</div>
     <button type="button" class="gal-nav prev" data-gal-nav="-1" aria-label="Foto anterior">‹</button>
@@ -573,6 +578,7 @@ function wireGals(root){
 function tagsHTML(p){
   const t = [];
   if (p.soldOut) t.push(`<span class="tag out">Esgotado</span>`);
+  else if (p.qty!=null && p.qty<=3) t.push(`<span class="tag last">Últimas unidades</span>`);
   if (TOP.has(p.id)) t.push(`<span class="tag best">Mais vendido</span>`);
   if (p.tag) t.push(`<span class="tag${p.items?" kit":""}">${p.tag}</span>`);
   return t.length ? `<div class="tags">${t.join("")}</div>` : "";
@@ -651,7 +657,10 @@ function renderCart(){
   $("c-note").textContent = lines.join(" ");
 }
 function refresh(){ renderGrid(); renderBag(); if($("cart").open) renderCart(); if(dlg.open) fillDialog(dlg.dataset.id); }
+function toast(msg){ let t = document.querySelector(".toast"); if(!t){ t = document.createElement("div"); t.className = "toast"; t.setAttribute("role","status"); document.body.appendChild(t); } t.textContent = msg; t.hidden = false; clearTimeout(t._h); t._h = setTimeout(()=>{ t.hidden = true; }, 2600); }
 function change(id, d){
+  const pr = P(id);
+  if (d>0 && pr && pr.qty!=null){ const used = keysOf(pr).reduce((s,k)=>s+cart[k],0); if (used >= pr.qty){ toast(pr.qty ? `Só temos ${pr.qty} ${pr.qty===1?"unidade":"unidades"} em estoque` : "Produto esgotado"); return; } }
   cart[id] = (cart[id]||0) + d;
   if (cart[id]<=0) delete cart[id];
   save(); refresh();
@@ -663,7 +672,7 @@ function fillDialog(id){
   const p = byId(id); dlg.dataset.id = id;
   if (dlg.dataset.shown !== id){
     dlg.dataset.shown = id;
-    $("d-pimg").innerHTML = p.items ? galHTML(p,false) : `<img src="${p.full ? (typeof IMGS!=="undefined" ? IMGS[p.id+"-full"] : `img/${p.id}-full.jpg`) : IMG(p)}" alt="${p.name}">`;
+    $("d-pimg").innerHTML = p.items ? galHTML(p,false) : `<img src="${FULL(p)}" alt="${p.name}">`;
     wireGals($("d-pimg"));
   }
   $("d-brand").textContent = p.brand; $("d-name").textContent = p.name; $("d-desc").textContent = p.desc;
@@ -729,7 +738,11 @@ const SHEETS = {
   produtos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSPn1Ol7iSoSkxcpbZbTENz58C20TOy0tNjp-GkXeQHjNn7_6-4fpoS3NHwTycVT3GzdNTClAtunJu5/pub?single=true&output=csv&gid=953215427",
   kits: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSPn1Ol7iSoSkxcpbZbTENz58C20TOy0tNjp-GkXeQHjNn7_6-4fpoS3NHwTycVT3GzdNTClAtunJu5/pub?single=true&output=csv&gid=793331616",
   entrega: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSPn1Ol7iSoSkxcpbZbTENz58C20TOy0tNjp-GkXeQHjNn7_6-4fpoS3NHwTycVT3GzdNTClAtunJu5/pub?single=true&output=csv&gid=263919990",
+  // catálogo completo editado pelo painel (aba "Publicado") e prévia (aba "Rascunho")
+  catalogo: "",
+  previa: "",
 };
+const IS_PREVIEW = /[?&]previa\b/.test(location.search);
 let SHEETDATA = {};
 function parseCSV(t){
   const rows=[]; let row=[], f="", q=false;
@@ -753,8 +766,50 @@ function num(s){
   return isNaN(n) || n<=0 ? null : n;
 }
 const col = (head, re) => head.findIndex(x=>re.test(norm(x)));
+const SW = {preto:"#151515",vermelho:"#e0141e",branco:"#ffffff",nude:"#eaa58d",rosa:"#f06aa6",pink:"#ff2e88",roxo:"#6b2a9a",lilas:"#b48ad6",azul:"#2a63d6","azul marinho":"#1d2b5a",verde:"#2e9b55",amarelo:"#f5c518",laranja:"#f28c28",vinho:"#7a1030",bordo:"#6d0f2a",bege:"#e8d3b4",marrom:"#6b4226",cinza:"#8a8a8a",dourado:"#d4af37",prata:"#c0c0c0",oncinha:"#c8954a",onca:"#c8954a",transparente:"#f4f4f4"};
+const slug = s => norm(s).trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+function parseVariants(t){
+  t = (t||"").trim(); if (!t) return null;
+  let note = ""; const m = t.match(/\(([^)]*)\)\s*$/); if (m){ note = m[1].trim(); t = t.slice(0,m.index).trim(); }
+  const i = t.indexOf(":"); const label = i>0 ? t.slice(0,i).trim() : "Opção";
+  const names = (i>0 ? t.slice(i+1) : t).split(",").map(s=>s.trim()).filter(Boolean);
+  if (!names.length) return null;
+  const isColor = /^cor/.test(norm(label));
+  return {label, type:isColor?"swatch":"select", note:note||undefined, options:names.map(n=>({id:slug(n), name:n, color:SW[norm(n)]||"#c9b8c4"}))};
+}
+function applyCatalog(rows){
+  const [head,...body] = rows; if (!head) return false;
+  const I = {id:/^codigo/, tipo:/^tipo/, cat:/^categoria/, name:/^produto/, brand:/^marca/, tag:/^selo/, desc:/^descricao/, specs:/^detalhes/, opts:/^opcoes/, items:/^itens/, img:/^foto$/, imgFull:/^foto ampliada/, price:/^preco$/, old:/^preco antigo/, qty:/^quantidade/, avail:/^disponivel/, show:/^mostrar/, rank:/^ranking/};
+  for (const k in I) I[k] = col(head, I[k]);
+  if (I.id<0 || I.name<0) return false;
+  const g = (r,k) => I[k]>=0 ? String(r[I[k]]||"").trim() : "";
+  const list = [];
+  body.forEach(r=>{
+    const id = g(r,"id"), name = g(r,"name"); if (!id || !name) return;
+    if (/^n/.test(norm(g(r,"show")))) return;
+    const old = byId(id) || {};
+    const c = CATS.find(x=>x.id!=="all" && norm(x.label)===norm(g(r,"cat")));
+    const q = g(r,"qty"), qn = parseFloat(q.replace(/\./g,"").replace(",","."));
+    const p = {id, name, cat: c ? c.id : (old.cat||"lub"), brand:g(r,"brand"), tag:g(r,"tag")||undefined, desc:g(r,"desc")||old.desc||"",
+      specs: g(r,"specs") ? g(r,"specs").split(",").map(s=>s.trim()).filter(Boolean) : [],
+      price:num(g(r,"price")), oldPrice:num(g(r,"old")), img:g(r,"img"), imgFull:g(r,"imgFull"), full:!!old.full && !g(r,"imgFull"),
+      qty: q==="" || isNaN(qn) ? null : Math.max(0, Math.floor(qn)), vendidos:0};
+    const rk = num(g(r,"rank")); if (rk) p.vendidos = 1000-rk;
+    p.soldOut = /^n/.test(norm(g(r,"avail"))) || p.qty===0;
+    if (norm(g(r,"tipo"))==="kit" || g(r,"items")) p.items = g(r,"items").split(",").map(s=>s.trim()).filter(Boolean);
+    const v = parseVariants(g(r,"opts")); if (v) p.variants = v;
+    list.push(p);
+  });
+  if (!list.length) return false;
+  list.forEach(p=>{ if (p.items){ p.items = p.items.filter(i=>list.some(x=>x.id===i && !x.items)); p.specs = [`${p.items.length} ${p.items.length===1?"item":"itens"}`]; } });
+  PRODUCTS.length = 0; PRODUCTS.push(...list);
+  ORDER.clear(); PRODUCTS.forEach((p,i)=>ORDER.set(p.id,i));
+  return true;
+}
+function pruneCart(){ let ch = false; for (const k in cart){ const p = P(k); if (!p || (p.variants ? !optOf(p,k) : k.includes("|"))){ delete cart[k]; ch = true; } } if (ch) save(); }
 function applySheets(d){
-  if (d.produtos){
+  const full = d.catalogo && applyCatalog(d.catalogo);
+  if (!full && d.produtos){
     const [head,...rows] = d.produtos, iId=col(head,/^codigo/), iP=col(head,/^preco \(/), iO=col(head,/^preco antigo/), iR=col(head,/^ranking/), iD=col(head,/^disponib/), iC=col(head,/^categoria/);
     rows.forEach(r=>{ const p = byId((r[iId]||"").trim()); if(!p || p.items) return;
       if (iC>=0){ const c = CATS.find(x=>x.id!=="all" && norm(x.label)===norm(r[iC]||"").trim()); if (c) p.cat = c.id; }
@@ -764,7 +819,7 @@ function applySheets(d){
       if (iD>=0) p.soldOut = /esgot/.test(norm(r[iD]));
     });
   }
-  if (d.kits){
+  if (!full && d.kits){
     const [head,...rows] = d.kits, iId=col(head,/^codigo/), iP=col(head,/^preco do kit/), iD=col(head,/^disponib/);
     rows.forEach(r=>{ const k = byId((r[iId]||"").trim()); if(!k || !k.items) return;
       if (iP>=0) k.price = num(r[iP]);
@@ -772,38 +827,43 @@ function applySheets(d){
     });
   }
   // kit: preço "de" = soma dos itens separados, quando todos têm preço
-  PRODUCTS.filter(k=>k.items).forEach(k=>{ const ps = k.items.map(i=>byId(i).price); k.oldPrice = ps.every(x=>x!=null) ? ps.reduce((a,b)=>a+b,0) : null; });
+  PRODUCTS.filter(k=>k.items).forEach(k=>{ if (full && k.oldPrice) return; const ps = k.items.map(i=>byId(i)?.price); k.oldPrice = ps.length && ps.every(x=>x!=null) ? ps.reduce((a,b)=>a+b,0) : null; });
+  pruneCart();
   if (d.entrega){
     const m = {}; d.entrega.slice(1).forEach(r=>{ m[norm(r[0]||"")] = (r[1]||"").trim(); });
     const get = re => { const k = Object.keys(m).find(x=>re.test(x)); return k ? m[k] : ""; };
     SHEETDATA.entrega = { pag:get(/^formas de pagamento/), parc:get(/^parcela/), freteLocal:get(/^frete em campestre/), freteFora:get(/^frete para outras/), gratis:num(get(/^frete gratis/)), prazo:get(/^prazo/) };
     const ex = $("notice-extra"); if (ex) ex.textContent = SHEETDATA.entrega.gratis ? `Frete grátis acima de ${brl(SHEETDATA.entrega.gratis)}` : "";
   }
-  PRODUCTS.forEach(p=>HAY.set(p.id, norm([p.name,p.brand,p.desc,p.tag,...(p.specs||[]),CATS.find(c=>c.id===p.cat)?.label,...(p.items||[]).flatMap(i=>[byId(i).name,byId(i).desc]),...(p.variants?p.variants.options.map(o=>o.name):[])].join(" "))));
+  PRODUCTS.forEach(p=>HAY.set(p.id, norm([p.name,p.brand,p.desc,p.tag,...(p.specs||[]),CATS.find(c=>c.id===p.cat)?.label,...(p.items||[]).filter(byId).flatMap(i=>[byId(i).name,byId(i).desc]),...(p.variants?p.variants.options.map(o=>o.name):[]),p.cat==="calcinhas"?"calcinha lingerie moda intima":""].join(" "))));
   TOP = new Set([...PRODUCTS].filter(p=>p.vendidos>0).sort((a,b)=>b.vendidos-a.vendidos).slice(0,3).map(p=>p.id));
 }
 async function loadSheets(){
-  const keys = Object.keys(SHEETS).filter(k=>SHEETS[k]);
+  const src = {...SHEETS};
+  if (src.catalogo){ delete src.produtos; delete src.kits; }
+  if (IS_PREVIEW && src.previa){ src.catalogo = src.previa; const f = document.createElement("div"); f.className = "preview-flag"; f.textContent = "PRÉVIA: assim vai ficar o site depois de publicar. Os clientes ainda não veem estas mudanças."; document.body.prepend(f); }
+  delete src.previa;
+  const keys = Object.keys(src).filter(k=>src[k]);
   if (!keys.length) return;
-  try{ const c = JSON.parse(localStorage.getItem("ousemais-planilha")||"null"); if (c){ applySheets(c); renderFilters(); refresh(); } }catch(e){}
+  if (!IS_PREVIEW) try{ const c = JSON.parse(localStorage.getItem("ousemais-planilha")||"null"); if (c){ applySheets(c); renderFilters(); refresh(); } }catch(e){}
   const got = {};
   await Promise.all(keys.map(async k=>{
     try{
       const ctl = new AbortController(); const t = setTimeout(()=>ctl.abort(), 8000);
-      const r = await fetch(SHEETS[k], {signal:ctl.signal, cache:"no-store"}); clearTimeout(t);
+      const r = await fetch(src[k] + (IS_PREVIEW ? "&t="+Date.now() : ""), {signal:ctl.signal, cache:"no-store"}); clearTimeout(t);
       if (r.ok) got[k] = parseCSV(await r.text());
     }catch(e){}
   }));
   if (!Object.keys(got).length) return;
   applySheets(got); renderFilters(); refresh();
-  try{ localStorage.setItem("ousemais-planilha", JSON.stringify(got)); }catch(e){}
+  if (!IS_PREVIEW) try{ localStorage.setItem("ousemais-planilha", JSON.stringify(got)); }catch(e){}
 }
 
 /* ---------- SEO: dados estruturados dos produtos (Google) ---------- */
 const SITE = "https://barros-pedro.github.io/ousemais-catalogo/";
 function updateLD(){
   const items = PRODUCTS.map((p,i)=>{
-    const prod = {"@type":"Product", name:p.name, image:SITE+"img/"+p.id+".jpg", description:p.desc,
+    const prod = {"@type":"Product", name:p.name, image:new URL(IMG(p), SITE).href, description:p.desc,
       category: CATS.find(c=>c.id===p.cat)?.label, url: SITE+"#"+p.cat};
     if (p.brand && !p.items && !["Moda íntima","Vibrador","Kit Ouse Mais"].includes(p.brand)) prod.brand = {"@type":"Brand", name:p.brand};
     if (p.price!=null) prod.offers = {"@type":"Offer", price:p.price.toFixed(2), priceCurrency:"BRL",
