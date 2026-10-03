@@ -25,14 +25,27 @@ img{max-width:100%;display:block}
 h1,h2,h3{line-height:1.15;margin:0}
 h1{font-family:var(--display);font-weight:700;font-size:clamp(1.7rem,5vw,2.6rem);color:var(--plum);letter-spacing:-.01em}
 h2{font-family:var(--display);font-weight:700;font-size:clamp(1.15rem,3vw,1.5rem);color:var(--plum);margin:40px 0 14px}
-.hero{background:var(--surface);border:1px solid var(--line);border-radius:28px;padding:clamp(20px,5vw,40px)}
+.hero{background:var(--surface);border:1px solid var(--line);border-radius:28px;padding:clamp(16px,4vw,36px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(16px,4vw,40px);align-items:center}
+.hero-img{order:2}
+.hero-img img{width:100%;height:auto}
+.hero .btn{margin-top:18px}
+@media (max-width:760px){.hero{grid-template-columns:1fr}.hero-img{order:0;margin:-4px -4px 0}}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+#p-t{scroll-margin-top:16px}
 .eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--magenta);margin:0 0 8px}
 .lead{max-width:68ch;margin:12px 0 0;color:var(--muted);font-size:1.05rem}
 .guide{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
 .pick{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px 18px}
 .pick h3{font-size:1rem;margin-bottom:4px}
 .pick p{margin:0;color:var(--muted);font-size:.95rem}
-.pick .picks{margin-top:8px;font-weight:600;font-size:.9rem}
+.pick{display:flex;flex-direction:column}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:4px 10px 4px 4px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--fg);text-decoration:none;font-weight:600;font-size:.86rem;line-height:1.2;transition:border-color .15s,background .15s}
+.chip img{width:32px;height:32px;border-radius:50%;object-fit:contain;background:#fff;border:1px solid var(--line)}
+.chip svg{color:var(--magenta);flex:none}
+.chip:hover{border-color:var(--magenta);background:var(--magenta-soft)}
+.chip:focus-visible{outline:3px solid var(--plum);outline-offset:2px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
 @media (max-width:520px){.grid{grid-template-columns:1fr 1fr;gap:12px}}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 10px 30px -22px rgba(91,15,122,.4)}
