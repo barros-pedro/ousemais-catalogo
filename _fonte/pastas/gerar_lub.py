@@ -91,6 +91,7 @@ def page(title, desc, url, image, body, ld):
 </main>
 <footer class="foot"><p>Ouse Mais · Sex shop e moda íntima em Campestre/AL · Venda proibida para menores de 18 anos.</p>
 <p><a href="/">Ver catálogo completo</a> · <a href="{wa_link("Olá! Vi os lubrificantes no site da Ouse Mais e quero tirar uma dúvida.")}" target="_blank" rel="noopener">WhatsApp (82) 99908-0594</a></p></footer>
+<a class="wa-float" href="{wa_link("Olá! Vi os lubrificantes no site da Ouse Mais e quero tirar uma dúvida.")}" target="_blank" rel="noopener" aria-label="Falar com a loja no WhatsApp"><svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><path fill="currentColor" d="M16 3C8.8 3 3 8.7 3 15.8c0 2.5.7 4.9 2 7L3 29l6.4-2c2 1.1 4.3 1.7 6.6 1.7 7.2 0 13-5.7 13-12.9S23.2 3 16 3zm0 23.4c-2.1 0-4.1-.6-5.9-1.7l-.4-.3-3.8 1.2 1.2-3.7-.3-.4c-1.2-1.8-1.9-3.9-1.9-6.1C4.9 9.8 9.9 4.9 16 4.9s11.1 4.9 11.1 10.9S22.1 26.4 16 26.4zm6.1-8.1c-.3-.2-2-1-2.3-1.1-.3-.1-.5-.2-.8.2-.2.3-.9 1.1-1.1 1.3-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.7-1.7-1-.9-1.7-2-1.9-2.3-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.3.3-.6.1-.2.1-.4 0-.6-.1-.2-.8-1.8-1-2.5-.3-.7-.5-.6-.8-.6h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.8s1.2 3.2 1.4 3.5c.2.2 2.4 3.6 5.7 5 .8.3 1.4.5 1.9.7.8.3 1.6.2 2.2.1.7-.1 2-.8 2.3-1.6.3-.8.3-1.5.2-1.6-.1-.2-.3-.3-.6-.4z"/></svg></a>
 <div class="bag" id="bag" hidden><span id="bag-txt"></span><a class="btn" href="/">Finalizar pedido</a></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>window.OUSE = {{ catalogo: {json.dumps(CATALOG_URL)}, wa: "{WA}" }};</script>
@@ -107,7 +108,7 @@ def card(p):
   <div class="info"><div class="brand">{e(p.get('brand'))}</div>
   <h3 class="name"><a href="{url}">{e(p['name'])}</a></h3>
   <p class="spec">{e(specs)}</p>
-  <div class="price" data-price>{e(money(p.get('price'))) or 'Preço no WhatsApp'}</div>
+  <div class="price{'' if p.get('price') else ' ask'}" data-price>{e(money(p.get('price'))) or 'Preço no WhatsApp'}</div>
   <button type="button" class="add" data-add="{e(p['id'])}">+ Adicionar</button></div>
 </article>'''
 
@@ -164,11 +165,14 @@ open(os.path.join(OUT, 'index.html'), 'w', encoding='utf-8').write(page(
 for p in LUB:
     pid = p['id']; url = SITE + f'lubrificantes/{pid}/'
     kits = [k for k in KITS if pid in k['items']]
-    outros = [x for x in LUB if x['id'] != pid][:4]
+    # mesma marca primeiro, depois quem divide kit com ele, depois o resto
+    kit_mates = {i for k in kits for i in k['items']}
+    outros = sorted([x for x in LUB if x['id'] != pid],
+                    key=lambda x: (x.get('brand') != p.get('brand'), x['id'] not in kit_mates, LUB.index(x)))[:4]
     bom = ''.join(f'<li><b>{e(t)}</b><span>{e(d)}</span></li>' for t, d in bom_saber(p))
     tag = f'<span class="pill">{e(p["tag"])}</span>' if p.get('tag') else ''
     specs = ''.join(f'<li>{e(s)}</li>' for s in p.get('specs', []))
-    kit_html = ''.join(f'''<a class="kitlink" href="/#kit"><img src="/img/{e(k['id'])}.jpg" alt="" loading="lazy" width="80" height="80"><span><b>{e(k['name'])}</b><small>{e(k['desc'])}</small></span></a>''' for k in kits)
+    kit_html = ''.join(f'''<a class="kitlink" href="/#kit" title="Ver os kits no catálogo"><img src="/img/{e(k['id'])}.jpg" alt="" loading="lazy" width="80" height="80"><span><b>{e(k['name'])}</b><small>{e(k['desc'])}</small></span></a>''' for k in kits)
     msg = f"Olá, Ouse Mais! Quero o {p['name']} ({p.get('brand')}). Vocês podem confirmar o valor e a entrega?"
     body = f'''<nav class="crumbs" aria-label="Você está em"><a href="/">Catálogo</a> › <a href="/lubrificantes/">Lubrificantes</a> › <span>{e(p['name'])}</span></nav>
 <article class="prod" data-id="{e(pid)}">
@@ -178,7 +182,7 @@ for p in LUB:
     <h1>{e(p['name'])}</h1>{tag}
     <p class="desc">{e(p.get('desc'))}</p>
     <ul class="specs">{specs}</ul>
-    <div class="price big" data-price>{e(money(p.get('price'))) or 'Preço no WhatsApp'}</div>
+    <div class="price big{'' if p.get('price') else ' ask'}" data-price>{e(money(p.get('price'))) or 'Preço no WhatsApp'}</div>
     <p class="stock" data-stock></p>
     <div class="actions"><button type="button" class="add" data-add="{e(pid)}">+ Adicionar à sacola</button>
     <a class="btn ghost" href="{wa_link(msg)}" target="_blank" rel="noopener">Pedir no WhatsApp</a></div>

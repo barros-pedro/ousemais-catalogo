@@ -59,22 +59,57 @@
     if (s.includes(",")) s = s.replace(/\./g,"").replace(",",".");
     const n = parseFloat(s); return isNaN(n) || n<=0 ? null : n;
   }
+  const safeUrl = u => /^https:\/\/[^\s"'<>`\\]+$/.test(u) || /^img\/[\w.-]+$/.test(u) ? u : "";
+  const ytId = u => (u.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/|embed\/))([\w-]{6,})/)||[])[1];
+  const drId = u => (u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([\w-]{10,})/)||[])[1];
+  const abs = u => /^img\//.test(u) ? "/" + u : u;
+  // fotos e vídeos extras do painel ("Mais fotos e vídeos") na página do produto
+  function gallery(){
+    const box = document.querySelector(".prod .pimg"); if (!box) return;
+    const L = LIVE[box.closest("[data-id]").dataset.id]; if (!L) return;
+    const main = box.querySelector("img");
+    const slides = [];
+    const first = L.img ? abs(L.img) : main.getAttribute("src");
+    slides.push({img:first});
+    L.media.forEach(u=>{ const y = ytId(u), d = drId(u);
+      if (y) slides.push({video:`https://www.youtube-nocookie.com/embed/${y}?rel=0&playsinline=1&autoplay=1`, thumb:`https://i.ytimg.com/vi/${y}/hqdefault.jpg`});
+      else if (d) slides.push({video:`https://drive.google.com/file/d/${d}/preview`, thumb:`https://drive.google.com/thumbnail?id=${d}&sz=w400`});
+      else slides.push({img:abs(u)}); });
+    if (main.getAttribute("src") !== first) main.src = first;
+    let strip = box.parentElement.querySelector(".thumbs"); if (strip) strip.remove();
+    if (slides.length < 2) return;
+    strip = document.createElement("div"); strip.className = "thumbs"; strip.setAttribute("role","group"); strip.setAttribute("aria-label","Fotos e vídeos");
+    slides.forEach((s,i)=>{
+      const b = document.createElement("button"); b.type = "button"; b.className = "th" + (i? "" : " on"); b.setAttribute("aria-label", s.video ? "Ver vídeo" : `Ver foto ${i+1}`);
+      const im = document.createElement("img"); im.src = s.thumb || s.img; im.alt = ""; im.loading = "lazy"; b.append(im);
+      if (s.video){ const pl = document.createElement("span"); pl.className = "play"; pl.textContent = "▶"; b.append(pl); }
+      b.addEventListener("click", ()=>{
+        strip.querySelectorAll(".th").forEach(x=>x.classList.toggle("on", x===b));
+        box.querySelectorAll("iframe").forEach(f=>f.remove());
+        if (s.video){ const f = document.createElement("iframe"); f.src = s.video; f.title = "Vídeo do produto"; f.allow = "autoplay; encrypted-media; picture-in-picture"; f.allowFullscreen = true; box.append(f); }
+        else main.src = s.img;
+      });
+      strip.append(b);
+    });
+    box.after(strip);
+  }
   function apply(rows){
     if (!rows || !rows.length) return;
     const head = rows[0].map(norm), col = re => head.findIndex(x=>re.test(x));
-    const I = {id:col(/^codigo/), price:col(/^preco$/), old:col(/^preco antigo/), qty:col(/^quantidade/), avail:col(/^disponivel/), show:col(/^mostrar/), last:col(/^ultimas unidades/)};
+    const I = {id:col(/^codigo/), price:col(/^preco$/), old:col(/^preco antigo/), qty:col(/^quantidade/), avail:col(/^disponivel/), show:col(/^mostrar/), last:col(/^ultimas unidades/), img:col(/^foto$/), media:col(/^mais fotos/)};
     if (I.id < 0) return;
     const g = (r,k) => I[k]>=0 ? String(r[I[k]]||"").trim() : "";
     rows.slice(1).forEach(r=>{
       const id = g(r,"id"); if (!/^[\w-]+$/.test(id)) return;
       const q = g(r,"qty"), qn = parseFloat(q.replace(/\./g,"").replace(",","."));
       const qty = q==="" || isNaN(qn) ? null : Math.max(0, Math.floor(qn));
-      LIVE[id] = { price:num(g(r,"price")), oldPrice:num(g(r,"old")), qty, hidden:/^n/.test(norm(g(r,"show"))),
+      LIVE[id] = { img:safeUrl(g(r,"img")), media:g(r,"media").split(/\s+/).map(safeUrl).filter(Boolean), price:num(g(r,"price")), oldPrice:num(g(r,"old")), qty, hidden:/^n/.test(norm(g(r,"show"))),
         soldOut:/^n/.test(norm(g(r,"avail"))) || qty===0, last:/^s/.test(norm(g(r,"last"))) };
     });
     document.querySelectorAll("[data-id]").forEach(el=>{
       const L = LIVE[el.dataset.id]; if (!L) return;
       const pr = el.querySelector("[data-price]");
+      if (pr) pr.classList.toggle("ask", !L.price);
       if (pr){ pr.textContent = ""; if (L.price){ if (L.oldPrice && L.oldPrice > L.price){ const s = document.createElement("s"); s.textContent = brl(L.oldPrice); pr.append(s, " "); } pr.append(brl(L.price)); } else pr.textContent = "Preço no WhatsApp"; }
       const add = el.querySelector("[data-add]");
       if (add){ add.disabled = L.soldOut || L.hidden; if (add.disabled) add.textContent = "Esgotado"; }
@@ -82,6 +117,7 @@
       if (st) st.textContent = L.soldOut || L.hidden ? "Esgotado no momento. Pergunte no WhatsApp quando chega." : (L.last ? "Últimas unidades" : "");
       if (el.classList.contains("card") && L.hidden) el.hidden = true;
     });
+    gallery();
     window.OUSE.live = LIVE;
     document.dispatchEvent(new CustomEvent("ouse:live", {detail:LIVE}));
   }
