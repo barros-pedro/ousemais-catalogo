@@ -1,0 +1,931 @@
+<title>Catálogo Ouse Mais</title>
+<meta name="description" content="Catálogo Ouse Mais: kits, lubrificantes, géis beijáveis e acessórios. Monte a sacola e peça pelo WhatsApp. Campestre/AL.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Figtree:wght@400;500;600;700&display=swap">
+<noscript><p style="padding:16px;font-family:sans-serif">Ative o JavaScript para ver o catálogo da Ouse Mais, ou fale com a loja pelo WhatsApp: (82) 99908-0594.</p></noscript>
+<style>
+/* Layout: vitrine de loja (só tema claro), com kits — banners rotativos no topo, filtros centralizados e fixos, grade de produtos em placas brancas, sacola fixa no rodapé com popup do pedido */
+:root{
+  --bg:#fbf4f8; --surface:#ffffff; --plate:#ffffff;
+  --fg:#2a1430; --muted:#76607c; --line:#ecd9e6;
+  --plum:#5b0f7a; --magenta:#d4136f; --magenta-soft:#fbe3ef; --lilac:#efe2f7;
+  --on-accent:#ffffff; --deep:#3d0a55; --on-deep:#fbeef6; --whats:#25d366;
+  --display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{
+  color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-inline:16px;padding-block:0 120px;
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(900px 520px at 8% -6%, rgba(212,19,111,.16), transparent 70%),
+    radial-gradient(800px 560px at 96% 4%, rgba(91,15,122,.14), transparent 70%),
+    radial-gradient(700px 600px at 50% 62%, rgba(212,19,111,.06), transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cpath d='M28 22v12M22 28h12' stroke='%235b0f7a' stroke-opacity='.07' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat,no-repeat,no-repeat,repeat;
+}
+.wrap{max-width:1180px;margin:0 auto}
+a{color:inherit}
+button{font-family:inherit}
+:focus-visible{outline:3px solid var(--magenta);outline-offset:3px;border-radius:6px}
+.ico{width:18px;height:18px;flex:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* Faixa de aviso */
+.notice{margin-inline:-16px;background:var(--deep);color:var(--on-deep);font-size:.88rem;font-weight:600;text-align:center;padding:9px 16px;display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap}
+.notice b{color:#ff9fca;font-weight:700}
+.notice .short{display:none}
+@media (max-width:560px){.notice{font-size:.84rem;row-gap:2px}.notice .long{display:none}.notice .short{display:inline}.notice .extra{flex-basis:100%;text-align:center}.notice > .ico{display:none}}
+.notice .ico{width:17px;height:17px}
+
+/* Busca */
+.search{position:relative;max-width:460px;margin:0 auto 10px}
+.search input{width:100%;font:500 1rem var(--body);color:var(--fg);background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:11px 44px 11px 42px;outline:none}
+.search input::placeholder{color:var(--muted)}
+.search input:focus{border-color:var(--magenta);box-shadow:0 0 0 3px var(--magenta-soft)}
+.search input::-webkit-search-cancel-button{display:none}
+.search .s-ico{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.search .s-clear{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;border:0;background:var(--magenta-soft);color:var(--magenta);font-size:1.1rem;cursor:pointer}
+.noresult{grid-column:1/-1;text-align:center;padding:40px 16px;background:var(--surface);border:1px dashed var(--line);border-radius:20px}
+.noresult strong{display:block;font-family:var(--display);font-weight:700;font-size:1.1rem;margin-bottom:6px}
+.noresult p{color:var(--muted);margin:0 0 16px}
+.filters[aria-disabled="true"]{opacity:.45}
+.secure{display:flex;gap:10px;align-items:flex-start;background:var(--magenta-soft);border-radius:14px;padding:10px 12px;font-size:.86rem;color:var(--fg)}
+.secure .ico{color:var(--magenta);margin-top:1px}
+
+/* Cabeçalho */
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px}
+.mark{font-family:var(--display);font-weight:900;font-size:1.6rem;letter-spacing:-.02em;color:var(--plum);line-height:1}
+.mark span{color:var(--magenta)}
+.top-r{display:flex;align-items:center;gap:10px}
+.age{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border:1.5px solid var(--line);background:var(--surface);color:var(--muted);padding:5px 10px;border-radius:999px}
+.cartbtn{position:relative;display:inline-flex;align-items:center;gap:8px;border:0;background:var(--plum);color:#fff;font-weight:700;font-size:.9rem;padding:9px 14px;border-radius:999px;cursor:pointer}
+.cartbtn .badge{min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:var(--magenta);display:grid;place-items:center;font-size:.78rem;font-variant-numeric:tabular-nums}
+
+/* Banners */
+.banners{position:relative;border-radius:28px;overflow:hidden;background:var(--surface);box-shadow:0 20px 50px -30px rgba(91,15,122,.45);margin-bottom:28px}
+.track{display:flex;transition:transform .5s ease}
+.slide{flex:0 0 100%;min-width:0;display:grid;grid-template-columns:1fr 1.1fr;align-items:center;gap:clamp(16px,4vw,40px);padding:clamp(22px,4vw,44px) clamp(22px,6vw,76px);min-height:380px}
+.slide > *{min-width:0}
+/* Cada banner tem uma cor sólida clara própria */
+.s1{background:#fff6fa}
+.s4{background:#f1e6fa}
+.s2{background:#fde0ea}
+.s3{background:#ffe6e1}
+.kitart{display:flex;justify-content:center}
+.kitart img{width:min(78%,360px);mix-blend-mode:multiply}
+.eyebrow{font-size:.76rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--magenta)}
+.slide h1.eyebrow{margin:0;line-height:1.5}
+.slide p.h1like{color:var(--fg);max-width:none}
+.slide .h1like,.slide h2{font-family:var(--display);font-weight:700;font-size:clamp(1.8rem,4.4vw,3.1rem);line-height:1.04;letter-spacing:-.03em;margin:.3em 0 .4em;text-wrap:balance}
+.slide em{font-style:normal;color:var(--magenta)}
+.slide p{color:var(--muted);font-size:1.04rem;max-width:42ch;margin:0 0 20px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--magenta);color:var(--on-accent);text-decoration:none;font-weight:700;padding:13px 22px;border-radius:999px;border:0;cursor:pointer;font-size:1rem;transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:transparent;color:var(--plum);border:1.5px solid var(--plum)}
+.btns{display:flex;flex-wrap:wrap;gap:10px}
+.vitrine{border-radius:22px 22px 22px 4px;overflow:hidden;aspect-ratio:3/2;max-width:100%}
+.vitrine img{width:100%;height:100%;object-fit:cover;display:block}
+.trio{display:flex;justify-content:center;align-items:flex-end;max-width:100%}
+.trio img{width:46%;max-width:300px;mix-blend-mode:multiply;margin-inline:-9%}
+.trio img:nth-child(2){width:54%;position:relative;z-index:1}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0;padding:0;list-style:none;color:var(--muted);font-size:.86rem;font-weight:600}
+.facts li:not(:last-child)::after{content:"·";margin-left:8px}
+.nav{position:absolute;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:50%;border:0;background:rgba(255,255,255,.9);color:var(--plum);font-size:1.3rem;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.nav.prev{left:12px}.nav.next{right:12px}
+.dots{position:absolute;left:0;right:0;bottom:14px;display:flex;justify-content:center;gap:8px}
+.dots button{width:9px;height:9px;border-radius:999px;border:0;padding:0;background:rgba(91,15,122,.25);cursor:pointer;transition:width .25s}
+.dots button[aria-current="true"]{width:26px;background:var(--magenta)}
+
+/* Filtros */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;padding-block:12px;margin-bottom:22px;background:rgba(251,244,248,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin-inline:-16px;padding-inline:16px}
+.filters{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;max-width:1180px;margin:0 auto}
+.filters::-webkit-scrollbar{display:none}
+.filters > :first-child{margin-left:auto}
+.filters > :last-child{margin-right:auto}
+.filters button{flex:none;font:600 .92rem var(--body);color:var(--fg);background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:8px 16px;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--plum);border-color:var(--plum);color:#fff}
+@media (min-width:900px){.filters{flex-wrap:wrap;justify-content:center;overflow:visible}.filters > :first-child,.filters > :last-child{margin:0}}
+.filters .n{font-variant-numeric:tabular-nums;opacity:.6;margin-left:4px}
+
+/* Produtos */
+.section-h{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px 16px;margin:0 0 16px}
+.sh-l{display:flex;align-items:baseline;gap:12px}
+.sort{display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;color:var(--muted)}
+.sort select{appearance:none;-webkit-appearance:none;font:600 .92rem var(--body);color:var(--fg);background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235b0f7a' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 14px center;border:1.5px solid var(--line);border-radius:999px;padding:8px 38px 8px 16px;cursor:pointer}
+.sort select:focus-visible{outline:3px solid var(--magenta);outline-offset:2px}
+.tag.best{background:#f6b40e;color:#2a1430}
+.tags{position:absolute;top:10px;left:10px;z-index:3;display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.tags .tag{position:static}
+.section-h h2{font-family:var(--display);font-weight:700;font-size:1.25rem;letter-spacing:-.01em;margin:0}
+.count{color:var(--muted);font-size:.9rem;font-variant-numeric:tabular-nums}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 10px 30px -22px rgba(91,15,122,.4)}
+.card.in{border-color:var(--magenta);box-shadow:0 0 0 1px var(--magenta)}
+.plate{background:var(--plate);aspect-ratio:1/1;position:relative;border:0;padding:0;cursor:zoom-in;display:block;width:100%}
+.plate img{width:100%;height:100%;object-fit:contain;display:block}
+.tag.kit{background:var(--magenta)}
+.tag{position:absolute;top:10px;left:10px;font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:#2a1430;color:#fff;padding:4px 9px;border-radius:999px}
+.info{padding:14px 14px 16px;display:flex;flex-direction:column;gap:5px;flex:1}
+.brand{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.name{font-family:var(--display);font-weight:500;font-size:.98rem;line-height:1.2;margin:0;text-wrap:balance}
+.name button{all:unset;cursor:pointer}
+.name button:focus-visible{outline:3px solid var(--magenta);outline-offset:2px;border-radius:4px}
+.specs{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 0;padding:0;list-style:none}
+.specs li{font-size:.75rem;font-weight:600;background:var(--magenta-soft);color:var(--fg);padding:2px 8px;border-radius:6px}
+.buy{margin-top:auto;padding-top:12px;display:flex;flex-direction:column;gap:8px}
+.price{font-family:var(--display);font-weight:700;font-size:1.05rem;font-variant-numeric:tabular-nums;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.price s{font-family:var(--body);font-weight:600;font-size:.85rem;color:var(--muted)}
+.save{font-size:.78rem;font-weight:700;color:#0f7a3a;background:#e3f6ea;border-radius:6px;padding:2px 8px;align-self:flex-start}
+.tag.out{background:#6b6170;color:#fff}
+.tag.last{background:#f6b40e;color:#2a1430}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#2a1430;color:#fff;padding:10px 16px;border-radius:999px;font-weight:600;font-size:.9rem;z-index:60;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.preview-flag{position:sticky;top:0;z-index:70;background:#f6b40e;color:#2a1430;text-align:center;font-weight:700;font-size:.85rem;padding:7px 12px;margin-inline:-16px}
+.card.sold .plate img,.card.sold .gal{opacity:.55}
+.soon{display:block;text-align:center;border:1.5px solid var(--plum);color:var(--plum);border-radius:999px;padding:9px 12px;font-weight:700;font-size:.86rem;text-decoration:none}
+.notice .extra{opacity:.9;font-weight:500}
+.notice .extra:not(:empty)::before{content:"· "}
+@media (max-width:560px){.notice .extra:not(:empty)::before{content:""}}
+.price.ask{font-family:var(--body);font-size:.85rem;font-weight:600;color:var(--muted)}
+.add{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;background:var(--magenta);color:var(--on-accent);border:0;border-radius:999px;padding:10px 12px;font-weight:700;font-size:.9rem;cursor:pointer}
+.add:hover{filter:brightness(1.08)}
+.var{display:flex;flex-direction:column;gap:6px}
+.sw{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.swb{width:26px;height:26px;border-radius:50%;background:var(--c);border:1.5px solid rgba(0,0,0,.18);cursor:pointer;padding:0;position:relative}
+.swb[aria-pressed="true"]{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--magenta)}
+.swb.has::after{content:"";position:absolute;right:-3px;top:-3px;width:10px;height:10px;border-radius:50%;background:var(--magenta);border:2px solid var(--surface)}
+.swn{font-size:.82rem;font-weight:700;margin-left:2px}
+.vsel{display:flex;flex-direction:column;gap:3px;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.vsel select{appearance:none;-webkit-appearance:none;font:700 .88rem var(--body);letter-spacing:.02em;color:var(--fg);background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235b0f7a' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center;border:1.5px solid var(--line);border-radius:12px;padding:8px 32px 8px 12px;width:100%;cursor:pointer;text-transform:none}
+.incart{font-size:.78rem;font-weight:600;color:var(--magenta)}
+.line .lv{font-size:.82rem;font-weight:600;color:var(--magenta)}
+.plate img.photo{object-fit:cover}
+/* Carrossel de fotos dos kits */
+.gal{position:relative;width:100%;height:100%;background:var(--plate)}
+.gal-track{display:flex;width:100%;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
+.gal-track::-webkit-scrollbar{display:none}
+.gal-slide{flex:0 0 100%;min-width:0;height:100%;scroll-snap-align:center;position:relative;cursor:zoom-in}
+.gal-slide img{width:100%;height:100%;object-fit:contain;display:block}
+.gal-slide iframe{width:100%;height:100%;border:0;display:block;background:#000}
+.gal-slide img.vthumb{object-fit:cover;background:#000}
+.vplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:58px;height:58px;border-radius:50%;background:rgba(212,19,111,.92);color:#fff;display:grid;place-items:center;font-size:1.4rem;padding-left:4px;box-shadow:0 6px 20px rgba(0,0,0,.3);pointer-events:none}
+.gal-cap{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);background:rgba(42,20,48,.82);color:#fff;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis}
+.gal-nav{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:var(--plum);font-size:1.15rem;line-height:1;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.15);opacity:0;transition:opacity .2s;z-index:2}
+.gal-nav.prev{left:8px}.gal-nav.next{right:8px}
+.gal:hover .gal-nav,.gal-nav:focus-visible{opacity:1}
+.gal-dots{position:absolute;left:0;right:0;bottom:10px;display:flex;justify-content:center;gap:5px;pointer-events:none}
+.gal-dots i{width:6px;height:6px;border-radius:999px;background:rgba(91,15,122,.25);transition:width .2s}
+.gal-dots i.on{width:16px;background:var(--magenta)}
+.plate.has-gal{cursor:default}
+.dlg .pimg:has(.gal){display:block;align-self:center;overflow:hidden}
+.dlg .pimg .gal{aspect-ratio:1/1;height:auto;width:100%}
+dialog{overflow-x:hidden}
+.dlg .pimg .gal-nav{opacity:1;width:38px;height:38px}
+@media (hover:none){.gal-nav{opacity:1}}
+.qty{display:flex;align-items:center;justify-content:space-between;gap:6px;border:1.5px solid var(--magenta);border-radius:999px;padding:3px}
+.qty button{width:34px;height:34px;border-radius:50%;border:0;background:var(--magenta-soft);color:var(--magenta);font-size:1.15rem;font-weight:700;cursor:pointer;line-height:1;flex:none}
+.qty output{font-weight:700;font-variant-numeric:tabular-nums;min-width:2ch;text-align:center}
+.more{background:var(--magenta-soft);border:1.5px dashed var(--magenta);border-radius:20px;padding:20px;display:flex;flex-direction:column;justify-content:center;gap:10px;text-decoration:none;color:var(--fg)}
+.more strong{font-family:var(--display);font-weight:700;font-size:1.05rem;line-height:1.2}
+.more span{color:var(--muted);font-size:.9rem}
+.more em{font-style:normal;font-weight:700;color:var(--magenta)}
+
+/* Rodapé */
+.faq{margin-top:56px;max-width:820px;margin-left:auto;margin-right:auto}
+.faq h2{font-family:var(--display);font-weight:700;font-size:clamp(1.3rem,3vw,1.9rem);line-height:1.1;margin:0 0 8px;color:var(--plum)}
+.faq-lead{color:var(--muted);margin:0 0 18px}
+.faq details{background:var(--surface,#fff);border:1px solid var(--line);border-radius:16px;margin-bottom:10px}
+.faq summary{cursor:pointer;list-style:none;padding:16px 48px 16px 18px;font-weight:700;position:relative}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:1.4rem;color:var(--magenta);transition:transform .2s}
+.faq details[open] summary::after{transform:translateY(-50%) rotate(45deg)}
+.faq summary:focus-visible{outline:2px solid var(--plum);outline-offset:2px;border-radius:16px}
+.faq details p{margin:0;padding:0 18px 16px;color:var(--fg)}
+.foot{margin-top:56px;background:var(--deep);color:var(--on-deep);border-radius:28px;padding:clamp(24px,5vw,44px);display:grid;grid-template-columns:1.4fr 1fr;gap:24px;align-items:center;background-image:radial-gradient(500px 300px at 100% 0%, rgba(212,19,111,.35), transparent 70%)}
+.foot > *{min-width:0}
+.foot h2{font-family:var(--display);font-weight:700;font-size:clamp(1.3rem,3vw,1.9rem);line-height:1.1;margin:0}
+.foot p{margin:8px 0 0;opacity:.85}
+.contact{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.phone{font-family:var(--display);font-weight:500;font-size:1.1rem;user-select:all;font-variant-numeric:tabular-nums}
+.foot .btn{background:var(--on-deep);color:var(--deep)}
+.foot a.ig{opacity:.85;font-size:.92rem}
+.fine{color:var(--muted);font-size:.82rem;text-align:center;margin-top:20px}
+
+/* Botão flutuante do WhatsApp */
+.wa-float{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:19;width:58px;height:58px;border-radius:50%;background:#25d366;color:#fff;display:grid;place-items:center;box-shadow:0 6px 20px rgba(20,0,30,.28);transition:transform .25s ease,bottom .25s ease;text-decoration:none}
+.wa-float:hover{transform:scale(1.06)}
+.wa-float:focus-visible{outline:3px solid var(--plum);outline-offset:3px}
+.wa-float .wa-tip{position:absolute;right:68px;top:50%;transform:translateY(-50%);background:#fff;color:var(--fg);font-weight:700;font-size:.86rem;white-space:nowrap;padding:8px 12px;border-radius:999px;box-shadow:0 4px 14px rgba(20,0,30,.15);opacity:0;pointer-events:none;transition:opacity .2s}
+.wa-float:hover .wa-tip,.wa-float:focus-visible .wa-tip{opacity:1}
+body.bag-on .wa-float{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+@media (hover:none){.wa-float .wa-tip{display:none}}
+@media (prefers-reduced-motion:reduce){.wa-float{transition:none}}
+
+/* Sacola fixa */
+.bag{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:var(--deep);color:var(--on-deep);box-shadow:0 -8px 30px rgba(20,0,30,.25);transform:translateY(110%);transition:transform .25s ease}
+.bag.show{transform:none}
+.bag-in{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.bag-sum{all:unset;flex:1;min-width:0;cursor:pointer}
+.bag-sum strong{display:block;font-family:var(--display);font-weight:500;font-size:.95rem}
+.bag-sum span{font-size:.85rem;opacity:.8;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bag-sum:focus-visible{outline:3px solid var(--magenta);outline-offset:4px;border-radius:6px}
+.bag .view{background:none;border:1.5px solid rgba(255,255,255,.35);color:var(--on-deep);border-radius:999px;padding:11px 16px;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn.wa{background:var(--whats);color:#0b2e17;white-space:nowrap}
+
+/* Popups */
+dialog{border:0;padding:0;border-radius:24px;max-width:min(760px,calc(100vw - 32px));width:100%;background:var(--surface);color:var(--fg);max-height:calc(100dvh - 32px)}
+dialog::backdrop{background:rgba(20,6,28,.6)}
+.close{position:absolute;top:10px;right:10px;z-index:2;width:38px;height:38px;border-radius:50%;border:0;background:var(--surface);color:var(--fg);font-size:1.3rem;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.dlg{display:grid;grid-template-columns:1fr 1fr}
+.dlg > *{min-width:0}
+.dlg .pimg{background:var(--plate);display:grid;place-items:center}
+.dlg .pimg img{width:100%;max-height:70vh;object-fit:contain}
+.dlg .pbody{padding:28px 24px 24px;display:flex;flex-direction:column;gap:10px}
+.dlg h3{font-family:var(--display);font-weight:700;font-size:1.35rem;line-height:1.15;margin:0}
+.dlg p{margin:0;color:var(--muted)}
+.kitlist:empty{display:none}
+.kitlist strong{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.kitlist ul{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}
+.kitlist li{display:flex;align-items:center;gap:10px;font-weight:600;font-size:.92rem;line-height:1.2}
+.kitlist img{width:40px;height:40px;object-fit:contain;border:1px solid var(--line);border-radius:10px;background:#fff;flex:none}
+.kitlist small{display:block;font-weight:500;color:var(--muted);font-size:.78rem}
+
+#cart{max-width:min(520px,calc(100vw - 32px))}
+.cart{display:flex;flex-direction:column;max-height:calc(100dvh - 32px)}
+.cart-h{padding:22px 60px 14px 22px;border-bottom:1px solid var(--line)}
+.cart-h h3{font-family:var(--display);font-weight:700;font-size:1.25rem;margin:0}
+.cart-h span{color:var(--muted);font-size:.9rem}
+.lines{list-style:none;margin:0;padding:8px 22px;overflow-y:auto;flex:1}
+.line{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:12px;align-items:center;padding-block:12px;border-bottom:1px solid var(--line)}
+.line:last-child{border-bottom:0}
+.line img{width:64px;height:64px;object-fit:contain;border-radius:12px;border:1px solid var(--line);background:#fff}
+.line .ln{font-weight:700;line-height:1.2}
+.line .lb{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.line .lp{font-size:.85rem;color:var(--muted)}
+.line .qty{border-width:1px}
+.line .qty button{width:30px;height:30px}
+.empty{padding:28px 22px;text-align:center;color:var(--muted)}
+.cart-f{padding:16px 22px 20px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px;background:var(--bg);border-radius:0 0 24px 24px}
+.total{display:flex;justify-content:space-between;font-weight:700}
+.total b{font-family:var(--display);font-variant-numeric:tabular-nums}
+.cart-f .note{font-size:.85rem;color:var(--muted);margin:0}
+.cart-f .row{display:flex;gap:10px}
+.cart-f .row > *{flex:1}
+.linkbtn{all:unset;cursor:pointer;color:var(--muted);font-size:.88rem;text-decoration:underline;align-self:center}
+
+@media (max-width:960px){ .grid{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:760px){
+  .slide{grid-template-columns:1fr;min-height:0;padding-bottom:44px}
+  .slide .art{order:-1}
+  .nav{display:none}
+  .foot{grid-template-columns:1fr}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .info{padding:12px 12px 14px}
+  .dlg{grid-template-columns:1fr}
+  .dlg .pimg img{max-height:38vh}
+  .dlg .pimg .gal{max-height:none;max-width:38vh;margin-inline:auto}
+  .age{display:none}
+  .section-h{align-items:flex-start}
+  .sort{width:100%;justify-content:space-between}
+  .bag-in .wa{display:none}
+  .cart-f .row{flex-direction:column-reverse}
+  .line{grid-template-columns:52px minmax(0,1fr) auto;gap:10px}
+  .line img{width:52px;height:52px}
+  .line .qty button{width:28px;height:28px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="notice" role="note"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg><span><b>Embalagem sigilosa:</b> <span class="long">seu pedido chega sem nenhuma identificação do que tem dentro.</span><span class="short">ninguém sabe o que tem dentro.</span></span><span class="extra" id="notice-extra"></span></div>
+<div class="wrap">
+  <header class="top">
+    <div class="mark" aria-label="Ouse Mais">OUSE<span>+</span></div>
+    <div class="top-r">
+      <div class="age">Proibido para menores de 18</div>
+      <button type="button" class="cartbtn" id="cart-open-top" aria-label="Abrir sacola">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+        Sacola <span class="badge" id="badge">0</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="banners" aria-roledescription="carrossel" aria-label="Destaques">
+    <div class="track" id="track">
+      <div class="slide s1" role="group" aria-label="1 de 4">
+        <div>
+          <h1 class="eyebrow">Ouse Mais · Sex shop e moda íntima em Campestre/AL</h1>
+          <p class="h1like">Venha descobrir seu lado <em>ousado</em></p>
+          <p>Escolha seus produtos, monte a sacola e mande o pedido pronto no WhatsApp. A gente confirma tudo por lá.</p>
+          <div class="btns"><button type="button" class="btn" data-go="all">Ver produtos</button></div>
+          <ul class="facts"><li>Embalagem sigilosa</li><li>Envio rápido</li><li>Atendimento no WhatsApp</li><li>Venda para maiores de 18</li></ul>
+        </div>
+        <div class="art vitrine"><img src="img/vitrine.jpg" fetchpriority="high" alt="Vitrine com lubrificantes, géis beijáveis e produtos esquenta da Ouse Mais"></div>
+      </div>
+      <div class="slide s4" role="group" aria-label="2 de 4">
+        <div>
+          <div class="eyebrow">Kits Ouse Mais</div>
+          <h2>Kits prontos para <em>ousar</em></h2>
+          <p>Combinações montadas pela loja para presentear ou estrear a dois. Um toque e o kit inteiro vai para a sacola.</p>
+          <div class="btns"><button type="button" class="btn" data-go="kit">Ver kits</button></div>
+        </div>
+        <div class="art kitart"><img src="img/kit-a-dois.jpg" alt="Kit A Dois: Love Lub Hot, D4 Beijável Morango e Jato Sex Esquenta"></div>
+      </div>
+      <div class="slide s2" role="group" aria-label="3 de 4">
+        <div>
+          <div class="eyebrow">Linha Love Lub · La Pimienta</div>
+          <h2>Hot, Ice ou Neutro: <em>escolha o clima</em></h2>
+          <p>O lubrificante à base de água da La Pimienta em três versões: uma que aquece, uma que refresca e uma neutra para o dia a dia.</p>
+          <div class="btns"><button type="button" class="btn" data-go="lub">Ver lubrificantes</button></div>
+        </div>
+        <div class="art trio"><img src="img/love-lub-ice.jpg" alt="Love Lub Ice"><img src="img/love-lub-hot.jpg" alt="Love Lub Hot"><img src="img/love-lub-neutro.jpg" alt="Love Lub Neutro"></div>
+      </div>
+      <div class="slide s3" role="group" aria-label="4 de 4">
+        <div>
+          <div class="eyebrow">Comestíveis</div>
+          <h2>Sabor que <em>provoca</em></h2>
+          <p>Morango, lolipop com glitter e efeito vibrante, e o Kuloko, pequeno para levar na bolsa.</p>
+          <div class="btns"><button type="button" class="btn" data-go="comestiveis">Ver comestíveis</button></div>
+        </div>
+        <div class="art trio"><img src="img/d4-morango.jpg" alt="D4 Gel Beijável Morango"><img src="img/sedenta.jpg" alt="Sedenta por Oral"><img src="img/kuloko.jpg" alt="Kuloko Gel Beijável"></div>
+      </div>
+    </div>
+    <button type="button" class="nav prev" id="prev" aria-label="Banner anterior">‹</button>
+    <button type="button" class="nav next" id="next" aria-label="Próximo banner">›</button>
+    <div class="dots" id="dots"></div>
+  </section>
+
+  <nav class="bar" aria-label="Busca e categorias" id="produtos">
+    <div class="search" role="search">
+      <svg class="ico s-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <label for="q" class="sr">Buscar produtos</label>
+      <input type="search" id="q" placeholder="Buscar produto, marca ou sabor" autocomplete="off" enterkeyhint="search">
+      <button type="button" class="s-clear" id="q-clear" aria-label="Limpar busca" hidden>×</button>
+    </div>
+    <div class="filters" id="filters"></div>
+  </nav>
+
+  <section>
+    <div class="section-h">
+      <div class="sh-l"><h2 id="sec-title">Todos os produtos</h2><span class="count" id="count"></span></div>
+      <label class="sort" for="sort">Ordenar por
+        <select id="sort">
+          <option value="destaque">Destaques</option>
+          <option value="vendidos">Mais vendidos</option>
+          <option value="menor">Menor preço</option>
+          <option value="maior">Maior preço</option>
+          <option value="az">Nome (A a Z)</option>
+        </select>
+      </label>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="faq" id="duvidas" aria-labelledby="faq-title">
+    <h2 id="faq-title">Dúvidas frequentes</h2>
+    <p class="faq-lead">A Ouse Mais é um sex shop e loja de moda íntima em Campestre, Alagoas. Aqui você encontra lubrificantes, produtos anais, comestíveis, jogos, calcinhas, lingeries, fantasias, anéis, vibradores, kits, fetiches e cuidados íntimos.</p>
+    <details><summary>Como faço meu pedido?</summary><p>Escolha os produtos, coloque na sacola e toque em <b>Enviar pedido</b>. A mensagem chega pronta no WhatsApp da loja, e a gente confirma valores, estoque e entrega por lá.</p></details>
+    <details><summary>A embalagem é sigilosa?</summary><p>Sim. Todos os pedidos vão em embalagem sem nenhuma identificação do que tem dentro.</p></details>
+    <details><summary>Onde fica a loja? Vocês entregam na minha cidade?</summary><p>A Ouse Mais fica em Campestre, Alagoas. O frete e a entrega para a sua cidade são combinados no WhatsApp, junto com o pedido.</p></details>
+    <details><summary>Como é feito o pagamento?</summary><p>O pagamento é combinado com a loja no WhatsApp, na hora de confirmar o pedido.<span id="faq-pag"></span></p></details>
+    <details><summary>Não achei o produto que procuro. A loja tem?</summary><p>O catálogo mostra só uma parte da loja. Chame no WhatsApp para perguntar por outros produtos, sabores, tamanhos e cores.</p></details>
+    <details><summary>Preciso ser maior de idade para comprar?</summary><p>Sim. A venda é proibida para menores de 18 anos.</p></details>
+  </section>
+
+  <footer class="foot">
+    <div>
+      <h2>Procura algo que não está aqui?</h2>
+      <p>Todos os pedidos vão em embalagem sigilosa. O catálogo mostra só uma parte da loja. Chame no WhatsApp para perguntar por moda íntima, outros sabores, tamanhos e cores.</p>
+    </div>
+    <div class="contact">
+      <span class="phone">(82) 99908-0594</span>
+      <a class="btn" id="cta-bottom" href="#" target="_blank" rel="noopener">Falar com a loja</a>
+      <a class="ig" href="https://www.instagram.com/ousemais_oficial/" target="_blank" rel="noopener">Instagram @ousemais_oficial</a>
+    </div>
+  </footer>
+  <p class="fine">Todos os pedidos são enviados em embalagem sigilosa. Venda proibida para menores de 18 anos. Imagens ilustrativas. Preços e estoque podem mudar sem aviso.</p>
+</div>
+
+<a class="wa-float" id="wa-float" href="#" target="_blank" rel="noopener" aria-label="Falar com a loja no WhatsApp"><svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" focusable="false"><path fill="currentColor" d="M16 3C8.8 3 3 8.7 3 15.8c0 2.5.7 4.9 2 7L3 29l6.4-2c2 1.1 4.3 1.7 6.6 1.7 7.2 0 13-5.7 13-12.9S23.2 3 16 3zm0 23.4c-2.1 0-4.1-.6-5.9-1.7l-.4-.3-3.8 1.2 1.2-3.7-.3-.4c-1.2-1.8-1.9-3.9-1.9-6.1C4.9 9.8 9.9 4.9 16 4.9s11.1 4.9 11.1 10.9S22.1 26.4 16 26.4zm6.1-8.1c-.3-.2-2-1-2.3-1.1-.3-.1-.5-.2-.8.2-.2.3-.9 1.1-1.1 1.3-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.7-1.7-1-.9-1.7-2-1.9-2.3-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.3.3-.6.1-.2.1-.4 0-.6-.1-.2-.8-1.8-1-2.5-.3-.7-.5-.6-.8-.6h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.8s1.2 3.2 1.4 3.5c.2.2 2.4 3.6 5.7 5 .8.3 1.4.5 1.9.7.8.3 1.6.2 2.2.1.7-.1 2-.8 2.3-1.6.3-.8.3-1.5.2-1.6-.1-.2-.3-.3-.6-.4z"/></svg><span class="wa-tip">Fale com a gente</span></a>
+
+<div class="bag" id="bag" aria-live="polite">
+  <div class="bag-in">
+    <button type="button" class="bag-sum" id="bag-sum"><strong id="bag-title">Sacola</strong><span id="bag-items"></span></button>
+    <button type="button" class="view" id="bag-view">Ver sacola</button>
+    <a class="btn wa" id="bag-send" href="#" target="_blank" rel="noopener">Enviar pedido</a>
+  </div>
+</div>
+
+<dialog id="dlg" aria-labelledby="d-name">
+  <button type="button" class="close" data-close aria-label="Fechar">×</button>
+  <div class="dlg">
+    <div class="pimg" id="d-pimg"></div>
+    <div class="pbody">
+      <div class="brand" id="d-brand"></div>
+      <h3 id="d-name"></h3>
+      <p id="d-desc"></p>
+      <ul class="specs" id="d-specs"></ul>
+      <div class="kitlist" id="d-kit"></div>
+      <div class="buy" id="d-buy"></div>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="cart" aria-labelledby="c-title">
+  <button type="button" class="close" data-close aria-label="Fechar">×</button>
+  <div class="cart">
+    <div class="cart-h"><h3 id="c-title">Sua sacola</h3><span id="c-count"></span></div>
+    <ul class="lines" id="c-lines"></ul>
+    <div class="cart-f" id="c-foot">
+      <div class="total" id="c-total"></div>
+      <div class="secure"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg><span>Seu pedido vai em <b>embalagem sigilosa</b>, sem nenhuma identificação do conteúdo.</span></div>
+      <p class="note" id="c-note"></p>
+      <div class="row">
+        <button type="button" class="btn ghost" data-close>Continuar comprando</button>
+        <a class="btn wa" id="c-send" href="#" target="_blank" rel="noopener">Enviar pelo WhatsApp</a>
+      </div>
+      <button type="button" class="linkbtn" id="c-clear">Esvaziar sacola</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+const WHATS = "5582999080594";
+// price: número em reais (ex.: 29.9) ou null para "Preço sob consulta"
+// vendidos: quantas unidades vendeu (ou uma nota de 0 a 100). Define a ordem "Mais vendidos" e o selo nos 3 primeiros.
+// novo: true mostra o produto em "Novidades" primeiro
+const PRODUCTS = [
+  // Kits: "items" lista os produtos que vêm dentro
+  {id:"kit-a-dois", cat:"kit", tag:"Kit", brand:"Kit Ouse Mais", name:"Kit A Dois", desc:"Para uma noite diferente: lubrificante que aquece, gel beijável de morango e a pomada esquenta de bolso.", items:["love-lub-hot","d4-morango","jato-sex-esquenta"], price:null, vendidos:0},
+  {id:"kit-love-lub", cat:"kit", tag:"Kit", brand:"Kit Ouse Mais", name:"Kit Love Lub Completo", desc:"As três versões do Love Lub juntas. Teste o calor, o frio e o neutro e descubra o seu favorito.", items:["love-lub-hot","love-lub-ice","love-lub-neutro"], price:null, vendidos:0},
+  {id:"kit-beijavel", cat:"kit", tag:"Kit", brand:"Kit Ouse Mais", name:"Kit Beijável", desc:"Três géis para o sexo oral: morango, lolipop com efeito vibrante e o Kuloko de bolso.", items:["d4-morango","sedenta","kuloko"], price:null, vendidos:0},
+  {id:"kit-descoberta", cat:"kit", tag:"Kit", brand:"Kit Ouse Mais", name:"Kit Descoberta", desc:"Para quem está começando: o vibrador curvo em silicone com o lubrificante neutro, que combina com tudo.", items:["vibrador-curvo","love-lub-neutro"], price:null, vendidos:0},
+
+  // Moda íntima. variants: opções que o cliente escolhe; dá para levar várias opções diferentes do mesmo produto
+  {id:"calcinha-laco", cat:"calcinhas", full:true, brand:"Moda íntima", name:"Calcinha Laço de Cetim", desc:"Calcinha fio em renda com laço de cetim e alças reguláveis nas laterais. Dá para levar mais de uma cor no mesmo pedido.", specs:["Renda","Alças reguláveis"],
+    variants:{label:"Cor", type:"swatch", options:[{id:"preto",name:"Preto",color:"#151515"},{id:"vermelho",name:"Vermelho",color:"#e0141e"},{id:"branco",name:"Branco",color:"#ffffff"},{id:"nude",name:"Nude",color:"#eaa58d"}]}, price:null, vendidos:0},
+  {id:"calcinha-frase", cat:"calcinhas", full:true, tag:"Cor sob consulta", brand:"Moda íntima", name:"Calcinha com Frase", desc:"Calcinha fio em renda com frase em letras douradas e strass, alças reguláveis. Escolha a frase. As cores disponíveis são confirmadas pela loja no WhatsApp.", specs:["Renda","Letras douradas","Strass"],
+    variants:{label:"Frase", type:"select", note:"cor a combinar", options:["Me chupa","Toda sua","Safada","Me fode","Delícia","Gostosa","Sua puta","Me come"].map(n=>({id:n.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/\s+/g,"-"),name:n.toUpperCase()}))}, price:null, vendidos:0},
+
+  {id:"love-lub-hot", cat:"lub", tag:"Esquenta", brand:"La Pimienta", name:"Love Lub Hot", desc:"Lubrificante à base de água com efeito que aquece ao contato.", specs:["60 g","Base água"], price:null, vendidos:0},
+  {id:"love-lub-ice", cat:"lub", tag:"Gelado", brand:"La Pimienta", name:"Love Lub Ice", desc:"Lubrificante à base de água com sensação refrescante, para quem gosta de contraste.", specs:["60 g","Base água"], price:null, vendidos:0},
+  {id:"love-lub-neutro", cat:"lub", brand:"La Pimienta", name:"Love Lub Neutro", desc:"Lubrificante à base de água sem efeito de calor ou frio. O básico que combina com tudo.", specs:["60 g","Base água"], price:null, vendidos:0},
+  {id:"aqua-silicon", cat:"lub", tag:"Resiste à água", brand:"La Pimienta", name:"Aqua Silicon", desc:"Lubrificante resistente à água, feito para usar no banho.", specs:["30 g"], price:null, vendidos:0},
+  {id:"rilex-morango", cat:"lub", brand:"Rilex", name:"Gel Lubrificante Morango", desc:"Gel íntimo solúvel em água, incolor e não gorduroso, com aroma de morango.", specs:["50 g","Base água"], price:null, vendidos:0},
+  {id:"rilex-menta", cat:"lub", brand:"Rilex", name:"Gel Lubrificante Menta", desc:"Gel íntimo solúvel em água, incolor e não gorduroso, com aroma de menta.", specs:["50 g","Base água"], price:null, vendidos:0},
+  {id:"d4-morango", cat:"comestiveis", brand:"Sexy Fantasy", name:"D4 Gel Beijável Morango", desc:"Gel umectante beijável com sabor de morango.", specs:["60 g","Beijável"], price:null, vendidos:0},
+  {id:"sedenta", cat:"comestiveis", tag:"Vibrante", brand:"Sedenta", name:"Sedenta por Oral", desc:"Gel com efeito vibrante e glitter, sabor lolipop. Feito para o sexo oral.", specs:["50 g","Glitter","Lolipop"], price:null, vendidos:0},
+  {id:"kuloko", cat:"comestiveis", brand:"Hot Flowers", name:"Kuloko Gel Beijável", desc:"Gel beijável em bisnaga de 15 g, pequena para levar na bolsa.", specs:["15 g","Beijável"], price:null, vendidos:0},
+  {id:"jato-sex-esquenta", cat:"lub", tag:"Esquenta", brand:"Pepper Blend", name:"Jato Sex Esquenta", desc:"Pomada esquenta em latinha de 7 g que cabe no bolso.", specs:["7 g"], price:null, vendidos:0},
+  {id:"vibrador-curvo", cat:"vib", brand:"Vibrador", name:"Vibrador Curvo em U", desc:"Silicone macio com formato curvo que se adapta ao corpo. Pergunte no WhatsApp sobre funções e modos.", specs:["Silicone","Rosa"], price:null, vendidos:0},
+];
+// Kits ganham especificação automática ("3 itens") a partir do que vem dentro
+PRODUCTS.forEach(p=>{ if(p.items) p.specs = [`${p.items.length} itens`]; });
+const CATS = [
+  {id:"all", label:"Todos", title:"Todos os produtos"},
+  {id:"lub", label:"Lubrificantes", title:"Lubrificantes"},
+  {id:"anal", label:"Anais", title:"Anais"},
+  {id:"comestiveis", label:"Comestíveis", title:"Comestíveis"},
+  {id:"jogos", label:"Jogos", title:"Jogos"},
+  {id:"calcinhas", label:"Calcinhas", title:"Calcinhas"},
+  {id:"lingeries", label:"Lingeries", title:"Lingeries"},
+  {id:"fantasias", label:"Fantasias", title:"Fantasias"},
+  {id:"aneis", label:"Anéis", title:"Anéis"},
+  {id:"vib", label:"Vibradores", title:"Vibradores"},
+  {id:"kit", label:"Kits", title:"Kits"},
+  {id:"fetiches", label:"Fetiches", title:"Fetiches"},
+  {id:"cuidados", label:"Cuidados", title:"Cuidados"},
+];
+const IMG = p => (typeof IMGS!=="undefined" && IMGS[p.id]) || p.img || (p.items && p.items.length && byId(p.items[0]) ? IMG(byId(p.items[0])) : `img/${p.id}.jpg`);
+const FULL = p => p.imgFull || (p.full ? ((typeof IMGS!=="undefined" && IMGS[p.id+"-full"]) || `img/${p.id}-full.jpg`) : IMG(p));
+const brl = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const wa = msg => `https://wa.me/${WHATS}?text=${encodeURIComponent(msg)}`;
+const byId = id => PRODUCTS.find(p=>p.id===id);
+const $ = id => document.getElementById(id);
+$("cta-bottom").href = $("wa-float").href = wa("Olá! Vi o catálogo da Ouse Mais e quero tirar uma dúvida.");
+
+/* ---------- Sacola ---------- */
+let cart = {};
+// a sacola fica salva no aparelho por até 48 h (discrição em celular compartilhado)
+try{ const s = JSON.parse(localStorage.getItem("ousemais-sacola")||"null"); cart = (s && s.items && Date.now()-s.t < 48*3600e3) ? s.items : {}; }catch(e){ cart = {}; }
+const P = k => byId(k.split("|")[0]);
+const optOf = (p,k) => { const o = k.split("|")[1]; return o && p.variants ? p.variants.options.find(x=>x.id===o) : null; };
+const lineLabel = k => { const p = P(k), o = optOf(p,k); return o ? `${p.variants.label}: ${o.name}` : ""; };
+for (const k in cart) if(!P(k) || !(cart[k]>0) || (P(k).variants && !optOf(P(k),k))) delete cart[k];
+const selVar = {};
+const curKey = p => p.variants ? `${p.id}|${selVar[p.id]||p.variants.options[0].id}` : p.id;
+const keysOf = p => Object.keys(cart).filter(k=>k===p.id || k.startsWith(p.id+"|"));
+const save = () => { try{ if (Object.keys(cart).length) localStorage.setItem("ousemais-sacola", JSON.stringify({t:Date.now(), items:cart})); else localStorage.removeItem("ousemais-sacola"); }catch(e){} };
+const itemsCount = () => Object.values(cart).reduce((s,n)=>s+n,0);
+
+function qtyHTML(k, q){
+  const n = P(k).name + (lineLabel(k)?` (${lineLabel(k)})`:"");
+  return `<div class="qty"><button type="button" data-act="dec" data-key="${k}" aria-label="Remover um ${n}">−</button><output aria-label="Quantidade na sacola">${q}</output><button type="button" data-act="inc" data-key="${k}" aria-label="Adicionar mais um ${n}">+</button></div>`;
+}
+function varHTML(p, ctx){
+  const v = p.variants; if (!v) return "";
+  const sel = selVar[p.id]||v.options[0].id;
+  const inCart = v.options.filter(o=>cart[`${p.id}|${o.id}`]).map(o=>`${o.name} ×${cart[`${p.id}|${o.id}`]}`);
+  const picker = v.type==="swatch"
+    ? `<div class="sw" role="group" aria-label="${v.label}">${v.options.map(o=>`<button type="button" class="swb${cart[`${p.id}|${o.id}`]?" has":""}" style="--c:${o.color}" data-var="${p.id}" data-opt="${o.id}" aria-pressed="${o.id===sel}" title="${o.name}"><span class="sr">${o.name}</span></button>`).join("")}<span class="swn">${v.options.find(o=>o.id===sel).name}</span></div>`
+    : `<label class="vsel" for="${ctx}-${p.id}"><span>${v.label}</span><select id="${ctx}-${p.id}" data-varsel="${p.id}">${v.options.map(o=>`<option value="${o.id}"${o.id===sel?" selected":""}>${o.name}${cart[`${p.id}|${o.id}`]?` (${cart[`${p.id}|${o.id}`]} na sacola)`:""}</option>`).join("")}</select></label>`;
+  return `<div class="var">${picker}${inCart.length?`<div class="incart">Na sacola: ${inCart.join(" · ")}</div>`:""}</div>`;
+}
+function buyHTML(p, ctx="c"){
+  const k = curKey(p), q = cart[k]||0;
+  const price = p.price!=null
+    ? `<span class="price">${p.oldPrice>p.price?`<s>${brl(p.oldPrice)}</s>`:""}${brl(p.price)}</span>${p.oldPrice>p.price?`<span class="save">Economize ${brl(p.oldPrice-p.price)}</span>`:""}`
+    : `<span class="price ask">Preço sob consulta</span>`;
+  if (p.soldOut && !q) return varHTML(p,ctx) + price + `<a class="soon" href="${wa(`Olá! Quero o ${p.name}, que está esgotado no catálogo. Me avisa quando chegar?`)}" target="_blank" rel="noopener">Avise-me quando chegar</a>`;
+  return varHTML(p,ctx) + price + (q ? qtyHTML(k,q) : `<button type="button" class="add" data-act="inc" data-key="${k}">+ Adicionar</button>`);
+}
+function orderMsg(){
+  const ids = Object.keys(cart);
+  const known = ids.every(k=>P(k).price!=null);
+  const sum = ids.reduce((s,k)=>s+(P(k).price||0)*cart[k],0);
+  const lines = ids.map(k=>{ const p=P(k), o=optOf(p,k); return `• ${cart[k]}x ${p.name}${o?` — ${p.variants.label.toLowerCase()} ${o.name}${p.variants.note?` (${p.variants.note})`:""}`:""}${p.items||p.variants||p.name.includes(p.brand)?"":` (${p.brand})`}${p.price!=null?` — ${brl(p.price*cart[k])}`:""}${p.items?`\n   (${p.items.map(i=>byId(i).name).join(" + ")})`:""}`; });
+  return `Olá, Ouse Mais! Montei este pedido pelo catálogo:\n\n${lines.join("\n")}${known&&ids.length?`\n\nTotal: ${brl(sum)}`:""}\n\nVocês podem confirmar ${known?"":"os valores, "}a disponibilidade e o frete?`;
+}
+
+/* ---------- Render ---------- */
+const grid = $("grid"), filters = $("filters");
+let current = "all";
+try{ const h = location.hash.slice(1); if (CATS.some(c=>c.id===h)) current = h; }catch(e){}
+
+function renderFilters(){
+  filters.innerHTML = CATS.map(c=>{
+    const n = c.id==="all" ? PRODUCTS.length : PRODUCTS.filter(p=>p.cat===c.id).length;
+    return `<button type="button" id="f-${c.id}" data-cat="${c.id}" aria-pressed="${c.id===current}">${c.label}${n?`<span class="n">${n}</span>`:""}</button>`;
+  }).join("");
+}
+let sortBy = "destaque";
+const ORDER = new Map(PRODUCTS.map((p,i)=>[p.id,i]));
+let TOP = new Set([...PRODUCTS].filter(p=>p.vendidos>0).sort((a,b)=>b.vendidos-a.vendidos).slice(0,3).map(p=>p.id));
+const byPrice = dir => (a,b)=>{
+  if (a.price==null && b.price==null) return ORDER.get(a.id)-ORDER.get(b.id);
+  if (a.price==null) return 1; if (b.price==null) return -1;
+  return dir*(a.price-b.price) || ORDER.get(a.id)-ORDER.get(b.id);
+};
+const SORTS = {
+  destaque:(a,b)=>ORDER.get(a.id)-ORDER.get(b.id),
+  vendidos:(a,b)=>(b.vendidos||0)-(a.vendidos||0) || ORDER.get(a.id)-ORDER.get(b.id),
+  menor:byPrice(1), maior:byPrice(-1),
+  az:(a,b)=>a.name.localeCompare(b.name,"pt-BR"),
+};
+const driveId = u => (String(u).match(/drive\.google\.com\/file\/d\/([\w-]+)/)||[])[1];
+const ytId = u => (String(u).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/|embed\/))([\w-]{6,})/)||[])[1];
+const hasGal = p => !!(p.items || (p.media && p.media.length));
+function slidesOf(p, big){
+  const out = [];
+  if (p.items){
+    const own = (typeof IMGS!=="undefined" && IMGS[p.id]) || p.img;
+    if (own) out.push({src:own, cap:"O kit completo", first:true});
+    p.items.filter(byId).forEach(i=>out.push({src:IMG(byId(i)), cap:byId(i).name}));
+  } else out.push({src: big ? FULL(p) : IMG(p), cap:p.name, first:true});
+  (p.media||[]).forEach(u=>{
+    const d = driveId(u), y = ytId(u);
+    if (y) out.push({video:`https://www.youtube-nocookie.com/embed/${y}?rel=0&playsinline=1`, thumb:`https://i.ytimg.com/vi/${y}/hqdefault.jpg`, cap:"Vídeo"});
+    else if (d) out.push({video:`https://drive.google.com/file/d/${d}/preview`, thumb:`https://drive.google.com/thumbnail?id=${d}&sz=w800`, cap:"Vídeo"});
+    else out.push({src:u, cap:p.name});
+  });
+  return out;
+}
+function galHTML(p, opener){
+  const slides = slidesOf(p, !opener);
+  const kit = !!p.items;
+  const slide = (s,i) => {
+    const label = `${s.video?"Vídeo":"Foto"} ${i+1} de ${slides.length}${s.cap?": "+s.cap:""}`;
+    let inner;
+    if (s.video && !opener) inner = `<iframe src="${s.video}" title="Vídeo de ${p.name}" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+    else if (s.video) inner = `<img src="${s.thumb}" alt="Vídeo de ${p.name}" loading="lazy" class="vthumb"><span class="vplay" aria-hidden="true">▶</span>`;
+    else inner = `<img src="${s.src}" alt="${s.cap}" loading="lazy">`;
+    const cap = (kit && !s.first && !s.video) ? `<span class="gal-cap">${s.cap}</span>` : (s.video && opener ? `<span class="gal-cap">Ver vídeo</span>` : "");
+    return `<div class="gal-slide${s.video?" is-video":""}"${opener?` data-open="${p.id}"`:""} role="group" aria-label="${label}">${inner}${cap}</div>`;
+  };
+  return `<div class="gal" data-gal data-kit="${p.id}">
+    <div class="gal-track">${slides.map(slide).join("")}</div>
+    ${slides.length>1 ? `<button type="button" class="gal-nav prev" data-gal-nav="-1" aria-label="Anterior">‹</button>
+    <button type="button" class="gal-nav next" data-gal-nav="1" aria-label="Próxima">›</button>
+    <div class="gal-dots" aria-hidden="true">${slides.map((_,i)=>`<i${i?"":' class="on"'}></i>`).join("")}</div>` : ""}
+  </div>`;
+}
+function wireGals(root){
+  root.querySelectorAll("[data-gal]").forEach(g=>{
+    if (g.dataset.wired) return; g.dataset.wired = 1;
+    const t = g.querySelector(".gal-track"), dots = [...g.querySelectorAll(".gal-dots i")];
+    t.addEventListener("scroll", ()=>{ const i = Math.round(t.scrollLeft / t.clientWidth); dots.forEach((d,j)=>d.classList.toggle("on", j===i)); }, {passive:true});
+  });
+}
+function tagsHTML(p){
+  const t = [];
+  if (p.soldOut) t.push(`<span class="tag out">Esgotado</span>`);
+  else if (p.lastUnits) t.push(`<span class="tag last">Últimas unidades</span>`);
+  if (TOP.has(p.id)) t.push(`<span class="tag best">Mais vendido</span>`);
+  if (p.tag) t.push(`<span class="tag${p.items?" kit":""}">${p.tag}</span>`);
+  return t.length ? `<div class="tags">${t.join("")}</div>` : "";
+}
+const norm = s => (s||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+const HAY = new Map(PRODUCTS.map(p=>[p.id, norm([p.name,p.brand,p.desc,p.tag,...(p.specs||[]),CATS.find(c=>c.id===p.cat)?.label,...(p.items||[]).flatMap(i=>[byId(i).name,byId(i).desc]),...(p.variants?p.variants.options.map(o=>o.name):[]),p.cat==="calcinhas"?"calcinha lingerie moda intima":""].join(" "))]));
+let query = "";
+function renderGrid(){
+  const terms = norm(query).split(/\s+/).filter(Boolean);
+  const searching = terms.length>0;
+  const base = searching ? PRODUCTS : (current==="all" ? PRODUCTS : PRODUCTS.filter(p=>p.cat===current));
+  const list = base.filter(p=>terms.every(t=>HAY.get(p.id).includes(t))).sort(SORTS[sortBy]);
+  filters.setAttribute("aria-disabled", searching);
+  $("sec-title").textContent = searching ? `Resultados para “${query.trim()}”` : CATS.find(c=>c.id===current).title;
+  $("count").textContent = `${list.length} ${list.length===1?"produto":"produtos"}`;
+  if (!searching && !list.length){
+    const c = CATS.find(x=>x.id===current);
+    grid.innerHTML = `<div class="noresult"><strong>${c.label}: em breve no catálogo</strong><p>A loja tem produtos dessa categoria. Pergunte no WhatsApp quais estão disponíveis.</p><a class="btn" href="${wa(`Olá! Quero ver as opções de ${c.label.toLowerCase()} da Ouse Mais.`)}" target="_blank" rel="noopener">Ver opções no WhatsApp</a></div>`;
+    return;
+  }
+  if (searching && !list.length){
+    grid.innerHTML = `<div class="noresult"><strong>Nenhum produto encontrado</strong><p>Pode ser que a loja tenha e ele só não esteja no catálogo.</p><a class="btn" href="${wa(`Olá! Procurei por "${query.trim()}" no catálogo da Ouse Mais. Vocês têm?`)}" target="_blank" rel="noopener">Perguntar no WhatsApp</a></div>`;
+    return;
+  }
+  const keep = {}; grid.querySelectorAll("[data-gal]").forEach(g=>{ keep[g.dataset.kit] = g.querySelector(".gal-track").scrollLeft; });
+  grid.innerHTML = list.map(p=>`
+    <article class="card${keysOf(p).length?" in":""}${p.soldOut?" sold":""}">
+      ${hasGal(p)
+        ? `<div class="plate has-gal">${tagsHTML(p)}${galHTML(p,true)}</div>`
+        : `<button type="button" class="plate" data-open="${p.id}" aria-label="Ver detalhes de ${p.name}">${tagsHTML(p)}<img src="${IMG(p)}" alt="${p.name}${p.brand && !p.items && !p.name.includes(p.brand)?` – ${p.brand}`:""}" loading="lazy"${p.full?' class="photo"':''}></button>`}
+      <div class="info">
+        <div class="brand">${p.brand}</div>
+        <h3 class="name"><button type="button" data-open="${p.id}">${p.name}</button></h3>
+        <ul class="specs">${p.specs.map(s=>`<li>${s}</li>`).join("")}</ul>
+        <div class="buy">${buyHTML(p,"c")}</div>
+      </div>
+    </article>`).join("") + `
+    <a class="more" href="${wa("Olá! Vi o catálogo da Ouse Mais e quero saber se vocês têm outro produto.")}" target="_blank" rel="noopener">
+      <strong>Procurando outro produto?</strong>
+      <span>A loja tem moda íntima, outros sabores e muito mais.</span>
+      <em>Perguntar no WhatsApp →</em>
+    </a>`;
+  wireGals(grid);
+  grid.querySelectorAll("[data-gal]").forEach(g=>{ if(keep[g.dataset.kit]) g.querySelector(".gal-track").scrollLeft = keep[g.dataset.kit]; });
+}
+function renderBag(){
+  const ids = Object.keys(cart), total = itemsCount();
+  $("bag").classList.toggle("show", total>0); document.body.classList.toggle("bag-on", total>0);
+  $("badge").textContent = total;
+  $("bag-title").textContent = `Sacola · ${total} ${total===1?"item":"itens"}`;
+  $("bag-items").textContent = ids.map(k=>`${cart[k]}× ${P(k).name}${optOf(P(k),k)?` ${optOf(P(k),k).name.toLowerCase()}`:""}`).join(", ");
+  const href = wa(orderMsg());
+  $("bag-send").href = href; $("c-send").href = href;
+}
+function renderCart(){
+  const ids = Object.keys(cart), total = itemsCount();
+  $("c-count").textContent = total ? `${total} ${total===1?"item":"itens"}` : "";
+  $("c-lines").innerHTML = ids.length ? ids.map(k=>{ const p=P(k), q=cart[k]; return `
+    <li class="line">
+      <img src="${IMG(p)}" alt="">
+      <div><div class="lb">${p.brand}</div><div class="ln">${p.name}</div>${lineLabel(k)?`<div class="lv">${lineLabel(k)}${p.variants.note?` · ${p.variants.note}`:""}</div>`:""}<div class="lp">${p.price!=null?brl(p.price*q):"Preço sob consulta"}</div></div>
+      ${qtyHTML(k,q)}
+    </li>`;}).join("") : `<li class="empty">Sua sacola está vazia. Toque em “+ Adicionar” nos produtos ou kits para montar o pedido.</li>`;
+  $("c-foot").hidden = !ids.length;
+  const known = ids.every(k=>P(k).price!=null);
+  const sum = ids.reduce((s,k)=>s+(P(k).price||0)*cart[k],0);
+  $("c-total").innerHTML = known ? `<span>Total</span><b>${brl(sum)}</b>` : "";
+  $("c-total").hidden = !known;
+  const ent = SHEETDATA.entrega||{}, lines = [];
+  if (ent.pag) lines.push(`Pagamento: ${ent.pag}${ent.parc?` (${ent.parc})`:""}.`);
+  if (ent.freteLocal) lines.push(`Frete em Campestre: ${ent.freteLocal}.`);
+  if (ent.freteFora) lines.push(`Outras cidades: ${ent.freteFora}.`);
+  if (ent.gratis) lines.push(`Frete grátis acima de ${brl(ent.gratis)}.`);
+  if (ent.prazo) lines.push(`Prazo: ${ent.prazo}.`);
+  lines.push(known ? "O pagamento e a entrega são combinados com a loja no WhatsApp." : "Valores, estoque e frete são confirmados pela loja no WhatsApp.");
+  $("c-note").textContent = lines.join(" ");
+}
+function refresh(){ renderGrid(); renderBag(); if($("cart").open) renderCart(); if(dlg.open) fillDialog(dlg.dataset.id); }
+function toast(msg){ let t = document.querySelector(".toast"); if(!t){ t = document.createElement("div"); t.className = "toast"; t.setAttribute("role","status"); document.body.appendChild(t); } t.textContent = msg; t.hidden = false; clearTimeout(t._h); t._h = setTimeout(()=>{ t.hidden = true; }, 2600); }
+function change(id, d){
+  const pr = P(id);
+  if (d>0 && pr && pr.qty!=null){ const used = keysOf(pr).reduce((s,k)=>s+cart[k],0); if (used >= pr.qty){ toast(pr.qty ? `Só temos ${pr.qty} ${pr.qty===1?"unidade":"unidades"} em estoque` : "Produto esgotado"); return; } }
+  cart[id] = (cart[id]||0) + d;
+  if (cart[id]<=0) delete cart[id];
+  save(); refresh();
+}
+
+/* ---------- Popups ---------- */
+const dlg = $("dlg");
+function fillDialog(id){
+  const p = byId(id); dlg.dataset.id = id;
+  if (dlg.dataset.shown !== id){
+    dlg.dataset.shown = id;
+    $("d-pimg").innerHTML = hasGal(p) ? galHTML(p,false) : `<img src="${FULL(p)}" alt="${p.name}">`;
+    wireGals($("d-pimg"));
+  }
+  $("d-brand").textContent = p.brand; $("d-name").textContent = p.name; $("d-desc").textContent = p.desc;
+  $("d-specs").innerHTML = p.specs.map(s=>`<li>${s}</li>`).join("");
+  $("d-kit").innerHTML = p.items ? `<strong>Vem no kit</strong><ul>${p.items.map(i=>{const x=byId(i);return `<li><img src="${IMG(x)}" alt=""><span>${x.name}<small>${x.brand} · ${x.specs[0]}</small></span></li>`;}).join("")}</ul>` : "";
+  $("d-buy").innerHTML = buyHTML(p,"d");
+}
+function openCart(){ if(dlg.open) dlg.close(); renderCart(); $("cart").showModal(); }
+for (const d of document.querySelectorAll("dialog")) d.addEventListener("click", e=>{ if(e.target===d) d.close(); });
+["cart-open-top","bag-view","bag-sum"].forEach(id=>$(id).addEventListener("click", openCart));
+$("c-clear").onclick = () => { cart = {}; save(); refresh(); };
+
+/* ---------- Banners ---------- */
+const track = $("track"), slides = track.children.length;
+let idx = 0, timer = null;
+$("dots").innerHTML = Array.from({length:slides},(_, i)=>`<button type="button" aria-label="Banner ${i+1}" data-dot="${i}"></button>`).join("");
+function go(i){
+  idx = (i+slides)%slides;
+  track.style.transform = `translateX(-${idx*100}%)`;
+  [...$("dots").children].forEach((b,j)=>b.setAttribute("aria-current", j===idx));
+}
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+// tempo de cada banner: o 1º (instruções) fica mais tempo para dar tempo de ler
+const SLIDE_MS = i => i===0 ? 8000 : 6000;
+function start(){ stop(); if(!reduce) timer = setTimeout(()=>{ go(idx+1); start(); }, SLIDE_MS(idx)); }
+function stop(){ clearTimeout(timer); }
+$("prev").onclick = () => { go(idx-1); start(); };
+$("next").onclick = () => { go(idx+1); start(); };
+const bn = document.querySelector(".banners");
+bn.addEventListener("mouseenter", stop); bn.addEventListener("mouseleave", start);
+let sx = null;
+bn.addEventListener("touchstart", e=>{ sx = e.touches[0].clientX; stop(); }, {passive:true});
+bn.addEventListener("touchend", e=>{ if(sx==null) return; const dx = e.changedTouches[0].clientX - sx; if(Math.abs(dx)>40) go(idx + (dx<0?1:-1)); sx=null; start(); });
+
+/* ---------- Cliques ---------- */
+dlg.addEventListener("close", ()=>{ delete dlg.dataset.shown; });
+document.addEventListener("click", e=>{
+  const gn = e.target.closest("[data-gal-nav]");
+  if (gn){ const t = gn.closest("[data-gal]").querySelector(".gal-track"); const n = t.children.length, i = Math.round(t.scrollLeft/t.clientWidth); const j = (i + +gn.dataset.galNav + n) % n; t.scrollTo({left:j*t.clientWidth, behavior:reduce?"auto":"smooth"}); return; }
+  if (e.target.closest("[data-close]")){ e.target.closest("dialog").close(); return; }
+  const dot = e.target.closest("[data-dot]");
+  if (dot){ go(+dot.dataset.dot); start(); return; }
+  const g = e.target.closest("[data-go]");
+  if (g){ if(query){ qIn.value=""; query=""; $("q-clear").hidden=true; } current = g.dataset.go; renderFilters(); renderGrid(); $("produtos").scrollIntoView({behavior:reduce?"auto":"smooth"}); return; }
+  const f = e.target.closest("[data-cat]");
+  if (f){ current = f.dataset.cat; if(query){ qIn.value=""; query=""; $("q-clear").hidden=true; } renderFilters(); renderGrid(); return; }
+  const o = e.target.closest("[data-open]");
+  if (o){ fillDialog(o.dataset.open); dlg.showModal(); return; }
+  const sw = e.target.closest("[data-var]");
+  if (sw){ selVar[sw.dataset.var] = sw.dataset.opt; refresh(); return; }
+  const a = e.target.closest("[data-act]");
+  if (a){ change(a.dataset.key, a.dataset.act==="inc"?1:-1); }
+});
+
+const qIn = $("q");
+qIn.addEventListener("input", ()=>{ query = qIn.value; $("q-clear").hidden = !query; renderGrid(); });
+qIn.addEventListener("keydown", e=>{ if(e.key==="Enter"){ qIn.blur(); $("produtos").scrollIntoView({behavior:reduce?"auto":"smooth"}); } });
+$("q-clear").onclick = () => { qIn.value = ""; query = ""; $("q-clear").hidden = true; renderGrid(); qIn.focus(); };
+document.addEventListener("change", e=>{ const s = e.target.closest("[data-varsel]"); if(!s) return; const id=s.id; selVar[s.dataset.varsel] = s.value; refresh(); const n=$(id); if(n) n.focus(); });
+$("sort").addEventListener("change", e=>{ sortBy = e.target.value; renderGrid(); });
+/* ---------- Planilha do Google (preços, estoque, ranking, entrega) ---------- */
+const SHEETS = {
+  produtos: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSPn1Ol7iSoSkxcpbZbTENz58C20TOy0tNjp-GkXeQHjNn7_6-4fpoS3NHwTycVT3GzdNTClAtunJu5/pub?single=true&output=csv&gid=953215427",
+  kits: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSPn1Ol7iSoSkxcpbZbTENz58C20TOy0tNjp-GkXeQHjNn7_6-4fpoS3NHwTycVT3GzdNTClAtunJu5/pub?single=true&output=csv&gid=793331616",
+  entrega: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSPn1Ol7iSoSkxcpbZbTENz58C20TOy0tNjp-GkXeQHjNn7_6-4fpoS3NHwTycVT3GzdNTClAtunJu5/pub?single=true&output=csv&gid=263919990",
+  // catálogo completo editado pelo painel (aba "Publicado") e prévia (aba "Rascunho")
+  catalogo: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSPn1Ol7iSoSkxcpbZbTENz58C20TOy0tNjp-GkXeQHjNn7_6-4fpoS3NHwTycVT3GzdNTClAtunJu5/pub?single=true&output=csv&gid=1296274691",
+  previa: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSPn1Ol7iSoSkxcpbZbTENz58C20TOy0tNjp-GkXeQHjNn7_6-4fpoS3NHwTycVT3GzdNTClAtunJu5/pub?single=true&output=csv&gid=777522530",
+};
+const IS_PREVIEW = /[?&]previa\b/.test(location.search);
+let SHEETDATA = {};
+function parseCSV(t){
+  const rows=[]; let row=[], f="", q=false;
+  for (let i=0;i<t.length;i++){
+    const c=t[i];
+    if (q){ if (c==='"'){ if (t[i+1]==='"'){ f+='"'; i++; } else q=false; } else f+=c; }
+    else if (c==='"') q=true;
+    else if (c===','){ row.push(f); f=""; }
+    else if (c==='\n'){ row.push(f); rows.push(row); row=[]; f=""; }
+    else if (c!=='\r') f+=c;
+  }
+  if (f!=="" || row.length){ row.push(f); rows.push(row); }
+  return rows;
+}
+function num(s){
+  if (s==null) return null;
+  s = String(s).replace(/[^\d,.-]/g,"");
+  if (!s || s==="-") return null;
+  if (s.includes(",")) s = s.replace(/\./g,"").replace(",",".");
+  const n = parseFloat(s);
+  return isNaN(n) || n<=0 ? null : n;
+}
+const col = (head, re) => head.findIndex(x=>re.test(norm(x)));
+const SW = {preto:"#151515",vermelho:"#e0141e",branco:"#ffffff",nude:"#eaa58d",rosa:"#f06aa6",pink:"#ff2e88",roxo:"#6b2a9a",lilas:"#b48ad6",azul:"#2a63d6","azul marinho":"#1d2b5a",verde:"#2e9b55",amarelo:"#f5c518",laranja:"#f28c28",vinho:"#7a1030",bordo:"#6d0f2a",bege:"#e8d3b4",marrom:"#6b4226",cinza:"#8a8a8a",dourado:"#d4af37",prata:"#c0c0c0",oncinha:"#c8954a",onca:"#c8954a",transparente:"#f4f4f4"};
+const slug = s => norm(s).trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+function parseVariants(t){
+  t = (t||"").trim(); if (!t) return null;
+  let note = ""; const m = t.match(/\(([^)]*)\)\s*$/); if (m){ note = m[1].trim(); t = t.slice(0,m.index).trim(); }
+  const i = t.indexOf(":"); const label = i>0 ? t.slice(0,i).trim() : "Opção";
+  const names = (i>0 ? t.slice(i+1) : t).split(",").map(s=>s.trim()).filter(Boolean);
+  if (!names.length) return null;
+  const isColor = /^cor/.test(norm(label));
+  return {label, type:isColor?"swatch":"select", note:note||undefined, options:names.map(n=>({id:slug(n), name:n, color:SW[norm(n)]||"#c9b8c4"}))};
+}
+// Texto vindo da planilha nunca vira código na página
+const clean = v => String(v||"").replace(/[<>]/g,"").replace(/"/g,"”").replace(/`/g,"'").trim();
+function applyCatalog(rows){
+  const [head,...body] = rows; if (!head) return false;
+  const I = {id:/^codigo/, tipo:/^tipo/, cat:/^categoria/, name:/^produto/, brand:/^marca/, tag:/^selo/, desc:/^descricao/, specs:/^detalhes/, opts:/^opcoes/, items:/^itens/, media:/^mais fotos/, last:/^ultimas unidades/, img:/^foto$/, imgFull:/^foto ampliada/, price:/^preco$/, old:/^preco antigo/, qty:/^quantidade/, avail:/^disponivel/, show:/^mostrar/, rank:/^ranking/};
+  for (const k in I) I[k] = col(head, I[k]);
+  if (I.id<0 || I.name<0) return false;
+  const g = (r,k) => I[k]>=0 ? clean(r[I[k]]) : "";
+  const url = u => /^https:\/\/[^\s"'<>`\\]+$/.test(u) || /^img\/[\w.-]+$/.test(u) ? u : "";
+  const list = [];
+  body.forEach(r=>{
+    const id = g(r,"id"), name = g(r,"name"); if (!id || !name || !/^[\w-]+$/.test(id)) return;
+    if (/^n/.test(norm(g(r,"show")))) return;
+    const old = byId(id) || {};
+    const c = CATS.find(x=>x.id!=="all" && norm(x.label)===norm(g(r,"cat")));
+    const q = g(r,"qty"), qn = parseFloat(q.replace(/\./g,"").replace(",","."));
+    const p = {id, name, cat: c ? c.id : (old.cat||"lub"), brand:g(r,"brand"), tag:g(r,"tag")||undefined, desc:g(r,"desc")||old.desc||"",
+      specs: g(r,"specs") ? g(r,"specs").split(",").map(s=>s.trim()).filter(Boolean) : [],
+      price:num(g(r,"price")), oldPrice:num(g(r,"old")), img:url(g(r,"img")), imgFull:url(g(r,"imgFull")), full:!!old.full && !g(r,"imgFull"),
+      qty: q==="" || isNaN(qn) ? null : Math.max(0, Math.floor(qn)), vendidos:0};
+    const rk = num(g(r,"rank")); if (rk) p.vendidos = 1000-rk;
+    p.soldOut = /^n/.test(norm(g(r,"avail"))) || p.qty===0;
+    p.lastUnits = /^s/.test(norm(g(r,"last")));
+    if (norm(g(r,"tipo"))==="kit" || g(r,"items")) p.items = g(r,"items").split(",").map(s=>s.trim()).filter(Boolean);
+    const v = parseVariants(g(r,"opts")); if (v) p.variants = v;
+    p.media = g(r,"media").split(/\s+/).map(url).filter(Boolean);
+    list.push(p);
+  });
+  if (!list.length) return false;
+  list.forEach(p=>{ if (p.items){ p.items = p.items.filter(i=>list.some(x=>x.id===i && !x.items)); p.specs = [`${p.items.length} ${p.items.length===1?"item":"itens"}`]; } });
+  PRODUCTS.length = 0; PRODUCTS.push(...list);
+  ORDER.clear(); PRODUCTS.forEach((p,i)=>ORDER.set(p.id,i));
+  return true;
+}
+function pruneCart(){ let ch = false; for (const k in cart){ const p = P(k); if (!p || (p.variants ? !optOf(p,k) : k.includes("|"))){ delete cart[k]; ch = true; } } if (ch) save(); }
+function applySheets(d){
+  const full = d.catalogo && applyCatalog(d.catalogo);
+  if (!full && d.produtos){
+    const [head,...rows] = d.produtos, iId=col(head,/^codigo/), iP=col(head,/^preco \(/), iO=col(head,/^preco antigo/), iR=col(head,/^ranking/), iD=col(head,/^disponib/), iC=col(head,/^categoria/);
+    rows.forEach(r=>{ const p = byId((r[iId]||"").trim()); if(!p || p.items) return;
+      if (iC>=0){ const c = CATS.find(x=>x.id!=="all" && norm(x.label)===norm(r[iC]||"").trim()); if (c) p.cat = c.id; }
+      if (iP>=0) p.price = num(r[iP]);
+      if (iO>=0) p.oldPrice = num(r[iO]);
+      if (iR>=0){ const rk = num(r[iR]); p.vendidos = rk ? 1000-rk : 0; }
+      if (iD>=0) p.soldOut = /esgot/.test(norm(r[iD]));
+    });
+  }
+  if (!full && d.kits){
+    const [head,...rows] = d.kits, iId=col(head,/^codigo/), iP=col(head,/^preco do kit/), iD=col(head,/^disponib/);
+    rows.forEach(r=>{ const k = byId((r[iId]||"").trim()); if(!k || !k.items) return;
+      if (iP>=0) k.price = num(r[iP]);
+      if (iD>=0) k.soldOut = /esgot/.test(norm(r[iD]));
+    });
+  }
+  // kit: preço "de" = soma dos itens separados, quando todos têm preço
+  PRODUCTS.filter(k=>k.items).forEach(k=>{ if (full && k.oldPrice) return; const ps = k.items.map(i=>byId(i)?.price); k.oldPrice = ps.length && ps.every(x=>x!=null) ? ps.reduce((a,b)=>a+b,0) : null; });
+  pruneCart();
+  if (d.entrega){
+    const m = {}; d.entrega.slice(1).forEach(r=>{ m[norm(r[0]||"")] = clean(r[1]); });
+    const get = re => { const k = Object.keys(m).find(x=>re.test(x)); return k ? m[k] : ""; };
+    SHEETDATA.entrega = { pag:get(/^formas de pagamento/), parc:get(/^parcela/), freteLocal:get(/^frete em campestre/), freteFora:get(/^frete para outras/), gratis:num(get(/^frete gratis/)), prazo:get(/^prazo/) };
+    const ex = $("notice-extra"); const fp = $("faq-pag"); if (fp) fp.textContent = SHEETDATA.entrega.pag ? ` Formas aceitas: ${SHEETDATA.entrega.pag}.` : "";
+    if (ex) ex.textContent = SHEETDATA.entrega.gratis ? `Frete grátis acima de ${brl(SHEETDATA.entrega.gratis)}` : "";
+  }
+  PRODUCTS.forEach(p=>HAY.set(p.id, norm([p.name,p.brand,p.desc,p.tag,...(p.specs||[]),CATS.find(c=>c.id===p.cat)?.label,...(p.items||[]).filter(byId).flatMap(i=>[byId(i).name,byId(i).desc]),...(p.variants?p.variants.options.map(o=>o.name):[]),p.cat==="calcinhas"?"calcinha lingerie moda intima":""].join(" "))));
+  TOP = new Set([...PRODUCTS].filter(p=>p.vendidos>0).sort((a,b)=>b.vendidos-a.vendidos).slice(0,3).map(p=>p.id));
+}
+async function loadSheets(){
+  const src = {...SHEETS};
+  if (src.catalogo){ delete src.produtos; delete src.kits; }
+  if (IS_PREVIEW && src.previa){ src.catalogo = src.previa; const f = document.createElement("div"); f.className = "preview-flag"; f.textContent = "PRÉVIA: assim vai ficar o site depois de publicar. Os clientes ainda não veem estas mudanças."; document.body.prepend(f); }
+  delete src.previa;
+  const keys = Object.keys(src).filter(k=>src[k]);
+  if (!keys.length) return;
+  if (!IS_PREVIEW) try{ const c = JSON.parse(localStorage.getItem("ousemais-planilha")||"null"); if (c){ applySheets(c); renderFilters(); refresh(); } }catch(e){}
+  const got = {};
+  await Promise.all(keys.map(async k=>{
+    try{
+      const ctl = new AbortController(); const t = setTimeout(()=>ctl.abort(), 8000);
+      const r = await fetch(src[k] + (IS_PREVIEW ? "&t="+Date.now() : ""), {signal:ctl.signal, cache:"no-store"}); clearTimeout(t);
+      if (r.ok) got[k] = parseCSV(await r.text());
+    }catch(e){}
+  }));
+  if (!Object.keys(got).length) return;
+  applySheets(got); renderFilters(); refresh();
+  if (!IS_PREVIEW) try{ localStorage.setItem("ousemais-planilha", JSON.stringify(got)); }catch(e){}
+}
+
+/* ---------- SEO: dados estruturados dos produtos (Google) ---------- */
+const SITE = "https://ousemaisoficial.com.br/";
+function updateLD(){
+  const items = PRODUCTS.map((p,i)=>{
+    const prod = {"@type":"Product", name:p.name, image:new URL(IMG(p), SITE).href, description:p.desc,
+      category: CATS.find(c=>c.id===p.cat)?.label, url: SITE+"#"+p.cat};
+    if (p.brand && !p.items && !["Moda íntima","Vibrador","Kit Ouse Mais"].includes(p.brand)) prod.brand = {"@type":"Brand", name:p.brand};
+    if (p.price!=null) prod.offers = {"@type":"Offer", price:p.price.toFixed(2), priceCurrency:"BRL",
+      availability: p.soldOut ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+      seller:{"@type":"Store", name:"Ouse Mais"}};
+    return {"@type":"ListItem", position:i+1, item:prod};
+  });
+  let s = document.getElementById("ld-products");
+  if (!s){ s = document.createElement("script"); s.type = "application/ld+json"; s.id = "ld-products"; document.head.appendChild(s); }
+  s.textContent = JSON.stringify({"@context":"https://schema.org","@type":"ItemList", name:"Catálogo Ouse Mais", itemListElement:items});
+}
+
+renderFilters(); refresh(); go(0); start(); updateLD();
+loadSheets().then(updateLD);
+</script>
