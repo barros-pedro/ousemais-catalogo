@@ -7,6 +7,7 @@ const WHATS = "5582999080594";
 const SITE = "https://ousemaisoficial.com.br/";
 const CATS = [{id:"all", slug:"", label:"Todos", title:"Todos os produtos"}].concat(/*CATEGORIAS*/[]);
 const PAGE = window.OUSE_PAGE || {type:"home"};
+const CORES = /*CORES*/{}; // id do produto -> [cor de fundo pastel, foto com fundo branco?]
 const SHEETS = {
   catalogo: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSPn1Ol7iSoSkxcpbZbTENz58C20TOy0tNjp-GkXeQHjNn7_6-4fpoS3NHwTycVT3GzdNTClAtunJu5/pub?single=true&output=csv&gid=1296274691",
   previa: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSPn1Ol7iSoSkxcpbZbTENz58C20TOy0tNjp-GkXeQHjNn7_6-4fpoS3NHwTycVT3GzdNTClAtunJu5/pub?single=true&output=csv&gid=777522530",
@@ -198,12 +199,20 @@ const moreHTML = () => `
       <span>A loja tem moda íntima, outros sabores e muito mais.</span>
       <em>Perguntar no WhatsApp →</em>
     </a>`;
+const hueOf = hex => { const n = parseInt(hex.slice(1),16), r=(n>>16&255)/255, g=(n>>8&255)/255, b=(n&255)/255, mx=Math.max(r,g,b), mn=Math.min(r,g,b), d=mx-mn; if (!d) return 0; const h = mx===r ? ((g-b)/d)%6 : mx===g ? (b-r)/d+2 : (r-g)/d+4; return (h*60+360)%360; };
 function tilesHTML(except){
+  const used = []; // tons já usados: cada caixa tenta um tom diferente da anterior
+  const dist = h => used.length ? Math.min(...used.map(u=>Math.min(Math.abs(u-h),360-Math.abs(u-h)))) : 360;
   return CATS.filter(c=>c.id!=="all" && c.id!==except).map(c=>{
     const ps = PRODUCTS.filter(p=>p.cat===c.id);
     if (!ps.length) return "";
-    const img = c.capa ? A(c.capa) : IMG(ps.find(p=>!p.items) || ps[0]);
-    return `<a class="tile" href="${catUrl(c.id)}"><span class="tile-img"><img src="${img}" alt="" loading="lazy"></span><span class="tile-t">${c.label}</span><span class="tile-n">${ps.length} ${ps.length===1?"produto":"produtos"}</span></a>`;
+    // foto de embalagem (fundo branco) fica melhor sobre a cor; entre elas, a de tom mais diferente das outras caixas
+    const soltos = ps.filter(p=>!p.items), pool = soltos.length ? soltos : ps;
+    const emb = pool.filter(p=>CORES[p.id] && CORES[p.id][1]);
+    const p0 = (emb.length ? emb.slice().sort((a,b)=>(dist(hueOf(CORES[b.id][0]))>=60)-(dist(hueOf(CORES[a.id][0]))>=60) || pool.indexOf(a)-pool.indexOf(b))[0] : null) || pool.find(p=>CORES[p.id]) || pool[0];
+    if (CORES[p0.id]) used.push(hueOf(CORES[p0.id][0]));
+    const cor = (CORES[p0.id]||[])[0] || "#f3d6e8", foto = !(CORES[p0.id]||[])[1];
+    return `<a class="tile" href="${catUrl(c.id)}"><span class="tile-img${foto?" foto":""}" style="background:${cor}"><img src="${IMG(p0)}" alt="" loading="lazy"></span><span class="tile-t">${c.label}</span><span class="tile-n">${ps.length} ${ps.length===1?"produto":"produtos"}</span></a>`;
   }).join("");
 }
 

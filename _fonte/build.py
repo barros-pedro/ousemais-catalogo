@@ -110,9 +110,35 @@ GENERIC = {'moda íntima', 'vibrador', 'kit ouse mais'}
 def brand_ok(p): return p['brand'] and p['brand'].lower() not in GENERIC and p['brand'] not in p['name']
 print(f'{len(PRODS)} produtos, {len({p["cat"] for p in PRODS})} categorias com produtos')
 
+# cor de fundo de cada produto (tom pastel tirado da própria foto) para as caixas de categoria
+def cor_da_foto(path):
+    try:
+        from PIL import Image
+        import colorsys
+        im = Image.open(path).convert('RGB'); im.thumbnail((80, 80)); W, H = im.size; px = list(im.getdata())
+        borda = [im.getpixel((x, y)) for x in range(W) for y in (0, H - 1)] + [im.getpixel((x, y)) for y in range(H) for x in (0, W - 1)]
+        branco = sum(1 for r, g, b in borda if min(r, g, b) > 235) / len(borda) > .8
+        hs = {}
+        for r, g, b in px:
+            h, l, s_ = colorsys.rgb_to_hls(r / 255, g / 255, b / 255)
+            if s_ < .25 or l > .92 or l < .12: continue
+            k = int(h * 24) % 24; hs[k] = hs.get(k, 0) + s_
+        if not hs: return None, branco
+        k = max(hs, key=hs.get); h = (k + .5) / 24
+        r, g, b = colorsys.hls_to_rgb(h, .79, .85)
+        return '#%02x%02x%02x' % (int(r * 255), int(g * 255), int(b * 255)), branco
+    except Exception:
+        return None, False
+CORES = {}
+for p in PRODS:
+    if p['img'].startswith('img/') and os.path.exists(os.path.join(RAIZ, p['img'])):
+        c_, w_ = cor_da_foto(os.path.join(RAIZ, p['img']))
+        if c_: CORES[p['id']] = [c_, 1 if w_ else 0]
+
 # ---------------- 2. arquivos de CSS e JS ----------------
 cats_js = [{k: c.get(k, '') for k in ('id', 'slug', 'label', 'title', 'intro', 'capa') if c.get(k)} for c in CATS]
 JS_OUT = JS.replace('/*CATEGORIAS*/[]', json.dumps(cats_js, ensure_ascii=False))
+JS_OUT = JS_OUT.replace('/*CORES*/{}', json.dumps(CORES))
 assert JS_OUT != JS, 'marcador /*CATEGORIAS*/ não encontrado no loja.js'
 V = hashlib.sha1((CSS + JS_OUT).encode()).hexdigest()[:10]
 wr(os.path.join(RAIZ, 'assets', 'loja.css'), CSS)
