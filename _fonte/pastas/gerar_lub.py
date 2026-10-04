@@ -50,6 +50,8 @@ def bom_saber(p):
         out.append(('Efeito que esquenta', 'Dá uma sensação de calor ao contato. Teste antes em uma área pequena.'))
     if p.get('tag') == 'Gelado':
         out.append(('Efeito refrescante', 'Dá uma sensação de frescor ao contato, ótima para alternar com o Hot.'))
+    if 'base silicone' in specs.lower():
+        out.append(('À base de silicone', 'Desliza por mais tempo e resiste à água. Não use com brinquedos de silicone: para eles, prefira um lubrificante à base de água.'))
     if 'aroma' in d:
         out.append(('Com aroma', 'Deixa o momento mais gostoso sem perder a textura de lubrificante.'))
     if 'banho' in d:
@@ -122,11 +124,12 @@ guia = [
     ('Com aroma', 'Mesma textura de lubrificante, com cheirinho de fruta ou menta.', ['rilex-morango', 'rilex-menta']),
     ('Para o banho', 'Não sai com a água, feito para usar debaixo do chuveiro.', ['aqua-silicon']),
 ]
+LUBIDS = {p['id'] for p in LUB}
 def chip(i):
     p = by[i]
     return (f'<a class="chip" href="/lubrificantes/{i}/"><img src="/lubrificantes/mini/{e(i)}.jpg" alt="" width="40" height="40" loading="lazy">'
             f'<span>{e(p["name"])}</span><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>')
-guia_html = ''.join(f'''<div class="pick"><h3>{e(t)}</h3><p>{e(d)}</p><div class="chips">{"".join(chip(i) for i in ids if i in by)}</div></div>''' for t, d, ids in guia)
+guia_html = ''.join(f'''<div class="pick"><h3>{e(t)}</h3><p>{e(d)}</p><div class="chips">{"".join(chip(i) for i in ids if i in LUBIDS)}</div></div>''' for t, d, ids in guia)
 faq = [
     ('Lubrificante à base de água pode ser usado com camisinha?', 'Pode. Lubrificantes à base de água são compatíveis com preservativos e com brinquedos de silicone. Em caso de dúvida, confira sempre a embalagem do produto.'),
     ('Qual a diferença entre o Hot, o Ice e o Neutro?', 'Os três são à base de água. O Hot dá sensação de calor, o Ice dá sensação de frescor e o Neutro não tem efeito, é o mais versátil.'),
@@ -136,7 +139,7 @@ faq = [
 faq_html = ''.join(f'<details><summary>{e(q)}</summary><p>{e(a)}</p></details>' for q, a in faq)
 cat_body = f'''<nav class="crumbs" aria-label="Você está em"><a href="/">Catálogo</a> › <span>Lubrificantes</span></nav>
 <section class="hero">
-  <div class="hero-img"><img src="/lubrificantes/capa.jpg" alt="Lubrificantes Love Lub Hot, Ice e Neutro, Aqua Silicon, Rilex Morango e Menta e Jato Sex Esquenta" width="1400" height="820" fetchpriority="high"></div>
+  <div class="hero-img"><img src="/lubrificantes/capa.jpg" alt="Lubrificantes Love Lub Hot, Ice e Neutro, Aqua Silicon e Rilex Morango e Menta" width="1400" height="820" fetchpriority="high"></div>
   <div class="hero-txt"><p class="eyebrow">Ouse Mais · Campestre/AL</p>
   <h1>Lubrificantes</h1>
   <p class="lead">Lubrificante deixa tudo mais confortável e prazeroso, a sós ou a dois. Aqui tem opções à base de água, com efeito que esquenta ou refresca, com aroma e até para usar no banho. Pedido pelo WhatsApp e entrega em embalagem sigilosa.</p>
