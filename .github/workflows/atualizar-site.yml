@@ -1,0 +1,46 @@
+# Gera de novo as páginas de categoria e de produto com os dados da planilha publicada pelo painel.
+# Roda de hora em hora, quando o código do site muda e quando alguém clica em "Run workflow" no GitHub.
+# Preço, estoque e textos já aparecem na hora pelo próprio site; isto atualiza o HTML pronto
+# (Google e prévias de link) e cria a página fixa de produtos novos.
+name: Atualizar páginas do site
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["_fonte/**", ".github/workflows/atualizar-site.yml"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: atualizar-site
+  cancel-in-progress: false
+
+jobs:
+  gerar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Instalar navegador para o HTML pronto
+        run: |
+          npm install --no-save --prefix "$RUNNER_TEMP/pw" playwright@1
+          "$RUNNER_TEMP/pw/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Gerar páginas
+        env:
+          NODE_PATH: ${{ runner.temp }}/pw/node_modules
+        run: python3 _fonte/build.py
+      - name: Publicar se algo mudou
+        run: |
+          git config user.name "Atualizador do site"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "Nada mudou."; exit 0; fi
+          git commit -m "Atualiza páginas com a planilha publicada"
+          git push
