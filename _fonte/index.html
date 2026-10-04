@@ -161,6 +161,14 @@ button{font-family:inherit}
 .add:disabled{background:var(--line);color:var(--muted);cursor:not-allowed}
 .swb.has::after{content:"";position:absolute;right:-3px;top:-3px;width:10px;height:10px;border-radius:50%;background:var(--magenta);border:2px solid var(--surface)}
 .swn{font-size:.82rem;font-weight:700;margin-left:2px}
+.seg{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.segl{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);width:100%}
+.segb{min-width:36px;height:32px;padding:0 10px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);font:700 .82rem var(--body);cursor:pointer;position:relative}
+.segb[aria-pressed="true"]{border-color:var(--magenta);background:var(--magenta-soft);color:var(--magenta)}
+.segb.out{color:var(--muted);text-decoration:line-through;opacity:.6}
+.segb.has::after{content:"";position:absolute;right:-4px;top:-4px;width:9px;height:9px;border-radius:50%;background:var(--magenta);border:2px solid var(--surface)}
+.segb:focus-visible{outline:2px solid var(--plum);outline-offset:2px}
+.var .seg + .seg,.var .sw + .seg{margin-top:8px}
 .vsel{display:flex;flex-direction:column;gap:3px;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .vsel select{appearance:none;-webkit-appearance:none;font:700 .88rem var(--body);letter-spacing:.02em;color:var(--fg);background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235b0f7a' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center;border:1.5px solid var(--line);border-radius:12px;padding:8px 32px 8px 12px;width:100%;cursor:pointer;text-transform:none}
 .incart{font-size:.78rem;font-weight:600;color:var(--magenta)}
@@ -515,7 +523,7 @@ let cart = {};
 try{ const s = JSON.parse(localStorage.getItem("ousemais-sacola")||"null"); cart = (s && s.items && Date.now()-s.t < 48*3600e3) ? s.items : {}; }catch(e){ cart = {}; }
 const P = k => byId(k.split("|")[0]);
 const optOf = (p,k) => { const o = k.split("|")[1]; return o && p.variants ? p.variants.options.find(x=>x.id===o) : null; };
-const lineLabel = k => { const p = P(k), o = optOf(p,k); return o ? `${p.variants.label}: ${o.name}` : ""; };
+const lineLabel = k => { const p = P(k), o = optOf(p,k); return o ? (o.lab || `${p.variants.label}: ${o.name}`) : ""; };
 for (const k in cart) if(!P(k) || !(cart[k]>0) || (P(k).variants && !optOf(P(k),k))) delete cart[k];
 const selVar = {};
 const firstOpt = v => (v.options.find(o=>o.qty!==0) || v.options[0]).id;
@@ -532,6 +540,16 @@ function varHTML(p, ctx){
   const v = p.variants; if (!v) return "";
   const sel = selVar[p.id]||firstOpt(v);
   const inCart = v.options.filter(o=>cart[`${p.id}|${o.id}`]).map(o=>`${o.name} ×${cart[`${p.id}|${o.id}`]}`);
+  if (v.type==="combo"){
+    const cur = v.options.find(o=>o.id===sel) || v.options[0], [A,B] = v.dims;
+    const combo = (ai,bi) => v.options.find(o=>o.a===ai && o.b===bi);
+    const outA = x => v.options.filter(o=>o.a===x.id).every(o=>o.qty===0);
+    const rowA = A.type==="swatch"
+      ? `<div class="sw" role="group" aria-label="${A.label}">${A.options.map(x=>{ const c = combo(x.id, cur.b), has = v.options.some(o=>o.a===x.id && cart[`${p.id}|${o.id}`]); return `<button type="button" class="swb${has?" has":""}${outA(x)?" out":""}" style="--c:${x.color}" data-var="${p.id}" data-opt="${c.id}" aria-pressed="${x.id===cur.a}" title="${x.name}${outA(x)?" (esgotado)":""}"><span class="sr">${A.label} ${x.name}${outA(x)?" (esgotado)":""}</span></button>`; }).join("")}<span class="swn">${A.options.find(x=>x.id===cur.a).name}</span></div>`
+      : `<div class="seg" role="group" aria-label="${A.label}"><span class="segl">${A.label}</span>${A.options.map(x=>`<button type="button" class="segb${outA(x)?" out":""}" data-var="${p.id}" data-opt="${combo(x.id,cur.b).id}" aria-pressed="${x.id===cur.a}">${x.name}</button>`).join("")}</div>`;
+    const rowB = `<div class="seg" role="group" aria-label="${B.label}"><span class="segl">${B.label}</span>${B.options.map(y=>{ const c = combo(cur.a, y.id); return `<button type="button" class="segb${c.qty===0?" out":""}${cart[`${p.id}|${c.id}`]?" has":""}" data-var="${p.id}" data-opt="${c.id}" aria-pressed="${y.id===cur.b}" title="${y.name}${c.qty===0?" (esgotado nessa combinação)":""}">${y.name}</button>`; }).join("")}</div>`;
+    return `<div class="var">${rowA}${rowB}${cur.qty===0?`<div class="incart" style="color:var(--muted)">${cur.name}: esgotado</div>`:""}${inCart.length?`<div class="incart">Na sacola: ${inCart.join(" · ")}</div>`:""}</div>`;
+  }
   const picker = v.type==="swatch"
     ? `<div class="sw" role="group" aria-label="${v.label}">${v.options.map(o=>`<button type="button" class="swb${cart[`${p.id}|${o.id}`]?" has":""}${o.qty===0?" out":""}" style="--c:${o.color}" data-var="${p.id}" data-opt="${o.id}" aria-pressed="${o.id===sel}" title="${o.name}${o.qty===0?" (esgotado)":""}"><span class="sr">${o.name}${o.qty===0?" (esgotado)":""}</span></button>`).join("")}<span class="swn">${v.options.find(o=>o.id===sel).name}${v.options.find(o=>o.id===sel).qty===0?" · esgotado":""}</span></div>`
     : `<label class="vsel" for="${ctx}-${p.id}"><span>${v.label}</span><select id="${ctx}-${p.id}" data-varsel="${p.id}">${v.options.map(o=>`<option value="${o.id}"${o.id===sel?" selected":""}${o.qty===0&&o.id!==sel?" disabled":""}>${o.name}${o.qty===0?" (esgotado)":""}${cart[`${p.id}|${o.id}`]?` (${cart[`${p.id}|${o.id}`]} na sacola)`:""}</option>`).join("")}</select></label>`;
@@ -544,14 +562,14 @@ function buyHTML(p, ctx="c"){
     : `<span class="price ask">Preço sob consulta</span>`;
   if (p.soldOut && !q) return varHTML(p,ctx) + price + `<a class="soon" href="${wa(`Olá! Quero o ${p.name}, que está esgotado no catálogo. Me avisa quando chegar?`)}" target="_blank" rel="noopener">Avise-me quando chegar</a>`;
   const so = p.variants ? optOf(p,k) : null;
-  if (so && so.qty===0 && !q) return varHTML(p,ctx) + price + `<button type="button" class="add" disabled>Esgotado nesta ${p.variants.label.toLowerCase()}</button>`;
+  if (so && so.qty===0 && !q) return varHTML(p,ctx) + price + `<button type="button" class="add" disabled>${p.variants.type==="combo" ? "Esgotado nessa combinação" : `Esgotado nesta ${p.variants.label.toLowerCase()}`}</button>`;
   return varHTML(p,ctx) + price + (q ? qtyHTML(k,q) : `<button type="button" class="add" data-act="inc" data-key="${k}">+ Adicionar</button>`);
 }
 function orderMsg(){
   const ids = Object.keys(cart);
   const known = ids.every(k=>P(k).price!=null);
   const sum = ids.reduce((s,k)=>s+(P(k).price||0)*cart[k],0);
-  const lines = ids.map(k=>{ const p=P(k), o=optOf(p,k); return `• ${cart[k]}x ${p.name}${o?` — ${p.variants.label.toLowerCase()} ${o.name}${p.variants.note?` (${p.variants.note})`:""}`:""}${p.items||p.variants||p.name.includes(p.brand)?"":` (${p.brand})`}${p.price!=null?` — ${brl(p.price*cart[k])}`:""}${p.items?`\n   (${p.items.map(i=>byId(i).name).join(" + ")})`:""}`; });
+  const lines = ids.map(k=>{ const p=P(k), o=optOf(p,k); return `• ${cart[k]}x ${p.name}${o?` — ${o.msg || `${p.variants.label.toLowerCase()} ${o.name}`}${p.variants.note?` (${p.variants.note})`:""}`:""}${p.items||p.variants||p.name.includes(p.brand)?"":` (${p.brand})`}${p.price!=null?` — ${brl(p.price*cart[k])}`:""}${p.items?`\n   (${p.items.map(i=>byId(i).name).join(" + ")})`:""}`; });
   return `Olá, Ouse Mais! Montei este pedido pelo catálogo:\n\n${lines.join("\n")}${known&&ids.length?`\n\nTotal: ${brl(sum)}`:""}\n\n${known?"Podem me passar as informações de pagamento para eu finalizar?":"Podem me confirmar os valores e as informações de pagamento?"}`;
 }
 
@@ -822,13 +840,22 @@ const slug = s => norm(s).trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")
 function parseVariants(t){
   t = (t||"").trim(); if (!t) return null;
   let note = ""; const m = t.match(/\(([^)]*)\)\s*$/); if (m){ note = m[1].trim(); t = t.slice(0,m.index).trim(); }
-  const i = t.indexOf(":"); const label = i>0 ? t.slice(0,i).trim() : "Opção";
-  const names = (i>0 ? t.slice(i+1) : t).split(",").map(s=>s.trim()).filter(Boolean);
-  if (!names.length) return null;
-  const isColor = /^cor/.test(norm(label));
-  const opts = names.map(raw=>{ const m = raw.match(/^(.*?)\s*=\s*(\d+)$/); const n = m ? m[1].trim() : raw; return {id:slug(n), name:n, color:SW[norm(n)]||"#c9b8c4", qty: m ? +m[2] : null}; }).filter(o=>o.name);
-  if (!opts.length) return null;
-  return {label, type:isColor?"swatch":"select", note:note||undefined, options:opts};
+  const groups = [], stock = {};
+  t.split("|").map(s=>s.trim()).filter(Boolean).forEach(part=>{
+    const i = part.indexOf(":"); const label = i>0 ? part.slice(0,i).trim() : "Opção", body = i>0 ? part.slice(i+1) : part;
+    if (norm(label)==="estoque"){ body.split(",").forEach(x=>{ const mm = x.trim().match(/^(.+?)\s*=\s*(\d+)$/); if (mm) stock[norm(mm[1].split("/").map(s=>s.trim()).join("/"))] = +mm[2]; }); return; }
+    const isColor = /^cor/.test(norm(label));
+    const opts = body.split(",").map(s=>s.trim()).filter(Boolean).map(raw=>{ const q = raw.match(/^(.*?)\s*=\s*(\d+)$/); const n = q ? q[1].trim() : raw; return {id:slug(n), name:n, color:SW[norm(n)]||"#c9b8c4", qty: q ? +q[2] : null}; }).filter(o=>o.name);
+    if (opts.length) groups.push({label, type:isColor?"swatch":"select", options:opts});
+  });
+  if (!groups.length) return null;
+  if (groups.length === 1){ const g = groups[0]; g.note = note||undefined; g.options.forEach(o=>{ o.msg = `${g.label.toLowerCase()} ${o.name}`; o.lab = `${g.label}: ${o.name}`; }); return g; }
+  // dois tipos (ex.: cor e tamanho): cada combinação vira uma opção
+  const [a,b] = groups.slice(0,2), options = [];
+  a.options.forEach(x=>b.options.forEach(y=>{ const k = norm(`${x.name}/${y.name}`);
+    options.push({id:`${x.id}--${y.id}`, name:`${x.name} · ${y.name}`, a:x.id, b:y.id, color:x.color, qty: k in stock ? stock[k] : null,
+      msg:`${a.label.toLowerCase()} ${x.name}, ${b.label.toLowerCase()} ${y.name}`, lab:`${a.label}: ${x.name} · ${b.label}: ${y.name}`}); }));
+  return {label:`${a.label} e ${b.label.toLowerCase()}`, type:"combo", dims:[a,b], note:note||undefined, options};
 }
 // Texto vindo da planilha nunca vira código na página
 const clean = v => String(v||"").replace(/[<>]/g,"").replace(/"/g,"”").replace(/`/g,"'").trim();

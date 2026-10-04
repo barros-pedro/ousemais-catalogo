@@ -160,6 +160,22 @@ details.hist summary{font-weight:700;cursor:pointer}
 .pw button:focus-visible{outline:2px solid var(--plum);outline-offset:2px}
 
 /* construtor de opções */
+.ob-g + .ob-sep{font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:12px 0 8px}
+.ob-g .ob-chips{margin-top:10px}
+.ob-label{margin-top:8px}
+.ob-rm{color:var(--err)!important;border-color:transparent!important;background:transparent!important}
+#ob-more{margin-top:10px}
+#ob-grid{margin-top:12px}
+.ob-gtitle{font-weight:700;font-size:.88rem;margin-bottom:6px}
+.ob-tablewrap{overflow-x:auto}
+.ob-table{border-collapse:collapse;font-size:.85rem}
+.ob-table th,.ob-table td{border:1px solid var(--line);padding:4px 6px;text-align:center;white-space:nowrap}
+.ob-table th[scope=row]{text-align:left;font-weight:600}
+.ob-table th i{display:inline-block;width:10px;height:10px;border-radius:50%;border:1px solid rgba(0,0,0,.2);margin-right:5px;vertical-align:-1px}
+.ob-cell{width:46px;border:1px solid var(--line);border-radius:6px;padding:3px;text-align:center;font:inherit}
+.ob-cell.zero{background:#f6e3e6;color:var(--err)}
+.ob-cell:focus{outline:2px solid var(--plum);outline-offset:1px}
+
 .ob-q{width:44px;border:1px solid var(--line);border-radius:8px;padding:2px 4px;font:inherit;font-size:.82rem;text-align:center;background:#fff}
 .ob-q:focus{outline:2px solid var(--plum);outline-offset:1px}
 .ob-chip.zero{background:#f1e9ee;color:var(--muted)}
@@ -263,26 +279,17 @@ details.hist summary{font-weight:700;cursor:pointer}
         <label class="f" for="f-specs">Detalhes</label>
         <input class="t" id="f-specs" maxlength="80" placeholder="ex.: 60 g, Base água">
         <div class="hint">Separe por vírgula. Aparecem como etiquetinhas no card.</div>
-        <span class="f" id="ob-title">Opções para o cliente escolher</span>
+        <span class="f" id="ob-title" style="display:block">Opções para o cliente escolher</span>
         <input type="hidden" id="f-opts">
         <div class="ob" role="group" aria-labelledby="ob-title">
-          <div class="ob-kinds" id="ob-kinds" role="radiogroup" aria-label="Tipo de opção">
-            <button type="button" data-kind="">Sem opções</button>
-            <button type="button" data-kind="Cor">Cor</button>
-            <button type="button" data-kind="Sabor">Sabor</button>
-            <button type="button" data-kind="Tamanho">Tamanho</button>
-            <button type="button" data-kind="Frase">Frase</button>
-            <button type="button" data-kind="*">Outro…</button>
-          </div>
-          <div id="ob-body" hidden>
-            <input class="t" id="ob-label" maxlength="20" placeholder="Nome do tipo, ex.: Modelo" hidden>
-            <div class="ob-chips" id="ob-chips"></div>
-            <div class="ob-add"><input class="t" id="ob-new" maxlength="40" placeholder="Digite e toque em Adicionar" autocomplete="off"><button type="button" class="btn sec small" id="ob-add">Adicionar</button></div>
-            <div class="ob-sug" id="ob-sug"></div>
+          <div id="ob-groups"></div>
+          <button type="button" class="btn ghost small" id="ob-more" hidden>+ Adicionar outro tipo (ex.: Tamanho)</button>
+          <div id="ob-grid" hidden></div>
+          <div id="ob-notebox" hidden>
             <label class="f" for="ob-note" style="font-weight:500">Observação (opcional)</label>
             <input class="t" id="ob-note" maxlength="40" placeholder="ex.: cor a combinar">
-            <div class="hint" id="ob-hint"></div>
           </div>
+          <div class="hint" id="ob-hint"></div>
         </div>
       </div>
       <label class="f" for="f-tag">Selo (opcional)</label>
@@ -594,7 +601,7 @@ async function onPhotoChange(){
 function readForm(){
   const p = {...editing};
   p.name = $("f-name").value.trim(); p.cat = $("f-cat").value; p.brand = $("f-brand").value.trim(); p.tag = $("f-tag").value.trim();
-  if ($("ob-new").value.trim() && OB.kind){ $("ob-new").value.split(",").forEach(obAdd); $("ob-new").value = ""; }
+  obFlushPending();
   p.desc = $("f-desc").value.trim(); p.specs = $("f-specs").value.trim(); p.opts = $("f-opts").value.trim();
   p.price = numIn($("f-price").value); p.oldPrice = numIn($("f-old").value);
   const q = $("f-qty").value.trim(); p.qty = q==="" ? "" : parseInt(q,10);
@@ -652,72 +659,119 @@ async function uploadMedia(base){
 }
 
 
-/* ---------------- construtor de opções (cor, sabor, frase…) ---------------- */
+/* ---------------- construtor de opções (cor, tamanho, sabor, frase…) ---------------- */
+// Formato salvo na planilha:
+//   1 tipo:  "Cor: Preto=2, Vermelho (observação)"
+//   2 tipos: "Cor: Preto, Vermelho | Tamanho: P, M | Estoque: Preto/P=2, Vermelho/M=0 (observação)"
 const SWC = {preto:"#151515",vermelho:"#e0141e",branco:"#ffffff",nude:"#eaa58d",rosa:"#f06aa6",pink:"#ff2e88",roxo:"#6b2a9a",lilas:"#b48ad6",azul:"#2a63d6","azul marinho":"#1d2b5a",verde:"#2e9b55",amarelo:"#f5c518",laranja:"#f28c28",vinho:"#7a1030",bordo:"#6d0f2a",bege:"#e8d3b4",marrom:"#6b4226",cinza:"#8a8a8a",dourado:"#d4af37",prata:"#c0c0c0",oncinha:"#c8954a",onca:"#c8954a",transparente:"#f4f4f4"};
 const OB_SUG = {Cor:["Preto","Vermelho","Branco","Nude","Rosa","Pink","Roxo","Azul","Vinho","Bege"], Sabor:["Morango","Menta","Chocolate","Uva","Melancia","Chiclete","Cereja","Framboesa"], Tamanho:["P","M","G","GG","Único"], Frase:[]};
-const nrm = s => (s||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
-const OB = {kind:"", label:"", items:[], note:""};
+const KINDS = ["Cor","Sabor","Tamanho","Frase"];
+const nrm = s => (s||"").toString().normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().trim();
+const OB = {groups:[], note:"", stock:{}};   // groups: [{kind, label, items:[{n,q}]}]; stock: {"Preto/P": 2}
+const gLabel = g => g.kind==="*" ? (g.label.trim() || "Opção") : g.kind;
+const cleanName = v => (v||"").replace(/[,():|/=]/g," ").replace(/\s+/g," ").trim();
 function obParse(t){
-  t = (t||"").trim(); OB.kind = ""; OB.label = ""; OB.items = []; OB.note = "";
-  if (!t) return;
+  OB.groups = []; OB.note = ""; OB.stock = {};
+  t = (t||"").trim(); if (!t) return;
   const m = t.match(/\(([^)]*)\)\s*$/); if (m){ OB.note = m[1].trim(); t = t.slice(0,m.index).trim(); }
-  const i = t.indexOf(":"); const label = i>0 ? t.slice(0,i).trim() : "Opção";
-  OB.items = (i>0 ? t.slice(i+1) : t).split(",").map(s=>s.trim()).filter(Boolean).map(s=>{ const m = s.match(/^(.*?)\s*=\s*(\d+)$/); return m ? {n:m[1].trim(), q:+m[2]} : {n:s, q:null}; });
-  const known = ["Cor","Sabor","Tamanho","Frase"].find(k=>nrm(k)===nrm(label));
-  OB.kind = known || "*"; OB.label = known ? "" : label;
+  t.split("|").map(s=>s.trim()).filter(Boolean).forEach(part=>{
+    const i = part.indexOf(":"); const label = i>0 ? part.slice(0,i).trim() : "Opção"; const body = i>0 ? part.slice(i+1) : part;
+    if (nrm(label)==="estoque"){ body.split(",").forEach(x=>{ const mm = x.trim().match(/^(.+?)\s*=\s*(\d+)$/); if (mm) OB.stock[mm[1].split("/").map(s=>s.trim()).join("/")] = +mm[2]; }); return; }
+    if (OB.groups.length >= 2) return;
+    const known = KINDS.find(k=>nrm(k)===nrm(label));
+    OB.groups.push({kind: known || "*", label: known ? "" : label,
+      items: body.split(",").map(s=>s.trim()).filter(Boolean).map(s=>{ const q = s.match(/^(.*?)\s*=\s*(\d+)$/); return q ? {n:q[1].trim(), q:+q[2]} : {n:s, q:null}; })});
+  });
+  // estoque salvo com o nome antigo das opções: casa sem acento/maiúscula
+  const fix = {}; Object.keys(OB.stock).forEach(k=>{ fix[k] = OB.stock[k]; }); OB.stock = fix;
 }
+const stockKey = (a,b) => `${a}/${b}`;
+function stockGet(a,b){ const k = Object.keys(OB.stock).find(x=>nrm(x)===nrm(stockKey(a,b))); return k==null ? null : OB.stock[k]; }
+function stockSet(a,b,v){ Object.keys(OB.stock).filter(x=>nrm(x)===nrm(stockKey(a,b))).forEach(x=>delete OB.stock[x]); if (v!=null) OB.stock[stockKey(a,b)] = v; }
 function obValue(){
-  if (!OB.kind || !OB.items.length) return "";
-  const label = OB.kind==="*" ? (OB.label.trim() || "Opção") : OB.kind;
-  return `${label}: ${OB.items.map(o=>o.q==null ? o.n : `${o.n}=${o.q}`).join(", ")}${OB.note.trim() ? ` (${OB.note.trim()})` : ""}`;
+  const gs = OB.groups.filter(g=>g.kind && g.items.length); if (!gs.length) return "";
+  const note = OB.note.trim() ? ` (${OB.note.trim()})` : "";
+  if (gs.length === 1) return `${gLabel(gs[0])}: ${gs[0].items.map(o=>o.q==null ? o.n : `${o.n}=${o.q}`).join(", ")}${note}`;
+  const [a,b] = gs, st = [];
+  a.items.forEach(x=>b.items.forEach(y=>{ const q = stockGet(x.n,y.n); if (q!=null) st.push(`${x.n}/${y.n}=${q}`); }));
+  return `${gLabel(a)}: ${a.items.map(o=>o.n).join(", ")} | ${gLabel(b)}: ${b.items.map(o=>o.n).join(", ")}${st.length ? ` | Estoque: ${st.join(", ")}` : ""}${note}`;
+}
+function groupHTML(g, gi){
+  const two = OB.groups.length > 1, isCor = g.kind==="Cor";
+  const kinds = `<div class="ob-kinds" role="radiogroup" aria-label="Tipo de opção">${(gi===0?[["","Sem opções"]]:[]).concat(KINDS.map(k=>[k,k]), [["*","Outro…"]]).map(([k,t])=>`<button type="button" data-g="${gi}" data-kind="${k}" aria-checked="${g.kind===k}">${t}</button>`).join("")}${gi===1?`<button type="button" class="ob-rm" data-g="${gi}" data-rmgroup>Remover este tipo</button>`:""}</div>`;
+  if (!g.kind) return `<div class="ob-g">${kinds}</div>`;
+  const chips = g.items.map((o,i)=>`<span class="ob-chip${!two && o.q===0?" zero":""}">${isCor?`<i style="background:${SWC[nrm(o.n)]||"#c9b8c4"}"></i>`:""}${esc(o.n)}${two?"":`<input class="ob-q" type="text" inputmode="numeric" data-g="${gi}" data-obq="${i}" value="${o.q==null?"":o.q}" placeholder="qtd" aria-label="Quantidade de ${esc(o.n)}" maxlength="4">`}${i>0?`<button type="button" class="mv" data-g="${gi}" data-obmv="${i}" aria-label="Mover ${esc(o.n)} para a esquerda">‹</button>`:""}<button type="button" data-g="${gi}" data-obdel="${i}" aria-label="Remover ${esc(o.n)}">×</button></span>`).join("") || `<span class="hint">Nenhuma opção ainda.</span>`;
+  const ph = isCor ? "Digite a cor, ex.: Vermelho" : g.kind==="Frase" ? "Digite a frase" : g.kind==="Sabor" ? "Digite o sabor" : g.kind==="Tamanho" ? "Digite o tamanho, ex.: M" : "Digite e toque em Adicionar";
+  const sug = (OB_SUG[g.kind]||[]).filter(s=>!g.items.some(x=>nrm(x.n)===nrm(s)));
+  return `<div class="ob-g">${kinds}
+    ${g.kind==="*"?`<input class="t ob-label" data-g="${gi}" maxlength="20" placeholder="Nome do tipo, ex.: Modelo" value="${esc(g.label)}">`:""}
+    <div class="ob-chips">${chips}</div>
+    <div class="ob-add"><input class="t ob-new" data-g="${gi}" maxlength="40" placeholder="${ph}" autocomplete="off" aria-label="${ph}"><button type="button" class="btn sec small" data-g="${gi}" data-obadd>Adicionar</button></div>
+    ${sug.length?`<div class="ob-sug"><span class="hint" style="width:100%;margin:0">Sugestões (toque para adicionar):</span>${sug.map(s=>`<button type="button" data-g="${gi}" data-obsug="${esc(s)}">${isCor?`<i style="background:${SWC[nrm(s)]}"></i>`:""}${esc(s)}</button>`).join("")}</div>`:""}
+  </div>`;
+}
+function gridHTML(){
+  const [a,b] = OB.groups; if (!a || !b || !a.items.length || !b.items.length) return "";
+  return `<div class="ob-gtitle">Estoque de cada combinação <span class="hint">(vazio = não controlar)</span></div>
+  <div class="ob-tablewrap"><table class="ob-table"><thead><tr><th scope="col"></th>${b.items.map(y=>`<th scope="col">${esc(y.n)}</th>`).join("")}</tr></thead><tbody>
+  ${a.items.map((x,i)=>`<tr><th scope="row">${a.kind==="Cor"?`<i style="background:${SWC[nrm(x.n)]||"#c9b8c4"}"></i>`:""}${esc(x.n)}</th>${b.items.map((y,j)=>{ const q = stockGet(x.n,y.n); return `<td><input type="text" inputmode="numeric" maxlength="4" class="ob-cell${q===0?" zero":""}" data-si="${i}" data-sj="${j}" value="${q==null?"":q}" aria-label="Quantidade ${esc(x.n)} ${esc(y.n)}"></td>`; }).join("")}</tr>`).join("")}
+  </tbody></table></div>`;
 }
 function obRender(){
+  if (!OB.groups.length) OB.groups = [{kind:"", label:"", items:[]}];
   $("f-opts").value = obValue();
-  document.querySelectorAll("#ob-kinds button").forEach(b=>b.setAttribute("aria-checked", String(b.dataset.kind===OB.kind)));
-  $("ob-body").hidden = !OB.kind;
-  $("ob-label").hidden = OB.kind!=="*"; $("ob-label").value = OB.label;
-  $("ob-note").value = OB.note;
-  const isCor = OB.kind==="Cor";
-  $("ob-new").placeholder = isCor ? "Digite a cor, ex.: Vermelho" : OB.kind==="Frase" ? "Digite a frase" : OB.kind==="Sabor" ? "Digite o sabor" : "Digite e toque em Adicionar";
-  $("ob-chips").innerHTML = OB.items.map((o,i)=>`<span class="ob-chip${o.q===0?" zero":""}">${isCor?`<i style="background:${SWC[nrm(o.n)]||"#c9b8c4"}"></i>`:""}${esc(o.n)}<input class="ob-q" type="text" inputmode="numeric" data-obq="${i}" value="${o.q==null?"":o.q}" placeholder="qtd" aria-label="Quantidade de ${esc(o.n)}" maxlength="4">${i>0?`<button type="button" class="mv" data-obmv="${i}" aria-label="Mover ${esc(o.n)} para a esquerda">‹</button>`:""}<button type="button" data-obdel="${i}" aria-label="Remover ${esc(o.n)}">×</button></span>`).join("") || `<span class="hint">Nenhuma opção ainda.</span>`;
+  $("ob-groups").innerHTML = OB.groups.map(groupHTML).join(`<div class="ob-sep">e também</div>`);
+  const g0 = OB.groups[0];
+  $("ob-more").hidden = !(g0.kind && OB.groups.length===1);
+  $("ob-grid").hidden = OB.groups.length < 2; $("ob-grid").innerHTML = gridHTML();
+  $("ob-notebox").hidden = !g0.kind; $("ob-note").value = OB.note;
+  const two = OB.groups.length > 1;
+  $("ob-hint").textContent = !g0.kind ? "" : two
+    ? "No site, o cliente escolhe as duas coisas (ex.: cor e tamanho). Combinações com 0 aparecem como esgotadas."
+    : (g0.kind==="Cor" ? "No site, as cores aparecem como bolinhas. Cores que o site não conhece aparecem em cinza claro." : "No site, o cliente escolhe numa lista e pode levar opções diferentes no mesmo pedido.");
   obQtySync();
-  const sug = (OB_SUG[OB.kind]||[]).filter(s=>!OB.items.some(x=>nrm(x.n)===nrm(s)));
-  $("ob-sug").innerHTML = sug.length ? `<span class="hint" style="width:100%;margin:0">Sugestões (toque para adicionar):</span>` + sug.map(s=>`<button type="button" data-obsug="${esc(s)}">${isCor?`<i style="background:${SWC[nrm(s)]}"></i>`:""}${esc(s)}</button>`).join("") : "";
-  const len = $("f-opts").value.length;
-  $("ob-hint").textContent = isCor ? "No site, as cores aparecem como bolinhas. Cores que o site não conhece aparecem em cinza claro." + (len>180?" Texto quase no limite.":"")
-    : OB.kind ? "No site, o cliente escolhe numa lista e pode levar opções diferentes no mesmo pedido." + (len>180?" Texto quase no limite.":"") : "";
 }
-function obAdd(v){
-  v = (v||"").replace(/[,():]/g," ").replace(/\s+/g," ").trim(); if (!v) return;
-  if (OB.items.some(x=>nrm(x.n)===nrm(v))){ toast("Essa opção já está na lista.", true); return; }
-  if ((obValue()+", "+v).length > 200){ toast("Muitas opções: o limite é 200 letras no total.", true); return; }
-  OB.items.push({n:v, q:null}); obRender();
-}
-
-// quantidade por opção: quando alguma opção tem quantidade, o estoque do produto vira a soma
 function obQtySync(){
-  const withQ = OB.kind ? OB.items.filter(o=>o.q!=null) : [];
-  const f = $("f-qty"), on = withQ.length > 0;
+  let vals = [];
+  if (OB.groups.length > 1){ const [a,b] = OB.groups; a.items.forEach(x=>b.items.forEach(y=>{ const q = stockGet(x.n,y.n); if (q!=null) vals.push(q); })); }
+  else if (OB.groups[0] && OB.groups[0].kind) vals = OB.groups[0].items.filter(o=>o.q!=null).map(o=>o.q);
+  const f = $("f-qty"), on = vals.length > 0;
   f.readOnly = on; $("q-minus").disabled = on; $("q-plus").disabled = on;
-  if (on) f.value = withQ.reduce((s,o)=>s+o.q,0);
-  $("qty-hint").textContent = on ? "Calculado pela soma das quantidades de cada opção." + (withQ.length < OB.items.length ? " Opções sem quantidade não são controladas." : "") : "";
+  if (on) f.value = vals.reduce((s,v)=>s+v,0);
+  $("qty-hint").textContent = on ? "Calculado pela soma das quantidades das opções." : "";
 }
-$("ob-chips").addEventListener("input", e=>{ const q = e.target.closest("[data-obq]"); if (!q) return;
-  const v = q.value.replace(/\D/g,""); q.value = v; const o = OB.items[+q.dataset.obq];
-  o.q = v==="" ? null : parseInt(v,10); q.closest(".ob-chip").classList.toggle("zero", o.q===0);
-  $("f-opts").value = obValue(); obQtySync(); });
-$("ob-kinds").addEventListener("click", e=>{ const b = e.target.closest("button[data-kind]"); if (!b) return;
-  OB.kind = b.dataset.kind; if (!OB.kind){ OB.items = []; OB.note = ""; OB.label = ""; }
-  obRender(); if (OB.kind) setTimeout(()=>(OB.kind==="*" && !OB.label ? $("ob-label") : $("ob-new")).focus(), 30); });
-$("ob-add").onclick = ()=>{ $("ob-new").value.split(",").forEach(obAdd); $("ob-new").value = ""; $("ob-new").focus(); };
-$("ob-new").addEventListener("keydown", e=>{ if (e.key==="Enter" || e.key===","){ e.preventDefault(); $("ob-add").click(); } });
-$("ob-new").addEventListener("paste", e=>{ const t = (e.clipboardData||window.clipboardData).getData("text"); if (/[,\n]/.test(t)){ e.preventDefault(); t.split(/[,\n]/).forEach(obAdd); } });
-$("ob-chips").addEventListener("click", e=>{ const d = e.target.closest("[data-obdel]"), m = e.target.closest("[data-obmv]");
-  if (d){ OB.items.splice(+d.dataset.obdel,1); obRender(); }
-  if (m){ const i = +m.dataset.obmv; [OB.items[i-1],OB.items[i]] = [OB.items[i],OB.items[i-1]]; obRender(); } });
-$("ob-sug").addEventListener("click", e=>{ const b = e.target.closest("[data-obsug]"); if (b) obAdd(b.dataset.obsug); });
-$("ob-label").addEventListener("input", e=>{ OB.label = e.target.value.replace(/[:,()]/g,""); $("f-opts").value = obValue(); });
-$("ob-note").addEventListener("input", e=>{ OB.note = e.target.value.replace(/[()]/g,""); $("f-opts").value = obValue(); });
+function obAdd(gi, v){
+  const g = OB.groups[gi]; v = cleanName(v); if (!g || !v) return;
+  if (g.items.some(x=>nrm(x.n)===nrm(v))){ toast("Essa opção já está na lista.", true); return; }
+  if ((obValue()+", "+v).length > 450){ toast("Muitas opções: o texto ficou grande demais.", true); return; }
+  g.items.push({n:v, q:null}); obRender();
+  const inp = document.querySelector(`.ob-new[data-g="${gi}"]`); if (inp) inp.focus();
+}
+function obFlushPending(){ document.querySelectorAll(".ob-new").forEach(inp=>{ if (inp.value.trim()){ const gi = +inp.dataset.g; inp.value.split(",").forEach(v=>obAdd(gi,v)); } }); }
+$("ob-groups").addEventListener("click", e=>{
+  const k = e.target.closest("[data-kind]"), gi = k ? +k.dataset.g : null;
+  if (k){ const g = OB.groups[gi]; g.kind = k.dataset.kind;
+    if (!g.kind){ OB.groups = [{kind:"", label:"", items:[]}]; OB.note = ""; OB.stock = {}; }
+    obRender(); const f = document.querySelector(g.kind==="*" && !g.label ? `.ob-label[data-g="${gi}"]` : `.ob-new[data-g="${gi}"]`); if (f) setTimeout(()=>f.focus(),30); return; }
+  const rm = e.target.closest("[data-rmgroup]"); if (rm){ OB.groups.splice(1,1); OB.stock = {}; obRender(); return; }
+  const add = e.target.closest("[data-obadd]"); if (add){ const gi2 = +add.dataset.g, inp = document.querySelector(`.ob-new[data-g="${gi2}"]`); inp.value.split(",").forEach(v=>obAdd(gi2,v)); return; }
+  const sug = e.target.closest("[data-obsug]"); if (sug){ obAdd(+sug.dataset.g, sug.dataset.obsug); return; }
+  const d = e.target.closest("[data-obdel]"); if (d){ OB.groups[+d.dataset.g].items.splice(+d.dataset.obdel,1); obRender(); return; }
+  const m = e.target.closest("[data-obmv]"); if (m){ const it = OB.groups[+m.dataset.g].items, i = +m.dataset.obmv; [it[i-1],it[i]] = [it[i],it[i-1]]; obRender(); }
+});
+$("ob-groups").addEventListener("keydown", e=>{ const inp = e.target.closest(".ob-new"); if (inp && (e.key==="Enter" || e.key===",")){ e.preventDefault(); const gi = +inp.dataset.g, v = inp.value; inp.value = ""; v.split(",").forEach(x=>obAdd(gi,x)); } });
+$("ob-groups").addEventListener("paste", e=>{ const inp = e.target.closest(".ob-new"); if (!inp) return; const t = (e.clipboardData||window.clipboardData).getData("text"); if (/[,\n]/.test(t)){ e.preventDefault(); t.split(/[,\n]/).forEach(x=>obAdd(+inp.dataset.g,x)); } });
+$("ob-groups").addEventListener("input", e=>{
+  const lb = e.target.closest(".ob-label"); if (lb){ OB.groups[+lb.dataset.g].label = lb.value.replace(/[:,()|/=]/g,""); $("f-opts").value = obValue(); return; }
+  const q = e.target.closest("[data-obq]"); if (q){ const v = q.value.replace(/\D/g,""); q.value = v; const o = OB.groups[+q.dataset.g].items[+q.dataset.obq];
+    o.q = v==="" ? null : parseInt(v,10); q.closest(".ob-chip").classList.toggle("zero", o.q===0); $("f-opts").value = obValue(); obQtySync(); }
+});
+$("ob-grid").addEventListener("input", e=>{ const c = e.target.closest(".ob-cell"); if (!c) return;
+  const v = c.value.replace(/\D/g,""); c.value = v; const [a,b] = OB.groups;
+  stockSet(a.items[+c.dataset.si].n, b.items[+c.dataset.sj].n, v==="" ? null : parseInt(v,10));
+  c.classList.toggle("zero", v==="0"); $("f-opts").value = obValue(); obQtySync(); });
+$("ob-more").onclick = ()=>{ OB.groups[0].items.forEach(o=>o.q=null); OB.groups.push({kind:"", label:"", items:[]}); obRender(); };
+$("ob-note").addEventListener("input", e=>{ OB.note = e.target.value.replace(/[()|]/g,""); $("f-opts").value = obValue(); });
 
 /* ---------------- foto automática do kit ---------------- */
 function loadImg(src, cors){ return new Promise((res,rej)=>{ const i = new Image(); if (cors) i.crossOrigin = "anonymous"; i.onload = ()=>res(i); i.onerror = ()=>rej(new Error("img")); i.src = src; }); }
