@@ -287,7 +287,7 @@ details.hist summary{font-weight:700;cursor:pointer}
           <div id="ob-grid" hidden></div>
           <div id="ob-notebox" hidden>
             <label class="f" for="ob-note" style="font-weight:500">Observação (opcional)</label>
-            <input class="t" id="ob-note" maxlength="40" placeholder="ex.: cor a combinar">
+            <input class="t" id="ob-note" maxlength="80" placeholder="ex.: cor a combinar">
           </div>
           <div class="hint" id="ob-hint"></div>
         </div>
@@ -706,7 +706,7 @@ function groupHTML(g, gi){
   return `<div class="ob-g">${kinds}
     ${g.kind==="*"?`<input class="t ob-label" data-g="${gi}" maxlength="20" placeholder="Nome do tipo, ex.: Modelo" value="${esc(g.label)}">`:""}
     <div class="ob-chips">${chips}</div>
-    <div class="ob-add"><input class="t ob-new" data-g="${gi}" maxlength="40" placeholder="${ph}" autocomplete="off" aria-label="${ph}"><button type="button" class="btn sec small" data-g="${gi}" data-obadd>Adicionar</button></div>
+    <div class="ob-add"><input class="t ob-new" data-g="${gi}" maxlength="80" placeholder="${ph}" autocomplete="off" aria-label="${ph}"><button type="button" class="btn sec small" data-g="${gi}" data-obadd>Adicionar</button></div>
     ${sug.length?`<div class="ob-sug"><span class="hint" style="width:100%;margin:0">Sugestões (toque para adicionar):</span>${sug.map(s=>`<button type="button" data-g="${gi}" data-obsug="${esc(s)}">${isCor?`<i style="background:${SWC[nrm(s)]}"></i>`:""}${esc(s)}</button>`).join("")}</div>`:""}
   </div>`;
 }
@@ -743,7 +743,7 @@ function obQtySync(){
 function obAdd(gi, v){
   const g = OB.groups[gi]; v = cleanName(v); if (!g || !v) return;
   if (g.items.some(x=>nrm(x.n)===nrm(v))){ toast("Essa opção já está na lista.", true); return; }
-  if ((obValue()+", "+v).length > 450){ toast("Muitas opções: o texto ficou grande demais.", true); return; }
+  if ((obValue()+", "+v).length > 3000){ toast("Opções demais para um produto só. Divida em dois produtos.", true); return; }
   g.items.push({n:v, q:null}); obRender();
   const inp = document.querySelector(`.ob-new[data-g="${gi}"]`); if (inp) inp.focus();
 }
