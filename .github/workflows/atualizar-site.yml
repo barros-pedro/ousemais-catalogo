@@ -32,6 +32,8 @@ jobs:
         run: |
           npm install --no-save --prefix "$RUNNER_TEMP/pw" playwright@1
           "$RUNNER_TEMP/pw/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Instalar Pillow (cores das categorias)
+        run: python3 -m pip install --quiet pillow
       - name: Gerar páginas
         env:
           NODE_PATH: ${{ runner.temp }}/pw/node_modules
