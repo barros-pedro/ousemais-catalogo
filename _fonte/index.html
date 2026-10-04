@@ -135,6 +135,9 @@ button{font-family:inherit}
 .name{font-family:var(--display);font-weight:500;font-size:.98rem;line-height:1.2;margin:0;text-wrap:balance}
 .name button{all:unset;cursor:pointer}
 .name button:focus-visible{outline:3px solid var(--magenta);outline-offset:2px;border-radius:4px}
+.fits{display:flex;align-items:center;gap:6px;font-size:.84rem;font-weight:700;color:var(--plum);margin:4px 0 0}
+.fits::before{content:"";width:16px;height:16px;flex:none;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 7h18v10H3z'/%3E%3Cpath d='M7 7v4M11 7v3M15 7v4M19 7v3'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 7h18v10H3z'/%3E%3Cpath d='M7 7v4M11 7v3M15 7v4M19 7v3'/%3E%3C/svg%3E") center/contain no-repeat}
+#d-fits{margin:8px 0 0}
 .specs{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 0;padding:0;list-style:none}
 .specs li{font-size:.75rem;font-weight:600;background:var(--magenta-soft);color:var(--fg);padding:2px 8px;border-radius:6px}
 .buy{margin-top:auto;padding-top:12px;display:flex;flex-direction:column;gap:8px}
@@ -437,6 +440,7 @@ dialog::backdrop{background:rgba(20,6,28,.6)}
       <div class="brand" id="d-brand"></div>
       <h3 id="d-name"></h3>
       <p id="d-desc"></p>
+      <p class="fits" id="d-fits" hidden></p>
       <ul class="specs" id="d-specs"></ul>
       <div class="kitlist" id="d-kit"></div>
       <div class="buy" id="d-buy"></div>
@@ -679,6 +683,7 @@ function renderGrid(){
       <div class="info">
         <div class="brand">${p.brand}</div>
         <h3 class="name"><button type="button" data-open="${p.id}">${p.name}</button></h3>
+        ${p.fits?`<div class="fits">${fitText(p.fits.split(" · ")[0])}</div>`:""}
         <ul class="specs">${p.specs.map(s=>`<li>${s}</li>`).join("")}</ul>
         <div class="buy">${buyHTML(p,"c")}</div>
       </div>
@@ -746,6 +751,7 @@ function fillDialog(id){
   }
   $("d-brand").textContent = p.brand; $("d-name").textContent = p.name; $("d-desc").textContent = p.desc;
   $("d-specs").innerHTML = p.specs.map(s=>`<li>${s}</li>`).join("");
+  $("d-fits").hidden = !p.fits; $("d-fits").textContent = p.fits ? fitText(p.fits) : "";
   $("d-kit").innerHTML = p.items ? `<strong>Vem no kit</strong><ul>${p.items.map(i=>{const x=byId(i);return `<li><img src="${IMG(x)}" alt=""><span>${x.name}<small>${x.brand} · ${x.specs[0]}</small></span></li>`;}).join("")}</ul>` : "";
   $("d-buy").innerHTML = buyHTML(p,"d");
 }
@@ -837,6 +843,7 @@ function num(s){
 const col = (head, re) => head.findIndex(x=>re.test(norm(x)));
 const SW = {preto:"#151515",vermelho:"#e0141e",branco:"#ffffff",nude:"#eaa58d",rosa:"#f06aa6",pink:"#ff2e88",roxo:"#6b2a9a",lilas:"#b48ad6",azul:"#2a63d6","azul marinho":"#1d2b5a",verde:"#2e9b55",amarelo:"#f5c518",laranja:"#f28c28",vinho:"#7a1030",bordo:"#6d0f2a",bege:"#e8d3b4",marrom:"#6b4226",cinza:"#8a8a8a",dourado:"#d4af37",prata:"#c0c0c0",oncinha:"#c8954a",onca:"#c8954a",transparente:"#f4f4f4"};
 const slug = s => norm(s).trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const fitText = v => { const [m, o] = String(v||"").split(" · "); if (!m) return ""; const t = /^tamanho/i.test(m) ? "Tamanho único" : (m.includes(" ao ") ? `Veste do ${m}` : `Veste ${m}`); return o ? `${t} · ${o}` : t; };
 function parseVariants(t){
   t = (t||"").trim(); if (!t) return null;
   let note = ""; const m = t.match(/\(([^)]*)\)\s*$/); if (m){ note = m[1].trim(); t = t.slice(0,m.index).trim(); }
@@ -861,7 +868,7 @@ function parseVariants(t){
 const clean = v => String(v||"").replace(/[<>]/g,"").replace(/"/g,"”").replace(/`/g,"'").trim();
 function applyCatalog(rows){
   const [head,...body] = rows; if (!head) return false;
-  const I = {id:/^codigo/, tipo:/^tipo/, cat:/^categoria/, name:/^produto/, brand:/^marca/, tag:/^selo/, desc:/^descricao/, specs:/^detalhes/, opts:/^opcoes/, items:/^itens/, media:/^mais fotos/, last:/^ultimas unidades/, img:/^foto$/, imgFull:/^foto ampliada/, price:/^preco$/, old:/^preco antigo/, qty:/^quantidade/, avail:/^disponivel/, show:/^mostrar/, rank:/^ranking/};
+  const I = {id:/^codigo/, tipo:/^tipo/, cat:/^categoria/, name:/^produto/, brand:/^marca/, tag:/^selo/, desc:/^descricao/, specs:/^detalhes/, opts:/^opcoes/, items:/^itens/, media:/^mais fotos/, last:/^ultimas unidades/, fits:/^veste/, img:/^foto$/, imgFull:/^foto ampliada/, price:/^preco$/, old:/^preco antigo/, qty:/^quantidade/, avail:/^disponivel/, show:/^mostrar/, rank:/^ranking/};
   for (const k in I) I[k] = col(head, I[k]);
   if (I.id<0 || I.name<0) return false;
   const g = (r,k) => I[k]>=0 ? clean(r[I[k]]) : "";
@@ -880,6 +887,7 @@ function applyCatalog(rows){
     const rk = num(g(r,"rank")); if (rk) p.vendidos = 1000-rk;
     p.soldOut = /^n/.test(norm(g(r,"avail"))) || p.qty===0;
     p.lastUnits = /^s/.test(norm(g(r,"last")));
+    p.fits = g(r,"fits");
     if (norm(g(r,"tipo"))==="kit" || g(r,"items")) p.items = g(r,"items").split(",").map(s=>s.trim()).filter(Boolean);
     const v = parseVariants(g(r,"opts")); if (v){ p.variants = v;
       const qs = v.options.filter(o=>o.qty!=null);

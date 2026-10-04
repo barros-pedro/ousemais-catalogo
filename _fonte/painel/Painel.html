@@ -74,7 +74,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .x{position:absolute;top:12px;right:12px;width:38px;height:38px;border-radius:50%;border:0;background:var(--bg);font-size:1.3rem;cursor:pointer}
 fieldset{border:1px solid var(--line);border-radius:14px;padding:12px 14px 14px;margin:0 0 14px}
 legend{font-weight:700;color:var(--plum);padding:0 6px}
-label.f{display:block;font-weight:600;font-size:.9rem;margin:10px 0 4px}
+label.f,span.f{display:block;font-weight:600;font-size:.9rem;margin:10px 0 4px}
 label.f:first-of-type{margin-top:2px}
 .hint{font-size:.8rem;color:var(--muted);margin-top:3px}
 input.t,select.t,textarea.t{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
@@ -159,6 +159,13 @@ details.hist summary{font-weight:700;cursor:pointer}
 .pw button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:var(--soft);color:var(--plum);font:600 13px/1 var(--body,inherit);padding:8px 10px;border-radius:8px;cursor:pointer}
 .pw button:focus-visible{outline:2px solid var(--plum);outline-offset:2px}
 
+/* numeração que veste */
+#fit-box{margin-top:12px}
+.fit-row{display:flex;align-items:center;gap:8px}
+.fit-row select{width:auto;min-width:86px}
+.fit-row label{font-size:.9rem;font-weight:600}
+.fit-unico{display:flex;align-items:center;gap:8px;font-size:.9rem;margin:8px 0}
+#fit-obs{margin-top:2px}
 /* construtor de opções */
 .ob-g + .ob-sep{font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:12px 0 8px}
 .ob-g .ob-chips{margin-top:10px}
@@ -290,6 +297,16 @@ details.hist summary{font-weight:700;cursor:pointer}
             <input class="t" id="ob-note" maxlength="80" placeholder="ex.: cor a combinar">
           </div>
           <div class="hint" id="ob-hint"></div>
+        </div>
+        <div id="fit-box" hidden>
+          <span class="f" style="display:block">Quais números veste</span>
+          <div class="fit-row">
+            <label for="fit-from">Do</label><select class="t" id="fit-from"></select>
+            <label for="fit-to">ao</label><select class="t" id="fit-to"></select>
+          </div>
+          <label class="fit-unico"><input type="checkbox" id="fit-unico"> Tamanho único (veste vários números)</label>
+          <input class="t" id="fit-obs" maxlength="40" placeholder="Observação (opcional), ex.: tecido com elastano">
+          <div class="hint" id="fit-hint">Aparece no site embaixo do nome. Deixe em branco se não souber.</div>
         </div>
       </div>
       <label class="f" for="f-tag">Selo (opcional)</label>
@@ -440,7 +457,7 @@ async function onLogout(){
 function toast(msg, err){ const t = $("toast"); t.textContent = msg; t.className = "toast" + (err?" err":""); t.hidden = false; clearTimeout(t._h); t._h = setTimeout(()=>t.hidden = true, err?6000:3200); }
 
 /* ---------------- diferenças e avisos ---------------- */
-const LABEL = { name:"Nome", cat:"Categoria", brand:"Marca", tag:"Selo", desc:"Descrição", specs:"Detalhes", opts:"Opções", items:"Itens do kit", img:"Foto", media:"Mais fotos e vídeos", last:"Selo Últimas unidades", imgFull:"Foto ampliada", price:"Preço", oldPrice:"Preço antigo", qty:"Quantidade", avail:"Disponível", show:"Mostrar no site", rank:"Ranking" };
+const LABEL = { name:"Nome", cat:"Categoria", brand:"Marca", tag:"Selo", desc:"Descrição", specs:"Detalhes", opts:"Opções", items:"Itens do kit", img:"Foto", media:"Mais fotos e vídeos", fits:"Veste", last:"Selo Últimas unidades", imgFull:"Foto ampliada", price:"Preço", oldPrice:"Preço antigo", qty:"Quantidade", avail:"Disponível", show:"Mostrar no site", rank:"Ranking" };
 function diffs(){
   const pub = {}; S.pub.forEach(p=>pub[p.id]=p);
   const out = [];
@@ -549,7 +566,7 @@ function openEdit(p, isKit){
   pendingPhoto = null;
   const kit = editing.tipo==="Kit";
   $("ed-title").textContent = p ? (kit ? "Editar kit" : "Editar produto") : (kit ? "Novo kit" : "Novo produto");
-  $("f-name").value = editing.name; $("f-cat").value = editing.cat; $("f-brand").value = editing.brand; $("f-tag").value = editing.tag;
+  $("f-name").value = editing.name; $("f-cat").value = editing.cat; fitLoad(editing.fits); fitShow(); $("f-brand").value = editing.brand; $("f-tag").value = editing.tag;
   $("f-desc").value = editing.desc; $("f-specs").value = editing.specs; $("f-opts").value = editing.opts; obParse(editing.opts); obRender();
   $("f-price").value = editing.price===""?"":String(editing.price).replace(".",","); $("f-old").value = editing.oldPrice===""?"":String(editing.oldPrice).replace(".",",");
   $("f-qty").value = editing.qty; $("f-rank").value = editing.rank;
@@ -603,6 +620,7 @@ function readForm(){
   p.name = $("f-name").value.trim(); p.cat = $("f-cat").value; p.brand = $("f-brand").value.trim(); p.tag = $("f-tag").value.trim();
   obFlushPending();
   p.desc = $("f-desc").value.trim(); p.specs = $("f-specs").value.trim(); p.opts = $("f-opts").value.trim();
+  p.fits = fitValue();
   p.price = numIn($("f-price").value); p.oldPrice = numIn($("f-old").value);
   const q = $("f-qty").value.trim(); p.qty = q==="" ? "" : parseInt(q,10);
   const r = $("f-rank").value.trim(); p.rank = r==="" ? "" : parseInt(r,10);
@@ -658,6 +676,35 @@ async function uploadMedia(base){
   return out.join("\n");
 }
 
+
+
+/* ---------------- numeração que veste (moda íntima) ---------------- */
+// Salvo na coluna "Veste": "36 ao 44", "38", "Tamanho único" — com observação opcional depois de " · "
+const MODA = ["Calcinhas","Lingeries","Fantasias"];
+const NUMS = []; for (let n=34; n<=56; n+=2) NUMS.push(String(n));
+$("fit-from").innerHTML = `<option value="">—</option>` + NUMS.map(n=>`<option>${n}</option>`).join("");
+$("fit-to").innerHTML = `<option value="">—</option>` + NUMS.map(n=>`<option>${n}</option>`).join("");
+function fitShow(){ $("fit-box").hidden = !MODA.includes($("f-cat").value); }
+function fitLoad(v){
+  v = String(v||""); const [main, obs] = v.split(" · ");
+  $("fit-obs").value = obs || ""; $("fit-unico").checked = /^tamanho [uú]nico/i.test(main||"");
+  const m = (main||"").match(/(\d+)(?:\s*ao\s*(\d+))?/);
+  $("fit-from").value = m ? m[1] : ""; $("fit-to").value = m ? (m[2]||m[1]) : "";
+  fitSync();
+}
+function fitValue(){
+  if (!MODA.includes($("f-cat").value)) return "";
+  const obs = $("fit-obs").value.replace(/·/g,"").trim(); let main = "";
+  if ($("fit-unico").checked) main = "Tamanho único";
+  else { let a = $("fit-from").value, b = $("fit-to").value; if (a && !b) b = a; if (b && !a) a = b;
+    if (a && b){ if (+a > +b) [a,b] = [b,a]; main = a===b ? a : `${a} ao ${b}`; } }
+  return main ? main + (obs ? " · " + obs : "") : "";
+}
+const fitText = v => { const [m, o] = String(v||"").split(" · "); if (!m) return ""; const t = /^tamanho/i.test(m) ? "Tamanho único" : (m.includes(" ao ") ? `Veste do ${m}` : `Veste ${m}`); return o ? `${t} · ${o}` : t; };
+function fitSync(){ const u = $("fit-unico").checked; $("fit-from").disabled = u; $("fit-to").disabled = u;
+  const v = fitValue(); $("fit-hint").textContent = v ? `No site vai aparecer: "${fitText(v)}"` : "Aparece no site embaixo do nome. Deixe em branco se não souber."; }
+["fit-from","fit-to","fit-unico","fit-obs"].forEach(id=>$(id).addEventListener(id==="fit-obs"?"input":"change", fitSync));
+$("f-cat").addEventListener("change", fitShow);
 
 /* ---------------- construtor de opções (cor, tamanho, sabor, frase…) ---------------- */
 // Formato salvo na planilha:

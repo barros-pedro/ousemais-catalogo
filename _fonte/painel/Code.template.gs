@@ -28,9 +28,9 @@ const TAB_LOG = 'Histórico';
 
 const HEAD = ['Código', 'Tipo', 'Categoria', 'Produto', 'Marca', 'Selo', 'Descrição', 'Detalhes', 'Opções', 'Itens do kit',
   'Foto', 'Foto ampliada', 'Preço', 'Preço antigo', 'Quantidade', 'Disponível', 'Mostrar no site', 'Ranking', 'Atualizado em', 'Atualizado por',
-  'Mais fotos e vídeos', 'Últimas unidades'];
+  'Mais fotos e vídeos', 'Últimas unidades', 'Veste'];
 const KEYS = ['id', 'tipo', 'cat', 'name', 'brand', 'tag', 'desc', 'specs', 'opts', 'items',
-  'img', 'imgFull', 'price', 'oldPrice', 'qty', 'avail', 'show', 'rank', 'updatedAt', 'updatedBy', 'media', 'last'];
+  'img', 'imgFull', 'price', 'oldPrice', 'qty', 'avail', 'show', 'rank', 'updatedAt', 'updatedBy', 'media', 'last', 'fits'];
 const NUMERIC = ['price', 'oldPrice', 'qty', 'rank'];
 
 const CATS = __CATS__;
@@ -325,7 +325,7 @@ function yesNo_(v, dflt) {
 function clean_(o) {
   const p = {};
   KEYS.forEach(function (k) { p[k] = o[k] === undefined || o[k] === null ? '' : o[k]; });
-  ['id', 'tipo', 'cat', 'name', 'brand', 'tag', 'desc', 'specs', 'opts', 'items', 'img', 'imgFull', 'updatedAt', 'updatedBy', 'media']
+  ['id', 'tipo', 'cat', 'name', 'brand', 'tag', 'desc', 'specs', 'opts', 'items', 'img', 'imgFull', 'updatedAt', 'updatedBy', 'media', 'fits']
     .forEach(function (k) { p[k] = String(p[k]).trim(); });
   NUMERIC.forEach(function (k) { p[k] = num_(p[k]); });
   if (p.price !== '' && p.price <= 0) p.price = '';
@@ -359,7 +359,7 @@ function money_(v) {
 function summarize_(before, after) {
   const out = [];
   const LABEL = { name: 'nome', cat: 'categoria', brand: 'marca', tag: 'selo', desc: 'descrição', specs: 'detalhes', opts: 'opções',
-    items: 'itens do kit', img: 'foto', media: 'mais fotos e vídeos', last: 'selo últimas unidades', imgFull: 'foto ampliada', price: 'preço', oldPrice: 'preço antigo', qty: 'quantidade',
+    items: 'itens do kit', img: 'foto', media: 'mais fotos e vídeos', fits: 'numeração que veste', last: 'selo últimas unidades', imgFull: 'foto ampliada', price: 'preço', oldPrice: 'preço antigo', qty: 'quantidade',
     avail: 'disponível', show: 'mostrar no site', rank: 'ranking' };
   const map = {};
   before.forEach(function (p) { map[p.id] = p; });
