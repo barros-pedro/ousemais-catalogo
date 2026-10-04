@@ -114,6 +114,8 @@ textarea.t{min-height:96px;resize:vertical}
 .mi .ctl{display:flex;justify-content:space-between;margin-top:4px}
 .mi .ctl button{width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:.9rem;line-height:1}
 .mi .ctl button.rm{color:var(--err)}
+.mi .mk{width:100%;margin-top:4px;height:26px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:.72rem;font-weight:600;color:var(--plum)}
+.mi .mk:hover{background:#faf3fb}
 .kitpick{max-height:240px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;padding:4px 8px;margin-top:6px}
 .kitpick label{display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:.9rem;cursor:pointer}
 .kitpick label:last-child{border-bottom:0}
@@ -144,15 +146,17 @@ details.hist summary{font-weight:700;cursor:pointer}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--fg);color:#fff;padding:12px 18px;border-radius:999px;font-weight:600;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:90vw;text-align:center}
 .toast.err{background:var(--err)}
 #ph img,.mi img,.mi video{cursor:zoom-in}
-.lb{position:fixed;inset:0;background:rgba(14,4,20,.92);z-index:45;display:flex;align-items:center;justify-content:center;padding:56px 12px 48px}
+.lb{position:fixed;inset:0;background:rgba(14,4,20,.92);z-index:45;display:flex;align-items:center;justify-content:center;padding:64px 12px 48px}
 .lb[hidden]{display:none}
-.lb img,.lb video{display:block;max-width:calc(100vw - 120px);max-height:calc(100vh - 110px);object-fit:contain;border-radius:10px;background:#fff}
+.lb img,.lb video{display:block;max-width:calc(100vw - 120px);max-height:calc(100vh - 116px);object-fit:contain;border-radius:10px;background:#fff}
 .lb button{position:absolute;border:0;background:rgba(255,255,255,.14);color:#fff;border-radius:999px;cursor:pointer;font-size:1.4rem;width:44px;height:44px;line-height:1}
 .lb button:hover{background:rgba(255,255,255,.26)}
 .lb .lb-x{top:10px;right:10px}
 .lb .lb-p{left:10px;top:50%;transform:translateY(-50%)}
 .lb .lb-n{right:10px;top:50%;transform:translateY(-50%)}
 .lb .lb-c{position:absolute;bottom:14px;left:0;right:0;text-align:center;color:#fff;font-size:.85rem;opacity:.8}
+.lb .lb-m{top:12px;left:50%;white-space:nowrap;transform:translateX(-50%);width:auto;height:auto;padding:9px 16px;font-size:.88rem;font-weight:700;background:#fff;color:var(--plum)}
+.lb .lb-m:hover{background:#f3e6f5}
 .lb .lb-o{position:absolute;top:14px;left:14px;color:#fff;font-size:.85rem;font-weight:600}
 
 @media (max-width:560px){
@@ -256,6 +260,7 @@ details.hist summary{font-weight:700;cursor:pointer}
   <button type="button" class="lb-p" id="lb-p" aria-label="Foto anterior">‹</button>
   <button type="button" class="lb-n" id="lb-n" aria-label="Próxima foto">›</button>
   <div class="lb-c" id="lb-c"></div>
+  <button type="button" class="lb-m" id="lb-m" hidden>★ Usar como foto principal</button>
 </div>
 
 <div class="sheet" id="ed" hidden role="dialog" aria-modal="true" aria-labelledby="ed-title">
@@ -279,7 +284,7 @@ details.hist summary{font-weight:700;cursor:pointer}
 
     <fieldset>
       <legend>Mais fotos e vídeos (carrossel)</legend>
-      <div class="hint" style="margin-top:0">Aparecem depois da foto principal, num carrossel que o cliente arrasta para o lado. Use as setas para mudar a ordem.</div>
+      <div class="hint" style="margin-top:0">Aparecem depois da foto principal, num carrossel que o cliente arrasta para o lado. Use as setas para mudar a ordem e <b>★ Principal</b> para trocar uma delas com a foto principal. Clique numa foto para ver grande.</div>
       <div class="media" id="media"></div>
       <div class="row" style="margin-top:8px">
         <span class="btn sec small filebtn">+ Fotos<input type="file" id="mfile" accept="image/*" multiple></span>
@@ -617,6 +622,9 @@ function renderKitPick(){
 }
 async function processImage(file, fit){
   const img = await new Promise((res, rej)=>{ const r = new FileReader(); r.onload = ()=>{ const i = new Image(); i.onload = ()=>res(i); i.onerror = ()=>rej(new Error("Não consegui abrir essa imagem. Tente outra foto (JPG ou PNG).")); i.src = r.result; }; r.onerror = rej; r.readAsDataURL(file); });
+  return {...processImg(img, fit), fileName: file.name};
+}
+function processImg(img, fit){
   const S1 = 900, c = document.createElement("canvas"); c.width = c.height = S1; const x = c.getContext("2d");
   x.fillStyle = "#fff"; x.fillRect(0,0,S1,S1);
   if (fit==="cover"){ const s = Math.max(S1/img.width, S1/img.height), w = img.width*s, h = img.height*s; x.drawImage(img,(S1-w)/2,(S1-h)/2,w,h); }
@@ -626,11 +634,12 @@ async function processImage(file, fit){
   c2.width = Math.round(img.width*s2); c2.height = Math.round(img.height*s2);
   const x2 = c2.getContext("2d"); x2.fillStyle = "#fff"; x2.fillRect(0,0,c2.width,c2.height); x2.drawImage(img,0,0,c2.width,c2.height);
   const full = c2.toDataURL("image/jpeg", .85).split(",")[1];
-  return {square, full, fileName: file.name};
+  return {square, full};
 }
-let lastFile = null;
+let lastFile = null, lastImg = null; // origem da foto principal nova (para refazer ao trocar o enquadramento)
 async function onPhotoChange(){
-  const f = $("file").files[0] || lastFile; if (!f) return;
+  const f = $("file").files[0] || lastFile;
+  if (!f){ if (lastImg){ pendingPhoto = processImg(lastImg, document.querySelector('input[name="fit"]:checked').value); renderPhoto(); } return; }
   if (f.size > 25*1024*1024) { toast("Foto muito grande (máximo 25 MB).", true); return; }
   lastFile = f;
   try{ pendingPhoto = await processImage(f, document.querySelector('input[name="fit"]:checked').value); renderPhoto(); }
@@ -663,7 +672,28 @@ function mediaThumb(m){
   return `<img src="${esc(imgUrl(m.url))}" alt="">`;
 }
 function renderMedia(){
-  $("media").innerHTML = media.map((m,i)=>`<div class="mi">${mediaThumb(m)}<div class="ctl"><button type="button" data-mv="${i}" data-d="-1" aria-label="Mover para a esquerda" ${i===0?"disabled":""}>←</button><button type="button" class="rm" data-rm="${i}" aria-label="Remover">×</button><button type="button" data-mv="${i}" data-d="1" aria-label="Mover para a direita" ${i===media.length-1?"disabled":""}>→</button></div></div>`).join("");
+  $("media").innerHTML = media.map((m,i)=>`<div class="mi">${mediaThumb(m)}<div class="ctl"><button type="button" data-mv="${i}" data-d="-1" aria-label="Mover para a esquerda" ${i===0?"disabled":""}>←</button><button type="button" class="rm" data-rm="${i}" aria-label="Remover">×</button><button type="button" data-mv="${i}" data-d="1" aria-label="Mover para a direita" ${i===media.length-1?"disabled":""}>→</button></div>${(m.kind==="vid" || (m.url && isVideo(m.url))) ? "" : `<button type="button" class="mk" data-main="${i}">★ Principal</button>`}</div>`).join("");
+}
+/* ---------------- trocar foto principal com uma do carrossel ---------------- */
+async function makeMain(i){
+  const m = media[i]; if (!m || m.kind==="vid" || (m.url && isVideo(m.url))) return;
+  let img = null;
+  $("loading-msg").textContent = "Trocando a foto…"; $("loading").hidden = false;
+  try{
+    if (m.kind==="img") img = await loadImg("data:image/jpeg;base64," + m.b64);
+    else {
+      try{ img = await loadImg(imgUrl(m.url), true); }
+      catch(e){ const d = await call("getImages", [[m.url]], "Trocando a foto…", true); if (d && d[0]) img = await loadImg(d[0]); }
+    }
+  }catch(e){} finally{ $("loading").hidden = true; }
+  if (!img){ toast("Não consegui carregar essa foto para usar como principal.", true); return; }
+  const oldMain = pendingPhoto ? {kind:"img", b64: pendingPhoto.full} : ((editing.imgFull || editing.img) ? {url: editing.imgFull || editing.img} : null);
+  try{ pendingPhoto = processImg(img, document.querySelector('input[name="fit"]:checked').value); }
+  catch(e){ toast("Não consegui usar essa foto como principal. Envie ela pelo botão Escolher foto.", true); return; }
+  lastFile = null; lastImg = img;
+  if (oldMain) media[i] = oldMain; else media.splice(i,1);
+  renderPhoto(); renderMedia();
+  toast(oldMain ? "Fotos trocadas. Salve para valer." : "Foto principal definida. Salve para valer.");
 }
 /* ---------------- ver foto ampliada ---------------- */
 let lbList = [], lbI = 0;
@@ -671,11 +701,11 @@ function lbItems(){
   const out = [];
   const main = pendingPhoto ? "data:image/jpeg;base64," + pendingPhoto.full : (imgUrl(editing.imgFull) || imgUrl(editing.img) || (editing.tipo==="Kit" ? firstItemImg(editing) : ""));
   if (main) out.push({img: main});
-  media.forEach(m=>{
-    if (m.kind==="img") out.push({img: "data:image/jpeg;base64," + m.b64});
-    else if (m.kind==="vid") out.push({vid: m.obj});
-    else if (isVideo(m.url)) out.push({link: m.url, img: driveId(m.url) ? DRIVE_THUMB + driveId(m.url) + "&sz=w1200" : YT_THUMB + ytId(m.url) + "/hqdefault.jpg"});
-    else out.push({img: imgUrl(m.url)});
+  media.forEach((m,mi)=>{
+    if (m.kind==="img") out.push({mi, img: "data:image/jpeg;base64," + m.b64});
+    else if (m.kind==="vid") out.push({mi, vid: m.obj});
+    else if (isVideo(m.url)) out.push({mi, link: m.url, img: driveId(m.url) ? DRIVE_THUMB + driveId(m.url) + "&sz=w1200" : YT_THUMB + ytId(m.url) + "/hqdefault.jpg"});
+    else out.push({mi, img: imgUrl(m.url)});
   });
   return out;
 }
@@ -685,6 +715,7 @@ function lbShow(){
   const o = $("lb-open"); o.hidden = !it.link; if (it.link){ o.href = it.link; o.textContent = "Ver vídeo ↗"; }
   $("lb-c").textContent = lbList.length > 1 ? (lbI+1) + " de " + lbList.length : "";
   $("lb-p").hidden = $("lb-n").hidden = lbList.length < 2;
+  $("lb-m").hidden = !(it.mi >= 0) || !!it.vid || !!it.link;
 }
 function lbOpen(i){ lbList = lbItems(); if (!lbList.length) return; lbI = Math.max(0, Math.min(i, lbList.length-1)); $("lb").hidden = false; lbShow(); }
 function lbClose(){ $("lb").hidden = true; $("lb-body").innerHTML = ""; }
@@ -909,7 +940,7 @@ async function kitComposite(ids){
   return {square:b64, full:b64, fileName:"kit.jpg", auto:true};
 }
 async function onKitAuto(){
-  try{ pendingPhoto = await kitComposite(selectedItems()); lastFile = null; renderPhoto(); toast("Foto do kit montada. Salve para usar."); }
+  try{ pendingPhoto = await kitComposite(selectedItems()); lastFile = null; lastImg = null; renderPhoto(); toast("Foto do kit montada. Salve para usar."); }
   catch(e){ if (e && e.message && e.message!=="img") toast(e.message, true); }
 }
 
@@ -971,6 +1002,7 @@ document.addEventListener("keydown", e=>{
 });
 $("ph").addEventListener("click", e=>{ if (e.target.closest("img")) lbOpen(0); });
 $("lb-x").onclick = lbClose;
+$("lb-m").onclick = async ()=>{ const it = lbList[lbI]; if (!it || !(it.mi >= 0)) return; await makeMain(it.mi); lbOpen(0); };
 $("lb-p").onclick = ()=>lbGo(-1);
 $("lb-n").onclick = ()=>lbGo(1);
 $("lb").addEventListener("click", e=>{ if (e.target.id==="lb" || e.target.id==="lb-body") lbClose(); });
@@ -981,8 +1013,8 @@ $("fcat").addEventListener("change", renderList);
 $("add-prod").onclick = ()=>openEdit(null,false);
 $("add-kit").onclick = ()=>openEdit(null,true);
 $("form").addEventListener("submit", onSave);
-$("file").addEventListener("change", ()=>{ lastFile = null; onPhotoChange(); });
-document.querySelectorAll('input[name="fit"]').forEach(r=>r.addEventListener("change", ()=>{ if (lastFile) onPhotoChange(); }));
+$("file").addEventListener("change", ()=>{ lastFile = null; lastImg = null; onPhotoChange(); });
+document.querySelectorAll('input[name="fit"]').forEach(r=>r.addEventListener("change", ()=>{ if (lastFile || lastImg) onPhotoChange(); }));
 $("f-dflt").onclick = ()=>{ $("f-desc").value = defaultDesc(readForm()); };
 $("q-minus").onclick = ()=>{ const v = parseInt($("f-qty").value,10); $("f-qty").value = isNaN(v) ? 0 : Math.max(0, v-1); };
 $("q-plus").onclick = ()=>{ const v = parseInt($("f-qty").value,10); $("f-qty").value = isNaN(v) ? 1 : v+1; };
@@ -994,7 +1026,8 @@ $("yt-add").onclick = onAddYt;
 $("media").addEventListener("click", e=>{
   const rm = e.target.closest("[data-rm]"); if (rm){ media.splice(+rm.dataset.rm,1); renderMedia(); return; }
   const mv = e.target.closest("[data-mv]"); if (mv){ const i = +mv.dataset.mv, j = i + +mv.dataset.d; if (j<0 || j>=media.length) return; [media[i],media[j]] = [media[j],media[i]]; renderMedia(); return; }
-  const mi = e.target.closest(".mi"); if (mi && !e.target.closest(".ctl")){ const i = [...$("media").children].indexOf(mi); lbOpen(i + (lbItems().length - media.length)); }
+  const mk = e.target.closest("[data-main]"); if (mk){ makeMain(+mk.dataset.main); return; }
+  const mi = e.target.closest(".mi"); if (mi && !e.target.closest(".ctl") && !e.target.closest(".mk")){ const i = [...$("media").children].indexOf(mi); lbOpen(i + (lbItems().length - media.length)); }
 });
 $("kitpick").addEventListener("change", ()=>{ editing.items = [...$("kitpick").querySelectorAll("input:checked")].map(i=>i.value).join(", "); renderKitPick(); renderPhoto(); });
 $("f-price").addEventListener("input", ()=>{ if (editing && editing.tipo==="Kit") renderKitPick(); });
