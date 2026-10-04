@@ -158,6 +158,27 @@ details.hist summary{font-weight:700;cursor:pointer}
 .pw .t{padding-right:84px}
 .pw button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:var(--soft);color:var(--plum);font:600 13px/1 var(--body,inherit);padding:8px 10px;border-radius:8px;cursor:pointer}
 .pw button:focus-visible{outline:2px solid var(--plum);outline-offset:2px}
+
+/* construtor de opções */
+.ob{border:1.5px solid var(--line);border-radius:12px;padding:10px;background:#fff}
+.ob-kinds{display:flex;flex-wrap:wrap;gap:6px}
+.ob-kinds button,.ob-sug button{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font:inherit;font-size:.86rem;font-weight:600;cursor:pointer;color:inherit}
+.ob-kinds button[aria-checked="true"]{background:var(--plum);border-color:var(--plum);color:#fff}
+#ob-body{margin-top:10px}
+#ob-label{margin-bottom:8px}
+.ob-chips{display:flex;flex-wrap:wrap;gap:6px;min-height:8px}
+.ob-chip{display:inline-flex;align-items:center;gap:6px;background:var(--soft);border-radius:999px;padding:4px 4px 4px 10px;font-size:.88rem;font-weight:600}
+.ob-chip i{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.2);flex:none}
+.ob-chip button{border:0;background:#fff;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:.9rem;line-height:1;color:var(--muted)}
+.ob-chip button:hover{color:var(--err)}
+.ob-chip .mv{width:auto;padding:0 5px;background:transparent}
+.ob-add{display:flex;gap:6px;margin-top:8px}
+.ob-add .t{flex:1}
+.ob-sug{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.ob-sug:empty{display:none}
+.ob-sug button{font-weight:500;font-size:.8rem;padding:4px 10px;color:var(--muted)}
+.ob-sug button i{display:inline-block;width:10px;height:10px;border-radius:50%;border:1px solid rgba(0,0,0,.2);margin-right:5px;vertical-align:-1px}
+.ob-kinds button:focus-visible,.ob-chip button:focus-visible,.ob-sug button:focus-visible{outline:2px solid var(--plum);outline-offset:2px}
 </style>
 </head>
 <body>
@@ -235,9 +256,27 @@ details.hist summary{font-weight:700;cursor:pointer}
         <label class="f" for="f-specs">Detalhes</label>
         <input class="t" id="f-specs" maxlength="80" placeholder="ex.: 60 g, Base água">
         <div class="hint">Separe por vírgula. Aparecem como etiquetinhas no card.</div>
-        <label class="f" for="f-opts">Opções para o cliente escolher</label>
-        <input class="t" id="f-opts" maxlength="200" placeholder="ex.: Cor: Preto, Vermelho, Branco">
-        <div class="hint">Comece com o tipo e dois-pontos: <b>Cor:</b> mostra bolinhas coloridas; qualquer outro (ex.: <b>Sabor:</b>, <b>Tamanho:</b>) mostra uma lista. Deixe vazio se não tiver opções.</div>
+        <span class="f" id="ob-title">Opções para o cliente escolher</span>
+        <input type="hidden" id="f-opts">
+        <div class="ob" role="group" aria-labelledby="ob-title">
+          <div class="ob-kinds" id="ob-kinds" role="radiogroup" aria-label="Tipo de opção">
+            <button type="button" data-kind="">Sem opções</button>
+            <button type="button" data-kind="Cor">Cor</button>
+            <button type="button" data-kind="Sabor">Sabor</button>
+            <button type="button" data-kind="Tamanho">Tamanho</button>
+            <button type="button" data-kind="Frase">Frase</button>
+            <button type="button" data-kind="*">Outro…</button>
+          </div>
+          <div id="ob-body" hidden>
+            <input class="t" id="ob-label" maxlength="20" placeholder="Nome do tipo, ex.: Modelo" hidden>
+            <div class="ob-chips" id="ob-chips"></div>
+            <div class="ob-add"><input class="t" id="ob-new" maxlength="40" placeholder="Digite e toque em Adicionar" autocomplete="off"><button type="button" class="btn sec small" id="ob-add">Adicionar</button></div>
+            <div class="ob-sug" id="ob-sug"></div>
+            <label class="f" for="ob-note" style="font-weight:500">Observação (opcional)</label>
+            <input class="t" id="ob-note" maxlength="40" placeholder="ex.: cor a combinar">
+            <div class="hint" id="ob-hint"></div>
+          </div>
+        </div>
       </div>
       <label class="f" for="f-tag">Selo (opcional)</label>
       <input class="t" id="f-tag" maxlength="20" placeholder="ex.: Novidade, Esquenta">
@@ -496,7 +535,7 @@ function openEdit(p, isKit){
   const kit = editing.tipo==="Kit";
   $("ed-title").textContent = p ? (kit ? "Editar kit" : "Editar produto") : (kit ? "Novo kit" : "Novo produto");
   $("f-name").value = editing.name; $("f-cat").value = editing.cat; $("f-brand").value = editing.brand; $("f-tag").value = editing.tag;
-  $("f-desc").value = editing.desc; $("f-specs").value = editing.specs; $("f-opts").value = editing.opts;
+  $("f-desc").value = editing.desc; $("f-specs").value = editing.specs; $("f-opts").value = editing.opts; obParse(editing.opts); obRender();
   $("f-price").value = editing.price===""?"":String(editing.price).replace(".",","); $("f-old").value = editing.oldPrice===""?"":String(editing.oldPrice).replace(".",",");
   $("f-qty").value = editing.qty; $("f-rank").value = editing.rank;
   $("f-avail").checked = editing.avail!=="Não"; $("f-show").checked = editing.show!=="Não"; $("f-last").checked = editing.last==="Sim";
@@ -547,6 +586,7 @@ async function onPhotoChange(){
 function readForm(){
   const p = {...editing};
   p.name = $("f-name").value.trim(); p.cat = $("f-cat").value; p.brand = $("f-brand").value.trim(); p.tag = $("f-tag").value.trim();
+  if ($("ob-new").value.trim() && OB.kind){ $("ob-new").value.split(",").forEach(obAdd); $("ob-new").value = ""; }
   p.desc = $("f-desc").value.trim(); p.specs = $("f-specs").value.trim(); p.opts = $("f-opts").value.trim();
   p.price = numIn($("f-price").value); p.oldPrice = numIn($("f-old").value);
   const q = $("f-qty").value.trim(); p.qty = q==="" ? "" : parseInt(q,10);
@@ -603,8 +643,62 @@ async function uploadMedia(base){
   return out.join("\n");
 }
 
+
+/* ---------------- construtor de opções (cor, sabor, frase…) ---------------- */
+const SWC = {preto:"#151515",vermelho:"#e0141e",branco:"#ffffff",nude:"#eaa58d",rosa:"#f06aa6",pink:"#ff2e88",roxo:"#6b2a9a",lilas:"#b48ad6",azul:"#2a63d6","azul marinho":"#1d2b5a",verde:"#2e9b55",amarelo:"#f5c518",laranja:"#f28c28",vinho:"#7a1030",bordo:"#6d0f2a",bege:"#e8d3b4",marrom:"#6b4226",cinza:"#8a8a8a",dourado:"#d4af37",prata:"#c0c0c0",oncinha:"#c8954a",onca:"#c8954a",transparente:"#f4f4f4"};
+const OB_SUG = {Cor:["Preto","Vermelho","Branco","Nude","Rosa","Pink","Roxo","Azul","Vinho","Bege"], Sabor:["Morango","Menta","Chocolate","Uva","Melancia","Chiclete","Cereja","Framboesa"], Tamanho:["P","M","G","GG","Único"], Frase:[]};
+const nrm = s => (s||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+const OB = {kind:"", label:"", items:[], note:""};
+function obParse(t){
+  t = (t||"").trim(); OB.kind = ""; OB.label = ""; OB.items = []; OB.note = "";
+  if (!t) return;
+  const m = t.match(/\(([^)]*)\)\s*$/); if (m){ OB.note = m[1].trim(); t = t.slice(0,m.index).trim(); }
+  const i = t.indexOf(":"); const label = i>0 ? t.slice(0,i).trim() : "Opção";
+  OB.items = (i>0 ? t.slice(i+1) : t).split(",").map(s=>s.trim()).filter(Boolean);
+  const known = ["Cor","Sabor","Tamanho","Frase"].find(k=>nrm(k)===nrm(label));
+  OB.kind = known || "*"; OB.label = known ? "" : label;
+}
+function obValue(){
+  if (!OB.kind || !OB.items.length) return "";
+  const label = OB.kind==="*" ? (OB.label.trim() || "Opção") : OB.kind;
+  return `${label}: ${OB.items.join(", ")}${OB.note.trim() ? ` (${OB.note.trim()})` : ""}`;
+}
+function obRender(){
+  $("f-opts").value = obValue();
+  document.querySelectorAll("#ob-kinds button").forEach(b=>b.setAttribute("aria-checked", String(b.dataset.kind===OB.kind)));
+  $("ob-body").hidden = !OB.kind;
+  $("ob-label").hidden = OB.kind!=="*"; $("ob-label").value = OB.label;
+  $("ob-note").value = OB.note;
+  const isCor = OB.kind==="Cor";
+  $("ob-new").placeholder = isCor ? "Digite a cor, ex.: Vermelho" : OB.kind==="Frase" ? "Digite a frase" : OB.kind==="Sabor" ? "Digite o sabor" : "Digite e toque em Adicionar";
+  $("ob-chips").innerHTML = OB.items.map((n,i)=>`<span class="ob-chip">${isCor?`<i style="background:${SWC[nrm(n)]||"#c9b8c4"}"></i>`:""}${esc(n)}${i>0?`<button type="button" class="mv" data-obmv="${i}" aria-label="Mover ${esc(n)} para a esquerda">‹</button>`:""}<button type="button" data-obdel="${i}" aria-label="Remover ${esc(n)}">×</button></span>`).join("") || `<span class="hint">Nenhuma opção ainda.</span>`;
+  const sug = (OB_SUG[OB.kind]||[]).filter(s=>!OB.items.some(x=>nrm(x)===nrm(s)));
+  $("ob-sug").innerHTML = sug.length ? `<span class="hint" style="width:100%;margin:0">Sugestões (toque para adicionar):</span>` + sug.map(s=>`<button type="button" data-obsug="${esc(s)}">${isCor?`<i style="background:${SWC[nrm(s)]}"></i>`:""}${esc(s)}</button>`).join("") : "";
+  const len = $("f-opts").value.length;
+  $("ob-hint").textContent = isCor ? "No site, as cores aparecem como bolinhas. Cores que o site não conhece aparecem em cinza claro." + (len>180?" Texto quase no limite.":"")
+    : OB.kind ? "No site, o cliente escolhe numa lista e pode levar opções diferentes no mesmo pedido." + (len>180?" Texto quase no limite.":"") : "";
+}
+function obAdd(v){
+  v = (v||"").replace(/[,():]/g," ").replace(/\s+/g," ").trim(); if (!v) return;
+  if (OB.items.some(x=>nrm(x)===nrm(v))){ toast("Essa opção já está na lista.", true); return; }
+  if ((obValue()+", "+v).length > 200){ toast("Muitas opções: o limite é 200 letras no total.", true); return; }
+  OB.items.push(v); obRender();
+}
+$("ob-kinds").addEventListener("click", e=>{ const b = e.target.closest("button[data-kind]"); if (!b) return;
+  OB.kind = b.dataset.kind; if (!OB.kind){ OB.items = []; OB.note = ""; OB.label = ""; }
+  obRender(); if (OB.kind) setTimeout(()=>(OB.kind==="*" && !OB.label ? $("ob-label") : $("ob-new")).focus(), 30); });
+$("ob-add").onclick = ()=>{ $("ob-new").value.split(",").forEach(obAdd); $("ob-new").value = ""; $("ob-new").focus(); };
+$("ob-new").addEventListener("keydown", e=>{ if (e.key==="Enter" || e.key===","){ e.preventDefault(); $("ob-add").click(); } });
+$("ob-new").addEventListener("paste", e=>{ const t = (e.clipboardData||window.clipboardData).getData("text"); if (/[,\n]/.test(t)){ e.preventDefault(); t.split(/[,\n]/).forEach(obAdd); } });
+$("ob-chips").addEventListener("click", e=>{ const d = e.target.closest("[data-obdel]"), m = e.target.closest("[data-obmv]");
+  if (d){ OB.items.splice(+d.dataset.obdel,1); obRender(); }
+  if (m){ const i = +m.dataset.obmv; [OB.items[i-1],OB.items[i]] = [OB.items[i],OB.items[i-1]]; obRender(); } });
+$("ob-sug").addEventListener("click", e=>{ const b = e.target.closest("[data-obsug]"); if (b) obAdd(b.dataset.obsug); });
+$("ob-label").addEventListener("input", e=>{ OB.label = e.target.value.replace(/[:,()]/g,""); $("f-opts").value = obValue(); });
+$("ob-note").addEventListener("input", e=>{ OB.note = e.target.value.replace(/[()]/g,""); $("f-opts").value = obValue(); });
+
 /* ---------------- foto automática do kit ---------------- */
-function loadImg(src){ return new Promise((res,rej)=>{ const i = new Image(); i.onload = ()=>res(i); i.onerror = ()=>rej(new Error("img")); i.src = src; }); }
+function loadImg(src, cors){ return new Promise((res,rej)=>{ const i = new Image(); if (cors) i.crossOrigin = "anonymous"; i.onload = ()=>res(i); i.onerror = ()=>rej(new Error("img")); i.src = src; }); }
 function trimWhite(img){
   const c = document.createElement("canvas"); c.width = img.width; c.height = img.height;
   const x = c.getContext("2d"); x.drawImage(img,0,0);
@@ -617,14 +711,24 @@ function trimWhite(img){
   return o;
 }
 async function kitComposite(ids){
-  const urls = ids.map(i=>byId(S.draft,i)).filter(x=>x && x.img).map(x=>x.img).slice(0,4);
-  if (urls.length < 2) throw new Error("Escolha pelo menos 2 itens com foto para montar a imagem do kit.");
-  const datas = (await call("getImages", [urls], "Montando a foto do kit…")).filter(Boolean);
-  if (datas.length < 2) throw new Error("Não consegui carregar as fotos dos itens. Tente de novo ou envie uma foto do kit.");
-  const parts = [];
-  for (const d of datas){ try{ parts.push(trimWhite(await loadImg(d))); }catch(e){} }
+  const items = ids.map(i=>byId(S.draft,i)).filter(x=>x && x.img).slice(0,4);
+  if (items.length < 2) throw new Error("Escolha pelo menos 2 itens com foto para montar a imagem do kit.");
+  // 1º tenta carregar direto do site (mais rápido); o que falhar, o servidor busca
+  const parts = new Array(items.length).fill(null), miss = [];
+  await Promise.all(items.map(async (it,i)=>{
+    try{ const im = await loadImg(imgUrl(it.img), true); parts[i] = trimWhite(im); }catch(e){ miss.push(i); }
+  }));
+  if (miss.length){
+    let datas = [];
+    try{ datas = await call("getImages", [miss.map(i=>items[i].img)], "Montando a foto do kit…", true); }catch(e){}
+    for (let j=0; j<miss.length; j++){ try{ if (datas[j]) parts[miss[j]] = trimWhite(await loadImg(datas[j])); }catch(e){} }
+  }
+  const failed = items.filter((it,i)=>!parts[i]).map(it=>it.name);
+  for (let i=parts.length-1; i>=0; i--) if (!parts[i]) parts.splice(i,1);
+  if (parts.length < 2) throw new Error("Não consegui carregar a foto de: " + failed.join(", ") + ". Confira se esses produtos têm foto, ou envie uma foto do kit.");
+  if (failed.length) toast("Montei sem a foto de: " + failed.join(", "), true);
   const SZ = 900, n = parts.length;
-  const H = n===2 ? [.62,.74] : n===3 ? [.6,.74,.6] : [.52,.6,.6,.52];
+  const H = n===2 ? [.62,.74] : n===3 ? [.6,.74,.6] : [.52,.6,.6,.52].slice(0,n);
   // tamanho pela "área" de cada item, para potes redondos e bisnagas finas ficarem equilibrados
   let hs = parts.map((p,i)=>Math.min(SZ*.8, H[i]*SZ*.62/Math.sqrt(p.width/p.height))), ws = parts.map((p,i)=>hs[i]*p.width/p.height);
   const gap = SZ*.02, total = ws.reduce((a,b)=>a+b,0) + gap*(n-1), maxW = SZ*.9;

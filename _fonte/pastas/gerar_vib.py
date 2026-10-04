@@ -61,7 +61,7 @@ ld = [{"@context": "https://schema.org", "@type": "Product", "name": P['name'], 
           {"@type": "ListItem", "position": 3, "name": P['name'], "item": url}]},
       {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
           {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in FAQ]}]
-msg = f"Olá, Ouse Mais! Tenho interesse no {P['name']}. Vocês podem me contar sobre os modos de vibração, valor e entrega?"
+msg = f"Olá, Ouse Mais! Tenho interesse no {P['name']}. Vocês podem me contar sobre os modos de vibração e me passar as informações de pagamento?"
 IMG = "/vibradores/vibrador-curvo.webp"
 
 page = f'''<!doctype html>

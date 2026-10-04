@@ -173,7 +173,7 @@ for p in LUB:
     tag = f'<span class="pill">{e(p["tag"])}</span>' if p.get('tag') else ''
     specs = ''.join(f'<li>{e(s)}</li>' for s in p.get('specs', []))
     kit_html = ''.join(f'''<a class="kitlink" href="/#kit" title="Ver os kits no catálogo"><img src="/img/{e(k['id'])}.jpg" alt="" loading="lazy" width="80" height="80"><span><b>{e(k['name'])}</b><small>{e(k['desc'])}</small></span></a>''' for k in kits)
-    msg = f"Olá, Ouse Mais! Quero o {p['name']} ({p.get('brand')}). Vocês podem confirmar o valor e a entrega?"
+    msg = f"Olá, Ouse Mais! Quero o {p['name']} ({p.get('brand')}). Podem me confirmar o valor e as informações de pagamento?"
     body = f'''<nav class="crumbs" aria-label="Você está em"><a href="/">Catálogo</a> › <a href="/lubrificantes/">Lubrificantes</a> › <span>{e(p['name'])}</span></nav>
 <article class="prod" data-id="{e(pid)}">
   <div class="pimg"><img src="/img/{e(pid)}.jpg" alt="{e(p['name'])} – {e(p.get('brand'))}" width="800" height="800"></div>

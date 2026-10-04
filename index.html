@@ -755,7 +755,7 @@ function orderMsg(){
   const known = ids.every(k=>P(k).price!=null);
   const sum = ids.reduce((s,k)=>s+(P(k).price||0)*cart[k],0);
   const lines = ids.map(k=>{ const p=P(k), o=optOf(p,k); return `• ${cart[k]}x ${p.name}${o?` — ${p.variants.label.toLowerCase()} ${o.name}${p.variants.note?` (${p.variants.note})`:""}`:""}${p.items||p.variants||p.name.includes(p.brand)?"":` (${p.brand})`}${p.price!=null?` — ${brl(p.price*cart[k])}`:""}${p.items?`\n   (${p.items.map(i=>byId(i).name).join(" + ")})`:""}`; });
-  return `Olá, Ouse Mais! Montei este pedido pelo catálogo:\n\n${lines.join("\n")}${known&&ids.length?`\n\nTotal: ${brl(sum)}`:""}\n\nVocês podem confirmar ${known?"":"os valores, "}a disponibilidade e o frete?`;
+  return `Olá, Ouse Mais! Montei este pedido pelo catálogo:\n\n${lines.join("\n")}${known&&ids.length?`\n\nTotal: ${brl(sum)}`:""}\n\n${known?"Podem me passar as informações de pagamento para eu finalizar?":"Podem me confirmar os valores e as informações de pagamento?"}`;
 }
 
 /* ---------- Render ---------- */
