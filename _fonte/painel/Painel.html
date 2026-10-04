@@ -22,7 +22,12 @@ button,input,select,textarea{font:inherit;color:inherit}
 /* topo */
 .top{background:var(--deep);color:#fff;padding:14px 16px}
 .top-in{max-width:860px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.brand{font-family:var(--display);font-weight:800;font-size:1.25rem}
+.brand{font-family:var(--display);font-weight:800;font-size:1.25rem;display:flex;align-items:center;flex-wrap:wrap}
+.sym{width:34px;height:34px;margin-right:10px;flex:none}
+header .sym{border-radius:50%;box-shadow:0 0 0 2px rgba(255,255,255,.55)}
+.sym.big{width:64px;height:64px;margin:0;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(.9);opacity:.75}}
+@media (prefers-reduced-motion:reduce){.sym.big{animation:none}}
 .brand span{color:#ff7ab5}
 .brand small{font-family:var(--body);font-weight:600;font-size:.8rem;opacity:.8;margin-left:8px}
 .who{font-size:.8rem;opacity:.8}
@@ -142,7 +147,7 @@ details.hist summary{font-weight:700;cursor:pointer}
 
 /* carregando e aviso */
 .loading{position:fixed;inset:0;background:rgba(255,255,255,.65);display:grid;place-items:center;z-index:40;font-weight:700;color:var(--plum)}
-.loading div{background:#fff;padding:14px 20px;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.12)}
+.loading .lbox{background:#fff;padding:22px 26px;border-radius:18px;box-shadow:0 8px 30px rgba(0,0,0,.12);display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--fg);color:#fff;padding:12px 18px;border-radius:999px;font-weight:600;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:90vw;text-align:center}
 .toast.err{background:var(--err)}
 #ph img,.mi img,.mi video{cursor:zoom-in}
@@ -229,7 +234,7 @@ details.hist summary{font-weight:700;cursor:pointer}
 </head>
 <body>
 <header class="top"><div class="top-in">
-  <div class="brand">OUSE<span>+</span><small>Painel do catálogo</small></div>
+  <div class="brand"><svg class="sym" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="49" fill="#5e0a86"/><g fill="none" stroke="#d00c70" stroke-width="9"><circle cx="52" cy="49" r="12.5"/><path d="M52 61.5V87M37.5 76h29"/><path d="M47.6 36.8 43.4 22"/></g><path d="M33.6 27.4 41 10.5 54.6 23.2 46.6 22.4 47.3 27.6 40.8 29.4 39.4 24.4Z" fill="#d00c70"/></svg>OUSE<span>+</span><small>Painel do catálogo</small></div>
   <div class="row"><span class="who" id="who"></span><button type="button" class="btn ghost small" id="logout" style="color:#fff;border-color:rgba(255,255,255,.35)" hidden>Sair</button></div>
 </div></header>
 
@@ -401,7 +406,7 @@ details.hist summary{font-weight:700;cursor:pointer}
 <!-- entrar -->
 <div class="sheet" id="lg" hidden role="dialog" aria-modal="true" aria-labelledby="lg-title" style="align-items:center">
   <form class="panel" id="lg-form" style="max-width:380px" novalidate>
-    <div class="brand" style="color:var(--plum);margin-bottom:6px">OUSE<span style="color:var(--mag)">+</span></div>
+    <div class="brand" style="color:var(--plum);margin-bottom:6px"><svg class="sym" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="49" fill="#5e0a86"/><g fill="none" stroke="#d00c70" stroke-width="9"><circle cx="52" cy="49" r="12.5"/><path d="M52 61.5V87M37.5 76h29"/><path d="M47.6 36.8 43.4 22"/></g><path d="M33.6 27.4 41 10.5 54.6 23.2 46.6 22.4 47.3 27.6 40.8 29.4 39.4 24.4Z" fill="#d00c70"/></svg>OUSE<span style="color:var(--mag)">+</span></div>
     <h2 id="lg-title" style="margin-right:0">Entrar no painel</h2>
     <label class="f" for="lg-name">Seu nome</label>
     <input class="t" id="lg-name" autocomplete="name" maxlength="40" placeholder="ex.: Alline">
@@ -413,7 +418,7 @@ details.hist summary{font-weight:700;cursor:pointer}
   </form>
 </div>
 
-<div class="loading" id="loading" hidden><div id="loading-msg">Salvando…</div></div>
+<div class="loading" id="loading" hidden><div class="lbox"><svg class="sym big" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="49" fill="#5e0a86"/><g fill="none" stroke="#d00c70" stroke-width="9"><circle cx="52" cy="49" r="12.5"/><path d="M52 61.5V87M37.5 76h29"/><path d="M47.6 36.8 43.4 22"/></g><path d="M33.6 27.4 41 10.5 54.6 23.2 46.6 22.4 47.3 27.6 40.8 29.4 39.4 24.4Z" fill="#d00c70"/></svg><span id="loading-msg">Salvando…</span></div></div>
 <div class="toast" id="toast" hidden role="status"></div>
 
 <script>

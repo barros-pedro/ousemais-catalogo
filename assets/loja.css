@@ -307,7 +307,9 @@ dialog::backdrop{background:rgba(20,6,28,.6)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
 /* ===== Páginas de categoria e de produto (links em vez de popup) ===== */
-a.mark{text-decoration:none}
+a.mark{text-decoration:none;display:inline-flex;align-items:center}
+a.mark img{width:40px;height:40px;flex:none;margin-right:10px}
+@media (max-width:560px){a.mark img{width:34px;height:34px}}
 .plate{cursor:pointer;text-decoration:none;color:inherit}
 a.gal-slide{display:block;cursor:pointer;color:inherit;text-decoration:none}
 .name a{text-decoration:none;color:inherit}
