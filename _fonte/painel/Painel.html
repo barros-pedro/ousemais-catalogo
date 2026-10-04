@@ -160,6 +160,13 @@ details.hist summary{font-weight:700;cursor:pointer}
 .pw button:focus-visible{outline:2px solid var(--plum);outline-offset:2px}
 
 /* construtor de opções */
+.ob-q{width:44px;border:1px solid var(--line);border-radius:8px;padding:2px 4px;font:inherit;font-size:.82rem;text-align:center;background:#fff}
+.ob-q:focus{outline:2px solid var(--plum);outline-offset:1px}
+.ob-chip.zero{background:#f1e9ee;color:var(--muted)}
+.ob-chip.zero::after{content:"esgotado";font-size:.7rem;font-weight:700;color:var(--err);margin-right:4px}
+.ob-chip.zero .ob-q{text-decoration:none}
+#f-qty[readonly]{background:#f6f1f4;color:var(--muted)}
+
 .ob{border:1.5px solid var(--line);border-radius:12px;padding:10px;background:#fff}
 .ob-kinds{display:flex;flex-wrap:wrap;gap:6px}
 .ob-kinds button,.ob-sug button{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font:inherit;font-size:.86rem;font-weight:600;cursor:pointer;color:inherit}
@@ -298,6 +305,7 @@ details.hist summary{font-weight:700;cursor:pointer}
       </div>
       <label class="f" for="f-qty">Quantidade em estoque</label>
       <div class="stepper"><button type="button" id="q-minus" aria-label="Diminuir">−</button><input class="t" id="f-qty" inputmode="numeric" placeholder="não controlar"><button type="button" id="q-plus" aria-label="Aumentar">+</button></div>
+      <div class="hint" id="qty-hint"></div>
       <div class="hint">Com 0 o produto aparece como <b>Esgotado</b>. Vazio = não controlar.</div>
       <div style="margin-top:8px">
         <div class="toggle"><div><b>Disponível para venda</b><span>Desligado mostra “Esgotado” com o botão “Avise-me”.</span></div><label class="sw"><input type="checkbox" id="f-avail" aria-label="Disponível para venda"><i></i></label></div>
@@ -654,14 +662,14 @@ function obParse(t){
   if (!t) return;
   const m = t.match(/\(([^)]*)\)\s*$/); if (m){ OB.note = m[1].trim(); t = t.slice(0,m.index).trim(); }
   const i = t.indexOf(":"); const label = i>0 ? t.slice(0,i).trim() : "Opção";
-  OB.items = (i>0 ? t.slice(i+1) : t).split(",").map(s=>s.trim()).filter(Boolean);
+  OB.items = (i>0 ? t.slice(i+1) : t).split(",").map(s=>s.trim()).filter(Boolean).map(s=>{ const m = s.match(/^(.*?)\s*=\s*(\d+)$/); return m ? {n:m[1].trim(), q:+m[2]} : {n:s, q:null}; });
   const known = ["Cor","Sabor","Tamanho","Frase"].find(k=>nrm(k)===nrm(label));
   OB.kind = known || "*"; OB.label = known ? "" : label;
 }
 function obValue(){
   if (!OB.kind || !OB.items.length) return "";
   const label = OB.kind==="*" ? (OB.label.trim() || "Opção") : OB.kind;
-  return `${label}: ${OB.items.join(", ")}${OB.note.trim() ? ` (${OB.note.trim()})` : ""}`;
+  return `${label}: ${OB.items.map(o=>o.q==null ? o.n : `${o.n}=${o.q}`).join(", ")}${OB.note.trim() ? ` (${OB.note.trim()})` : ""}`;
 }
 function obRender(){
   $("f-opts").value = obValue();
@@ -671,8 +679,9 @@ function obRender(){
   $("ob-note").value = OB.note;
   const isCor = OB.kind==="Cor";
   $("ob-new").placeholder = isCor ? "Digite a cor, ex.: Vermelho" : OB.kind==="Frase" ? "Digite a frase" : OB.kind==="Sabor" ? "Digite o sabor" : "Digite e toque em Adicionar";
-  $("ob-chips").innerHTML = OB.items.map((n,i)=>`<span class="ob-chip">${isCor?`<i style="background:${SWC[nrm(n)]||"#c9b8c4"}"></i>`:""}${esc(n)}${i>0?`<button type="button" class="mv" data-obmv="${i}" aria-label="Mover ${esc(n)} para a esquerda">‹</button>`:""}<button type="button" data-obdel="${i}" aria-label="Remover ${esc(n)}">×</button></span>`).join("") || `<span class="hint">Nenhuma opção ainda.</span>`;
-  const sug = (OB_SUG[OB.kind]||[]).filter(s=>!OB.items.some(x=>nrm(x)===nrm(s)));
+  $("ob-chips").innerHTML = OB.items.map((o,i)=>`<span class="ob-chip${o.q===0?" zero":""}">${isCor?`<i style="background:${SWC[nrm(o.n)]||"#c9b8c4"}"></i>`:""}${esc(o.n)}<input class="ob-q" type="text" inputmode="numeric" data-obq="${i}" value="${o.q==null?"":o.q}" placeholder="qtd" aria-label="Quantidade de ${esc(o.n)}" maxlength="4">${i>0?`<button type="button" class="mv" data-obmv="${i}" aria-label="Mover ${esc(o.n)} para a esquerda">‹</button>`:""}<button type="button" data-obdel="${i}" aria-label="Remover ${esc(o.n)}">×</button></span>`).join("") || `<span class="hint">Nenhuma opção ainda.</span>`;
+  obQtySync();
+  const sug = (OB_SUG[OB.kind]||[]).filter(s=>!OB.items.some(x=>nrm(x.n)===nrm(s)));
   $("ob-sug").innerHTML = sug.length ? `<span class="hint" style="width:100%;margin:0">Sugestões (toque para adicionar):</span>` + sug.map(s=>`<button type="button" data-obsug="${esc(s)}">${isCor?`<i style="background:${SWC[nrm(s)]}"></i>`:""}${esc(s)}</button>`).join("") : "";
   const len = $("f-opts").value.length;
   $("ob-hint").textContent = isCor ? "No site, as cores aparecem como bolinhas. Cores que o site não conhece aparecem em cinza claro." + (len>180?" Texto quase no limite.":"")
@@ -680,10 +689,23 @@ function obRender(){
 }
 function obAdd(v){
   v = (v||"").replace(/[,():]/g," ").replace(/\s+/g," ").trim(); if (!v) return;
-  if (OB.items.some(x=>nrm(x)===nrm(v))){ toast("Essa opção já está na lista.", true); return; }
+  if (OB.items.some(x=>nrm(x.n)===nrm(v))){ toast("Essa opção já está na lista.", true); return; }
   if ((obValue()+", "+v).length > 200){ toast("Muitas opções: o limite é 200 letras no total.", true); return; }
-  OB.items.push(v); obRender();
+  OB.items.push({n:v, q:null}); obRender();
 }
+
+// quantidade por opção: quando alguma opção tem quantidade, o estoque do produto vira a soma
+function obQtySync(){
+  const withQ = OB.kind ? OB.items.filter(o=>o.q!=null) : [];
+  const f = $("f-qty"), on = withQ.length > 0;
+  f.readOnly = on; $("q-minus").disabled = on; $("q-plus").disabled = on;
+  if (on) f.value = withQ.reduce((s,o)=>s+o.q,0);
+  $("qty-hint").textContent = on ? "Calculado pela soma das quantidades de cada opção." + (withQ.length < OB.items.length ? " Opções sem quantidade não são controladas." : "") : "";
+}
+$("ob-chips").addEventListener("input", e=>{ const q = e.target.closest("[data-obq]"); if (!q) return;
+  const v = q.value.replace(/\D/g,""); q.value = v; const o = OB.items[+q.dataset.obq];
+  o.q = v==="" ? null : parseInt(v,10); q.closest(".ob-chip").classList.toggle("zero", o.q===0);
+  $("f-opts").value = obValue(); obQtySync(); });
 $("ob-kinds").addEventListener("click", e=>{ const b = e.target.closest("button[data-kind]"); if (!b) return;
   OB.kind = b.dataset.kind; if (!OB.kind){ OB.items = []; OB.note = ""; OB.label = ""; }
   obRender(); if (OB.kind) setTimeout(()=>(OB.kind==="*" && !OB.label ? $("ob-label") : $("ob-new")).focus(), 30); });

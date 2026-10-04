@@ -187,6 +187,8 @@ button{font-family:inherit}
 .sw{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .swb{width:26px;height:26px;border-radius:50%;background:var(--c);border:1.5px solid rgba(0,0,0,.18);cursor:pointer;padding:0;position:relative}
 .swb[aria-pressed="true"]{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--magenta)}
+.swb.out{opacity:.45;background-image:linear-gradient(135deg,transparent 46%,#2a1430 46%,#2a1430 54%,transparent 54%)}
+.add:disabled{background:var(--line);color:var(--muted);cursor:not-allowed}
 .swb.has::after{content:"";position:absolute;right:-3px;top:-3px;width:10px;height:10px;border-radius:50%;background:var(--magenta);border:2px solid var(--surface)}
 .swn{font-size:.82rem;font-weight:700;margin-left:2px}
 .vsel{display:flex;flex-direction:column;gap:3px;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
@@ -724,7 +726,8 @@ const optOf = (p,k) => { const o = k.split("|")[1]; return o && p.variants ? p.v
 const lineLabel = k => { const p = P(k), o = optOf(p,k); return o ? `${p.variants.label}: ${o.name}` : ""; };
 for (const k in cart) if(!P(k) || !(cart[k]>0) || (P(k).variants && !optOf(P(k),k))) delete cart[k];
 const selVar = {};
-const curKey = p => p.variants ? `${p.id}|${selVar[p.id]||p.variants.options[0].id}` : p.id;
+const firstOpt = v => (v.options.find(o=>o.qty!==0) || v.options[0]).id;
+const curKey = p => p.variants ? `${p.id}|${selVar[p.id]||firstOpt(p.variants)}` : p.id;
 const keysOf = p => Object.keys(cart).filter(k=>k===p.id || k.startsWith(p.id+"|"));
 const save = () => { try{ if (Object.keys(cart).length) localStorage.setItem("ousemais-sacola", JSON.stringify({t:Date.now(), items:cart})); else localStorage.removeItem("ousemais-sacola"); }catch(e){} };
 const itemsCount = () => Object.values(cart).reduce((s,n)=>s+n,0);
@@ -735,11 +738,11 @@ function qtyHTML(k, q){
 }
 function varHTML(p, ctx){
   const v = p.variants; if (!v) return "";
-  const sel = selVar[p.id]||v.options[0].id;
+  const sel = selVar[p.id]||firstOpt(v);
   const inCart = v.options.filter(o=>cart[`${p.id}|${o.id}`]).map(o=>`${o.name} ×${cart[`${p.id}|${o.id}`]}`);
   const picker = v.type==="swatch"
-    ? `<div class="sw" role="group" aria-label="${v.label}">${v.options.map(o=>`<button type="button" class="swb${cart[`${p.id}|${o.id}`]?" has":""}" style="--c:${o.color}" data-var="${p.id}" data-opt="${o.id}" aria-pressed="${o.id===sel}" title="${o.name}"><span class="sr">${o.name}</span></button>`).join("")}<span class="swn">${v.options.find(o=>o.id===sel).name}</span></div>`
-    : `<label class="vsel" for="${ctx}-${p.id}"><span>${v.label}</span><select id="${ctx}-${p.id}" data-varsel="${p.id}">${v.options.map(o=>`<option value="${o.id}"${o.id===sel?" selected":""}>${o.name}${cart[`${p.id}|${o.id}`]?` (${cart[`${p.id}|${o.id}`]} na sacola)`:""}</option>`).join("")}</select></label>`;
+    ? `<div class="sw" role="group" aria-label="${v.label}">${v.options.map(o=>`<button type="button" class="swb${cart[`${p.id}|${o.id}`]?" has":""}${o.qty===0?" out":""}" style="--c:${o.color}" data-var="${p.id}" data-opt="${o.id}" aria-pressed="${o.id===sel}" title="${o.name}${o.qty===0?" (esgotado)":""}"><span class="sr">${o.name}${o.qty===0?" (esgotado)":""}</span></button>`).join("")}<span class="swn">${v.options.find(o=>o.id===sel).name}${v.options.find(o=>o.id===sel).qty===0?" · esgotado":""}</span></div>`
+    : `<label class="vsel" for="${ctx}-${p.id}"><span>${v.label}</span><select id="${ctx}-${p.id}" data-varsel="${p.id}">${v.options.map(o=>`<option value="${o.id}"${o.id===sel?" selected":""}${o.qty===0&&o.id!==sel?" disabled":""}>${o.name}${o.qty===0?" (esgotado)":""}${cart[`${p.id}|${o.id}`]?` (${cart[`${p.id}|${o.id}`]} na sacola)`:""}</option>`).join("")}</select></label>`;
   return `<div class="var">${picker}${inCart.length?`<div class="incart">Na sacola: ${inCart.join(" · ")}</div>`:""}</div>`;
 }
 function buyHTML(p, ctx="c"){
@@ -748,6 +751,8 @@ function buyHTML(p, ctx="c"){
     ? `<span class="price">${p.oldPrice>p.price?`<s>${brl(p.oldPrice)}</s>`:""}${brl(p.price)}</span>${p.oldPrice>p.price?`<span class="save">Economize ${brl(p.oldPrice-p.price)}</span>`:""}`
     : `<span class="price ask">Preço sob consulta</span>`;
   if (p.soldOut && !q) return varHTML(p,ctx) + price + `<a class="soon" href="${wa(`Olá! Quero o ${p.name}, que está esgotado no catálogo. Me avisa quando chegar?`)}" target="_blank" rel="noopener">Avise-me quando chegar</a>`;
+  const so = p.variants ? optOf(p,k) : null;
+  if (so && so.qty===0 && !q) return varHTML(p,ctx) + price + `<button type="button" class="add" disabled>Esgotado nesta ${p.variants.label.toLowerCase()}</button>`;
   return varHTML(p,ctx) + price + (q ? qtyHTML(k,q) : `<button type="button" class="add" data-act="inc" data-key="${k}">+ Adicionar</button>`);
 }
 function orderMsg(){
@@ -912,6 +917,8 @@ function refresh(){ renderGrid(); renderBag(); if($("cart").open) renderCart(); 
 function toast(msg){ let t = document.querySelector(".toast"); if(!t){ t = document.createElement("div"); t.className = "toast"; t.setAttribute("role","status"); document.body.appendChild(t); } t.textContent = msg; t.hidden = false; clearTimeout(t._h); t._h = setTimeout(()=>{ t.hidden = true; }, 2600); }
 function change(id, d){
   const pr = P(id);
+  const op = pr && pr.variants ? optOf(pr, id) : null;
+  if (d>0 && op && op.qty!=null && (cart[id]||0) >= op.qty){ toast(op.qty ? `Só temos ${op.qty} ${op.qty===1?"unidade":"unidades"} de ${op.name}` : `${op.name} está esgotado. Escolha outra opção.`); return; }
   if (d>0 && pr && pr.qty!=null){ const used = keysOf(pr).reduce((s,k)=>s+cart[k],0); if (used >= pr.qty){ toast(pr.qty ? `Só temos ${pr.qty} ${pr.qty===1?"unidade":"unidades"} em estoque` : "Produto esgotado"); return; } }
   cart[id] = (cart[id]||0) + d;
   if (cart[id]<=0) delete cart[id];
@@ -1027,7 +1034,9 @@ function parseVariants(t){
   const names = (i>0 ? t.slice(i+1) : t).split(",").map(s=>s.trim()).filter(Boolean);
   if (!names.length) return null;
   const isColor = /^cor/.test(norm(label));
-  return {label, type:isColor?"swatch":"select", note:note||undefined, options:names.map(n=>({id:slug(n), name:n, color:SW[norm(n)]||"#c9b8c4"}))};
+  const opts = names.map(raw=>{ const m = raw.match(/^(.*?)\s*=\s*(\d+)$/); const n = m ? m[1].trim() : raw; return {id:slug(n), name:n, color:SW[norm(n)]||"#c9b8c4", qty: m ? +m[2] : null}; }).filter(o=>o.name);
+  if (!opts.length) return null;
+  return {label, type:isColor?"swatch":"select", note:note||undefined, options:opts};
 }
 // Texto vindo da planilha nunca vira código na página
 const clean = v => String(v||"").replace(/[<>]/g,"").replace(/"/g,"”").replace(/`/g,"'").trim();
@@ -1053,7 +1062,9 @@ function applyCatalog(rows){
     p.soldOut = /^n/.test(norm(g(r,"avail"))) || p.qty===0;
     p.lastUnits = /^s/.test(norm(g(r,"last")));
     if (norm(g(r,"tipo"))==="kit" || g(r,"items")) p.items = g(r,"items").split(",").map(s=>s.trim()).filter(Boolean);
-    const v = parseVariants(g(r,"opts")); if (v) p.variants = v;
+    const v = parseVariants(g(r,"opts")); if (v){ p.variants = v;
+      const qs = v.options.filter(o=>o.qty!=null);
+      if (qs.length === v.options.length){ p.qty = qs.reduce((s,o)=>s+o.qty,0); if (p.qty===0) p.soldOut = true; } }
     p.media = g(r,"media").split(/\s+/).map(url).filter(Boolean);
     list.push(p);
   });
