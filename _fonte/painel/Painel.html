@@ -550,8 +550,13 @@ function renderList(){
       (p.avail==="Não" || p.qty===0) ? `<span class="chip out">Esgotado</span>` : "",
       p.last==="Sim" && !(p.avail==="Não" || p.qty===0) ? `<span class="chip chg">Últimas unidades</span>` : "",
     ].join("");
-    return `<button type="button" class="item" data-edit="${esc(p.id)}">${thumb}<div><div class="nm">${esc(p.name)}</div><div class="meta">${esc(p.cat)}${p.brand?" · "+esc(p.brand):""}</div><div class="chips">${chips}</div></div><div class="pr">${p.price===""?"<small>sob consulta</small>":money(p.price)}<small>${p.qty===""?"estoque livre":p.qty+" em estoque"}</small></div></button>`;
+    return `<button type="button" class="item" data-edit="${esc(p.id)}">${thumb}<div><div class="nm">${esc(p.name)}</div><div class="meta">${esc(p.cat)}${p.brand?" · "+esc(p.brand):""}</div><div class="chips">${chips}</div></div><div class="pr">${p.price===""?"<small>sob consulta</small>":money(p.price)}${p.tipo==="Kit" ? (k=>k.n ? `<small>itens somam ${money(k.sum)}${k.priced?"":" (faltam preços)"}</small>` : "")(kitSum((p.items||"").split(",").filter(x=>x.trim()))) : ""}<small>${p.qty===""?"estoque livre":p.qty+" em estoque"}</small></div></button>`;
   }).join("") : `<div class="empty-list">Nenhum produto encontrado.</div>`;
+}
+function kitSum(ids){
+  const its = ids.map(i=>byId(S.draft,String(i).trim())).filter(Boolean);
+  const priced = its.filter(x=>x.price!=="");
+  return { n: its.length, sum: priced.reduce((a,x)=>a+x.price,0), priced: priced.length===its.length, missing: its.filter(x=>x.price==="").map(x=>x.name) };
 }
 function firstItemImg(p){ const id = (p.items||"").split(",")[0]; const x = byId(S.draft,(id||"").trim()); return x && x.img ? imgUrl(x.img) : ""; }
 function renderLog(){
@@ -614,11 +619,12 @@ function renderKitPick(){
   const q = norm($("kq").value), sel = new Set(selectedItems());
   const prods = S.draft.filter(p=>p.tipo!=="Kit" && (!q || norm(p.name+" "+p.brand).includes(q) || sel.has(p.id)));
   $("kitpick").innerHTML = prods.map(p=>`<label><input type="checkbox" value="${esc(p.id)}" ${sel.has(p.id)?"checked":""}>${p.img?`<img src="${esc(imgUrl(p.img))}" alt="">`:""}<span>${esc(p.name)} <small style="color:var(--muted)">${p.price===""?"":money(p.price)}</small></span></label>`).join("") || `<div class="hint" style="padding:8px">Nenhum produto encontrado.</div>`;
-  const its = [...sel].map(i=>byId(S.draft,i)).filter(Boolean);
-  const priced = its.every(x=>x.price!=="");
-  const sum = its.reduce((a,x)=>a+(x.price||0),0);
+  const k = kitSum([...sel]);
   const pr = numIn($("f-price").value);
-  $("kitsum").innerHTML = its.length ? `<b>${its.length} ${its.length===1?"item":"itens"}</b> · ${priced ? "separados somam <b>"+money(sum)+"</b>" + (pr>0 && pr<sum ? " · economia de <b>"+money(sum-pr)+"</b>" : "") : "alguns itens ainda estão sem preço"}` : "Marque os produtos que fazem parte do kit.";
+  $("kitsum").innerHTML = k.n ? `<b>${k.n} ${k.n===1?"item":"itens"}</b> · ${k.priced ? "valor total dos itens separados: <b>"+money(k.sum)+"</b>" : "itens com preço somam <b>"+money(k.sum)+"</b>"}`
+    + (k.missing.length ? `<br><span style="color:var(--muted)">Sem preço, fora da soma: ${k.missing.map(esc).join(", ")}</span>` : "")
+    + (k.priced && pr>0 ? (pr<k.sum ? ` · economia de <b>${money(k.sum-pr)}</b>` : ` · <span style="color:var(--err)">o kit não está mais barato que os itens separados</span>`) : "")
+    : "Marque os produtos que fazem parte do kit.";
 }
 async function processImage(file, fit){
   const img = await new Promise((res, rej)=>{ const r = new FileReader(); r.onload = ()=>{ const i = new Image(); i.onload = ()=>res(i); i.onerror = ()=>rej(new Error("Não consegui abrir essa imagem. Tente outra foto (JPG ou PNG).")); i.src = r.result; }; r.onerror = rej; r.readAsDataURL(file); });

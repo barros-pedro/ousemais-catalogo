@@ -33,7 +33,7 @@ const KEYS = ['id', 'tipo', 'cat', 'name', 'brand', 'tag', 'desc', 'specs', 'opt
   'img', 'imgFull', 'price', 'oldPrice', 'qty', 'avail', 'show', 'rank', 'updatedAt', 'updatedBy', 'media', 'last', 'fits'];
 const NUMERIC = ['price', 'oldPrice', 'qty', 'rank'];
 
-const CATS = ["Lubrificantes", "Anais", "Comestíveis", "Jogos", "Calcinhas", "Lingeries", "Fantasias", "Anéis", "Vibradores", "Kits", "Fetiches", "Cuidados"];
+const CATS = ["Lubrificantes", "Anais", "Comestíveis", "Jogos", "Calcinhas", "Lingeries", "Fantasias", "Anéis", "Vibradores", "Kits", "Fetiches", "Masturbadores", "Cuidados"];
 const SEED = [
  {
   "id": "kit-a-dois",
