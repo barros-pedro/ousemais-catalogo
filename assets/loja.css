@@ -1,3 +1,4 @@
+body{margin:0}
 /* Layout: vitrine de loja (só tema claro), com kits — banners rotativos no topo, filtros centralizados e fixos, grade de produtos em placas brancas, sacola fixa no rodapé com popup do pedido */
 :root{
   --bg:#fbf4f8; --surface:#ffffff; --plate:#ffffff;
