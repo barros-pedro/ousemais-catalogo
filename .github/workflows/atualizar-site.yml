@@ -45,4 +45,9 @@ jobs:
           git add -A
           if git diff --cached --quiet; then echo "Nada mudou."; exit 0; fi
           git commit -m "Atualiza páginas com a planilha publicada"
-          git push
+          # se alguém publicou algo durante esta rodada, junta e tenta de novo; se não der, a próxima rodada resolve
+          for i in 1 2 3; do
+            git push && exit 0
+            git pull --rebase || { git rebase --abort; echo "Conflito com uma mudança mais nova: fica para a próxima rodada."; exit 0; }
+          done
+          echo "Não consegui publicar agora: fica para a próxima rodada."
