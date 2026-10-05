@@ -129,14 +129,29 @@ def cor_da_foto(path):
         return '#%02x%02x%02x' % (int(r * 255), int(g * 255), int(b * 255)), branco
     except Exception:
         return None, False
+def recorte(src, dst):
+    """Foto de fundo branco recortada rente ao produto (para caixas em que ele ocupa o quadrado todo)."""
+    try:
+        from PIL import Image, ImageChops
+        im = Image.open(src).convert('RGB')
+        box = ImageChops.difference(im, Image.new('RGB', im.size, (255, 255, 255))).convert('L').point(lambda v: 255 if v > 22 else 0).getbbox()
+        if not box: return False
+        m = int(max(im.size) * .02); x0, y0, x1, y1 = box
+        im = im.crop((max(0, x0 - m), max(0, y0 - m), min(im.width, x1 + m), min(im.height, y1 + m)))
+        im.thumbnail((700, 700)); os.makedirs(os.path.dirname(dst), exist_ok=True); im.save(dst, quality=85)
+        return True
+    except Exception:
+        return False
 CORES = {}
 for p in PRODS:
     if p['img'].startswith('img/') and os.path.exists(os.path.join(RAIZ, p['img'])):
         c_, w_ = cor_da_foto(os.path.join(RAIZ, p['img']))
-        if c_: CORES[p['id']] = [c_, 1 if w_ else 0]
+        if c_:
+            CORES[p['id']] = [c_, 1 if w_ else 0]
+            if w_ and recorte(os.path.join(RAIZ, p['img']), os.path.join(RAIZ, 'img', 'recorte', p['id'] + '.jpg')): CORES[p['id']].append(1)
 
 # ---------------- 2. arquivos de CSS e JS ----------------
-cats_js = [{k: c.get(k, '') for k in ('id', 'slug', 'label', 'title', 'intro', 'capa', 'cheia') if c.get(k)} for c in CATS]
+cats_js = [{k: c.get(k, '') for k in ('id', 'slug', 'label', 'title', 'intro', 'capa', 'cheia', 'cor') if c.get(k)} for c in CATS]
 JS_OUT = JS.replace('/*CATEGORIAS*/[]', json.dumps(cats_js, ensure_ascii=False))
 JS_OUT = JS_OUT.replace('/*CORES*/{}', json.dumps(CORES))
 assert JS_OUT != JS, 'marcador /*CATEGORIAS*/ não encontrado no loja.js'
