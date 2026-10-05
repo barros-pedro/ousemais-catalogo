@@ -208,10 +208,11 @@ function tilesHTML(except){
     if (!ps.length) return "";
     // foto de embalagem (fundo branco) fica melhor sobre a cor; entre elas, a de tom mais diferente das outras caixas
     const soltos = ps.filter(p=>!p.items), pool = soltos.length ? soltos : ps;
-    const emb = pool.filter(p=>CORES[p.id] && CORES[p.id][1]);
+    const emb = pool.filter(p=>CORES[p.id] && (c.cheia ? !CORES[p.id][1] : CORES[p.id][1]));
     const p0 = (emb.length ? emb.slice().sort((a,b)=>(dist(hueOf(CORES[b.id][0]))>=60)-(dist(hueOf(CORES[a.id][0]))>=60) || pool.indexOf(a)-pool.indexOf(b))[0] : null) || pool.find(p=>CORES[p.id]) || pool[0];
     if (CORES[p0.id]) used.push(hueOf(CORES[p0.id][0]));
-    const cor = (CORES[p0.id]||[])[0] || "#f3d6e8", foto = !(CORES[p0.id]||[])[1];
+    // categorias marcadas como "cheia" (fetiches, fantasias): a foto ocupa a caixa inteira
+    const cor = (CORES[p0.id]||[])[0] || "#f3d6e8", foto = c.cheia || !(CORES[p0.id]||[])[1];
     return `<a class="tile" href="${catUrl(c.id)}"><span class="tile-img${foto?" foto":""}" style="background:${cor}"><img src="${IMG(p0)}" alt="" loading="lazy"></span><span class="tile-t">${c.label}</span><span class="tile-n">${ps.length} ${ps.length===1?"produto":"produtos"}</span></a>`;
   }).join("");
 }
