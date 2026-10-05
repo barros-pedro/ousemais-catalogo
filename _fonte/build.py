@@ -165,6 +165,22 @@ for p in PRODS:
             CORES[p['id']] = [c_, 1 if w_ else 0]
             if w_ and recorte(fl, os.path.join(RAIZ, 'img', 'recorte', p['id'] + '.jpg')): CORES[p['id']].append(1)
 
+# fotos candidatas para revisão (lista em _fonte/dados/importar.json): baixadas uma vez para _fonte/revisao/
+_imp = os.path.join(FONTE, 'dados', 'importar.json')
+if os.path.exists(_imp):
+    for nome, u in json.load(open(_imp, encoding='utf-8')).items():
+        dst = os.path.join(FONTE, 'revisao', nome + '.jpg')
+        if os.path.exists(dst): continue
+        try:
+            from PIL import Image
+            req = urllib.request.Request(u, headers={'User-Agent': 'Mozilla/5.0 (ouse-build)'})
+            data = urllib.request.urlopen(req, timeout=30).read()
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            Image.open(io.BytesIO(data)).convert('RGB').save(dst, quality=90)
+            print('foto importada:', nome)
+        except Exception as ex:
+            print('aviso: não importei', nome, ex)
+
 # ---------------- 2. arquivos de CSS e JS ----------------
 cats_js = [{k: c.get(k, '') for k in ('id', 'slug', 'label', 'title', 'intro', 'capa', 'cheia', 'cor') if c.get(k)} for c in CATS]
 JS_OUT = JS.replace('/*CATEGORIAS*/[]', json.dumps(cats_js, ensure_ascii=False))
