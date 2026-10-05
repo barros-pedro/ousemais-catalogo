@@ -443,6 +443,9 @@ const money = v => v===""||v==null ? "sob consulta" : "R$ " + Number(v).toFixed(
 const numIn = s => { s = String(s||"").trim(); if (!s) return ""; s = s.replace(/[^\d,.-]/g,""); if (s.includes(",")) s = s.replace(/\./g,"").replace(",","."); const n = parseFloat(s); return isNaN(n) ? NaN : n; };
 const imgUrl = src => !src ? "" : /^(https?:|data:)/.test(src) ? src : S.site + src;
 const byId = (list,id) => list.find(p=>p.id===id);
+// Foto recém-enviada ao GitHub pode levar alguns minutos para aparecer no site: enquanto isso, mostra direto do repositório
+const RAW = "https:" + "//raw.githubusercontent.com/barros-pedro/ousemais-catalogo/main/";
+document.addEventListener("error", e=>{ const i = e.target; if (!i || i.tagName!=="IMG" || i.dataset.fb || !S.site || i.src.indexOf(S.site + "img/")!==0) return; i.dataset.fb = "1"; i.src = RAW + i.src.slice(S.site.length); }, true);
 
 /* ---------------- servidor ---------------- */
 window.addEventListener("unhandledrejection", e=>e.preventDefault()); // erros já aparecem num aviso
