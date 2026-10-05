@@ -142,13 +142,28 @@ def recorte(src, dst):
         return True
     except Exception:
         return False
+def foto_local(u):
+    """Caminho no disco da foto principal. Foto enviada pelo painel (Google Drive) é baixada uma vez e guardada."""
+    if u.startswith('img/'):
+        f = os.path.join(RAIZ, u); return f if os.path.exists(f) else None
+    if not u.startswith('https://'): return None
+    f = os.path.join(FONTE, 'dados', 'fotos', hashlib.sha1(u.encode()).hexdigest()[:16] + '.jpg')
+    if os.path.exists(f): return f
+    try:
+        req = urllib.request.Request(u, headers={'User-Agent': 'ouse-build'})
+        data = urllib.request.urlopen(req, timeout=30).read()
+        if len(data) < 500: return None
+        os.makedirs(os.path.dirname(f), exist_ok=True); open(f, 'wb').write(data); return f
+    except Exception as ex:
+        print('aviso: não baixei a foto de', u[:60], ex); return None
 CORES = {}
 for p in PRODS:
-    if p['img'].startswith('img/') and os.path.exists(os.path.join(RAIZ, p['img'])):
-        c_, w_ = cor_da_foto(os.path.join(RAIZ, p['img']))
+    fl = foto_local(p['img']) if p['img'] else None
+    if fl:
+        c_, w_ = cor_da_foto(fl)
         if c_:
             CORES[p['id']] = [c_, 1 if w_ else 0]
-            if w_ and recorte(os.path.join(RAIZ, p['img']), os.path.join(RAIZ, 'img', 'recorte', p['id'] + '.jpg')): CORES[p['id']].append(1)
+            if w_ and recorte(fl, os.path.join(RAIZ, 'img', 'recorte', p['id'] + '.jpg')): CORES[p['id']].append(1)
 
 # ---------------- 2. arquivos de CSS e JS ----------------
 cats_js = [{k: c.get(k, '') for k in ('id', 'slug', 'label', 'title', 'intro', 'capa', 'cheia', 'cor') if c.get(k)} for c in CATS]
