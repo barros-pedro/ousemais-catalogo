@@ -248,8 +248,8 @@
   "tagline": "Macia, silenciosa e sempre carregada.",
   "callouts": [
    "Cabeça arredondada",
-   "Toque aveludado",
-   "Botões no corpo"
+   "Botão M de modos",
+   "Entrada de carga"
   ],
   "destaques": [
    [
@@ -470,8 +470,8 @@
   "tagline": "Sucção que envolve, sem penetração.",
   "callouts": [
    "Bocal de sucção",
-   "Botão de controle",
-   "Encaixa na mão"
+   "Botão de ligar",
+   "Formato que encaixa na mão"
   ],
   "destaques": [
    [
@@ -678,12 +678,11 @@
   "cor": "#4a4a63",
   "fundo": "#ececf3",
   "img": "img/venda/pincel-vibratorio.webp",
-  "base": true,
   "eyebrow": "Discreto",
   "tagline": "Parece maquiagem. Não é.",
   "callouts": [
    "Cerdas macias",
-   "10 velocidades",
+   "Botão de ligar",
    "Cabo de pincel"
   ],
   "destaques": [
