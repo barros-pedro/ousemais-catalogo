@@ -7,7 +7,8 @@ const WHATS = "5582999080594";
 const SITE = "https://ousemaisoficial.com.br/";
 const CATS = [{id:"all", slug:"", label:"Todos", title:"Todos os produtos"}].concat(/*CATEGORIAS*/[]);
 const PAGE = window.OUSE_PAGE || {type:"home"};
-const CORES = /*CORES*/{}; // id do produto -> [cor de fundo pastel, foto com fundo branco?]
+const CORES = /*CORES*/{};
+const FOTOCOR = /*FOTOSCOR*/{}; // id do produto -> {cor: foto} (só fotos que mostram aquela cor) // id do produto -> [cor de fundo pastel, foto com fundo branco?]
 const SHEETS = {
   catalogo: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSPn1Ol7iSoSkxcpbZbTENz58C20TOy0tNjp-GkXeQHjNn7_6-4fpoS3NHwTycVT3GzdNTClAtunJu5/pub?single=true&output=csv&gid=1296274691",
   previa: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSPn1Ol7iSoSkxcpbZbTENz58C20TOy0tNjp-GkXeQHjNn7_6-4fpoS3NHwTycVT3GzdNTClAtunJu5/pub?single=true&output=csv&gid=777522530",
@@ -48,6 +49,7 @@ const lineLabel = k => { const p = P(k), o = optOf(p,k); return o ? (o.lab || `$
 const selVar = {};
 const firstOpt = v => (v.options.find(o=>o.qty!==0) || v.options[0]).id;
 const curKey = p => p.variants ? `${p.id}|${selVar[p.id]||firstOpt(p.variants)}` : p.id;
+const colorImg = (p, k) => { const m = FOTOCOR[p.id]; if (!m || !p.variants) return ""; const o = (k ? k.split("|")[1] : null) || selVar[p.id] || firstOpt(p.variants); const f = m[o] || (p.variants.type==="combo" && o ? m[o.split("--")[0]] : ""); return f ? A(f) : ""; };
 const keysOf = p => Object.keys(cart).filter(k=>k===p.id || k.startsWith(p.id+"|"));
 const save = () => { try{ if (Object.keys(cart).length) localStorage.setItem("ousemais-sacola", JSON.stringify({t:Date.now(), items:cart})); else localStorage.removeItem("ousemais-sacola"); }catch(e){} };
 const liveKeys = () => Object.keys(cart).filter(k=>P(k));
@@ -107,7 +109,7 @@ function slidesOf(p, big){
   if (p.items && p.items.length){
     if (p.img) out.push({src:A(p.img), cap:"O kit completo", first:true});
     p.items.filter(byId).forEach(i=>out.push({src:IMG(byId(i)), cap:byId(i).name, item:i}));
-  } else out.push({src: big ? FULL(p) : IMG(p), cap:p.name, first:true});
+  } else out.push({src: colorImg(p) || (big ? FULL(p) : IMG(p)), cap:p.name, first:true});
   (p.media||[]).forEach(u=>{
     const d = driveId(u), y = ytId(u);
     if (y) out.push({video:`https://www.youtube-nocookie.com/embed/${y}?rel=0&playsinline=1`, thumb:`https://i.ytimg.com/vi/${y}/hqdefault.jpg`, cap:"Vídeo"});
@@ -184,7 +186,7 @@ function cardHTML(p){
     <article class="card${keysOf(p).length?" in":""}${p.soldOut?" sold":""}">
       ${hasGal(p)
         ? `<div class="plate has-gal">${tagsHTML(p)}${galHTML(p,true)}</div>`
-        : `<a class="plate" href="${href}" aria-label="Ver ${p.name}">${tagsHTML(p)}<img src="${IMG(p)}" alt="${altOf(p)}" loading="lazy"${p.imgFull?' class="photo"':''}></a>`}
+        : `<a class="plate" href="${href}" aria-label="Ver ${p.name}">${tagsHTML(p)}<img src="${colorImg(p) || IMG(p)}" alt="${altOf(p)}" loading="lazy"${p.imgFull?' class="photo"':''}></a>`}
       <div class="info">
         <div class="brand">${brandOf(p)}</div>
         <h3 class="name"><a href="${href}">${p.name}</a></h3>
@@ -327,7 +329,7 @@ function renderHome(){
   if (PAGE.type!=="home" || !READY) return;
   const hk = $("h-kits");
   if (hk){
-    const kits = PRODUCTS.filter(p=>p.items && p.items.length);
+    const kits = PRODUCTS.filter(p=>p.items && p.items.length && !p.soldOut);
     hk.closest("section").hidden = !kits.length;
     keepScroll(hk, kits.map(p=>`<article class="hk-card${keysOf(p).length?" in":""}${p.soldOut?" sold":""}">
       <a class="hk-img" href="${purl(p)}" aria-label="Ver ${p.name}"><img src="${IMG(p)}" alt="${altOf(p)}" loading="lazy"></a>
@@ -337,7 +339,7 @@ function renderHome(){
   }
   const ht = $("h-top");
   if (ht){
-    const top = PRODUCTS.filter(p=>p.vendidos>0).sort((a,b)=>b.vendidos-a.vendidos).slice(0,6);
+    const top = PRODUCTS.filter(p=>p.vendidos>0 && !p.soldOut).sort((a,b)=>b.vendidos-a.vendidos).slice(0,6);
     $("sec-top").hidden = !top.length;
     ht.dataset.n = top.length;
     ht.innerHTML = top.map((p,i)=>`<li class="ht-i${keysOf(p).length?" in":""}">
@@ -359,9 +361,9 @@ function renderHome(){
         <div class="hp-pr"><s>${brl(p.oldPrice)}</s><b>${brl(p.price)}</b></div>${miniBuy(p)}</div></article>`).join(""));
   }
   document.querySelectorAll("[data-crow]").forEach(sec=>{
-    const c = catOf(sec.dataset.crow), ps = c ? PRODUCTS.filter(p=>p.cat===c.id && !p.items) : [];
+    const c = catOf(sec.dataset.crow), ps = c ? PRODUCTS.filter(p=>p.cat===c.id && !p.items && !p.soldOut) : [];
     sec.hidden = !ps.length; if (!ps.length) return;
-    const avail = ps.filter(p=>!p.soldOut).concat(ps.filter(p=>p.soldOut)).slice(0,12);
+    const avail = ps.slice(0,12);
     const p0 = ps.find(p=>CORES[p.id]) || ps[0], cor = c.fileira || c.cor || (CORES[p0.id]||[])[0] || "#f3d6e8";
     const row = sec.querySelector(".row-scroll");
     const items = avail.map(p=>`<article class="mc${keysOf(p).length?" in":""}${p.soldOut?" sold":""}">
@@ -372,6 +374,8 @@ function renderHome(){
     if (row) keepScroll(row, cover + items);
     else sec.innerHTML = `<div class="home-h"><div><p class="eyebrow">Categoria</p><h2>${c.label}</h2></div><a class="catlink" href="${catUrl(c.id)}">Ver todos →</a></div><div class="row-scroll crow-row">${cover}${items}</div>`;
   });
+  // vitrine de vibradores (feita na atualização do site): some o cartão de quem esgotou ou saiu do site
+  document.querySelectorAll(".vb-card[data-id]").forEach(a=>{ const p = byId(a.dataset.id); a.hidden = FINAL && (!p || p.soldOut); });
   wireRows();
   const ie = $("info-ent");
   if (ie && (ENTREGA.freteLocal || ENTREGA.prazo || ENTREGA.pag)){
@@ -404,6 +408,7 @@ function renderVenda(){
   document.querySelectorAll("[data-jprice]").forEach(x=>{ const y = byId(x.dataset.jprice); if (y && y.price!=null){ x.textContent = brl(y.price); sum += y.price; } else { x.textContent = "Preço sob consulta"; ok = false; } });
   if ($("vd-jsum")) $("vd-jsum").textContent = ok ? brl(sum) : "Preço no WhatsApp";
   const g = $("vd-gal");
+  if (g && g.dataset.v === String(DATAV)) showColor(p, g);
   if (g && g.dataset.v !== String(DATAV)){
     g.dataset.v = DATAV;
     const n = slidesOf(p, true).length;
@@ -428,6 +433,17 @@ if (revealEls.length && !reduce && "IntersectionObserver" in window){
 }
 
 /* ---------- Página do produto ---------- */
+// ao escolher uma cor que tem foto própria, a galeria vai para essa foto
+function showColor(p, root){
+  const f = colorImg(p); if (!f || !root) return;
+  const t = root.querySelector(".gal-track");
+  if (!t){ const im = root.querySelector(".pdp-img"); if (im) im.src = f; return; }
+  const imgs = [...t.querySelectorAll(".gal-slide img")];
+  const base = u => (u||"").split("?")[0].replace(location.origin, "");
+  let i = imgs.findIndex(im=>base(im.getAttribute("src"))===base(f));
+  if (i < 0){ imgs[0].src = f; i = 0; }
+  t.scrollTo({left:i*t.clientWidth, behavior:reduce?"auto":"smooth"});
+}
 function kitsWith(p){ return PRODUCTS.filter(k=>k.items && k.items.includes(p.id)); }
 function renderProduct(){
   const box = $("prod"); if (!box || !READY) return;
@@ -454,6 +470,7 @@ function renderProduct(){
     // só a parte de comprar muda (opção escolhida, sacola): a galeria fica como está
     box.querySelector(".pdp-buy").innerHTML = buyHTML(p,"p");
     box.querySelector(".pdp-wa").href = direct;
+    showColor(p, box);
     return;
   }
   const kits = kitsWith(p);
@@ -509,7 +526,7 @@ function renderCart(){
   $("c-count").textContent = total ? `${total} ${total===1?"item":"itens"}` : "";
   $("c-lines").innerHTML = ids.length ? ids.map(k=>{ const p=P(k), q=cart[k]; return `
     <li class="line">
-      <a href="${purl(p)}" tabindex="-1" aria-hidden="true"><img src="${IMG(p)}" alt=""></a>
+      <a href="${purl(p)}" tabindex="-1" aria-hidden="true"><img src="${colorImg(p,k) || IMG(p)}" alt=""></a>
       <div><div class="lb">${brandOf(p)}</div><a class="ln" href="${purl(p)}">${p.name}</a>${lineLabel(k)?`<div class="lv">${lineLabel(k)}${p.variants.note?` · ${p.variants.note}`:""}</div>`:""}<div class="lp">${p.price!=null?brl(p.price*q):"Preço sob consulta"}</div></div>
       ${qtyHTML(k,q)}
     </li>`;}).join("") : `<li class="empty">Sua sacola está vazia. Toque em “+ Adicionar” nos produtos ou kits para montar o pedido.</li>`;

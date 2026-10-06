@@ -737,3 +737,4 @@ body{overflow-x:clip}
 .crumbs a{display:inline-block;padding:6px 2px}
 .pdp-wa{padding:8px 0}
 .catlink{display:inline-block;padding:6px 0}
+.vb-card[hidden]{display:none}

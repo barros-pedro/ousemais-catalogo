@@ -239,7 +239,8 @@
    "texto": "12 modos de vibração e o controle na mão de quem você escolher.",
    "cor": "#e7dafc",
    "tinta": "#5b2aa0"
-  }
+  },
+  "indexar": true
  },
  "varinha-magica": {
   "cor": "#d9577a",
@@ -352,7 +353,8 @@
    "texto": "10 modos, silenciosa e com toque aveludado.",
    "cor": "#d4eefa",
    "tinta": "#1f6a92"
-  }
+  },
+  "indexar": true
  },
  "porquinho": {
   "cor": "#e8708f",
@@ -461,7 +463,8 @@
    "texto": "Fofo e discreto: ninguém desconfia do que é.",
    "cor": "#fde0e2",
    "tinta": "#c0335a"
-  }
+  },
+  "indexar": true
  },
  "sugador-clitoris": {
   "cor": "#b5487a",
@@ -560,7 +563,8 @@
    "cor": "#f0d6f6",
    "tinta": "#86307f",
    "largo": true
-  }
+  },
+  "indexar": true
  },
  "golfinho": {
   "cor": "#e6197f",
@@ -673,7 +677,8 @@
    "texto": "Ponta curvada para o ponto G, em três cores.",
    "cor": "#fde6c9",
    "tinta": "#b23a12"
-  }
+  },
+  "indexar": true
  },
  "pincel-vibratorio": {
   "cor": "#4a4a63",
@@ -777,6 +782,7 @@
    "texto": "Parece pincel de maquiagem: 10 velocidades e cerdas macias.",
    "cor": "#e6f4c6",
    "tinta": "#4e6a12"
-  }
+  },
+  "indexar": true
  }
 }

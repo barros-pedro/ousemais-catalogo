@@ -349,6 +349,32 @@ function saveProduct(token, obj) {
   }
 }
 
+// Mais vendidos: recebe a lista de códigos na ordem (1º, 2º, 3º…) e grava a coluna Ranking do rascunho
+function saveRanking(token, ids) {
+  const email = guard_(token);
+  const lock = LockService.getDocumentLock();
+  lock.waitLock(20000);
+  try {
+    ids = (ids || []).map(String).filter(function (x, i, a) { return x && a.indexOf(x) === i; });
+    const sh = sheet_(TAB_DRAFT);
+    const values = sh.getDataRange().getValues();
+    const head = values[0].map(String);
+    const iId = head.indexOf('Código'), iR = head.indexOf('Ranking'), iA = head.indexOf('Atualizado em'), iB = head.indexOf('Atualizado por');
+    if (iId < 0 || iR < 0) throw new Error('A planilha está sem a coluna Ranking.');
+    for (let r = 1; r < values.length; r++) {
+      const id = String(values[r][iId]).trim(); if (!id) continue;
+      const want = ids.indexOf(id) + 1 || '';
+      if (String(values[r][iR]) === String(want)) continue;
+      sh.getRange(r + 1, iR + 1).setValue(want);
+      if (iA >= 0) sh.getRange(r + 1, iA + 1).setValue(now_());
+      if (iB >= 0) sh.getRange(r + 1, iB + 1).setValue(email);
+    }
+    return { draft: readTab_(TAB_DRAFT) };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
 function deleteProduct(token, id) {
   guard_(token);
   const lock = LockService.getDocumentLock();

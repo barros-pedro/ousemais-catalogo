@@ -188,6 +188,8 @@ if os.path.exists(_imp):
 cats_js = [{k: c.get(k, '') for k in ('id', 'slug', 'label', 'title', 'intro', 'capa', 'cheia', 'cor', 'fileira', 'tileimg', 'trio') if c.get(k)} for c in CATS]
 JS_OUT = JS.replace('/*CATEGORIAS*/[]', json.dumps(cats_js, ensure_ascii=False))
 JS_OUT = JS_OUT.replace('/*CORES*/{}', json.dumps(CORES))
+# foto de cada cor (só onde a foto mostra exatamente aquela cor)
+JS_OUT = JS_OUT.replace('/*FOTOSCOR*/{}', json.dumps(json.load(open(os.path.join(S, 'fotos-cor.json'), encoding='utf-8'))))
 assert JS_OUT != JS, 'marcador /*CATEGORIAS*/ não encontrado no loja.js'
 V = hashlib.sha1((CSS + JS_OUT).encode()).hexdigest()[:10]
 wr(os.path.join(RAIZ, 'assets', 'loja.css'), CSS)
@@ -342,8 +344,7 @@ def venda_main(p):
     return main, faq
 
 def vitrine_html():
-    ps = [BY[i] for i in VENDAS if i in BY]
-    ps = [x for x in ps if not x['soldOut']] + [x for x in ps if x['soldOut']]
+    ps = [BY[i] for i in VENDAS if i in BY and not BY[i]['soldOut']]   # esgotado não entra na vitrine
     if not ps: return ''
     vib = next((c for c in CATS if c['id'] == 'vib'), None)
     if VITRINE.get('foto'):
@@ -354,7 +355,7 @@ def vitrine_html():
     cards = []
     for p in ps:
         v = VENDAS[p['id']]; k = v['card']
-        cards.append(f'''<a class="vb-card{" largo" if k.get("largo") else ""}{" base" if v.get("base") else ""}" href="{purl(p)}" style="--cc:{k["cor"]};--ct:{k["tinta"]}">
+        cards.append(f'''<a class="vb-card{" largo" if k.get("largo") else ""}{" base" if v.get("base") else ""}" data-id="{p["id"]}" href="{purl(p)}" style="--cc:{k["cor"]};--ct:{k["tinta"]}">
 <span class="vb-txt"><b class="vb-t">{e(k["titulo"])}</b><span class="vb-s">{e(k["sub"])}</span><span class="vb-p">{e(k["texto"])}</span><span class="vb-go">Ver detalhes <span aria-hidden="true">→</span></span></span>
 <img src="{vimg(v["img"])}" alt="{e(p["name"])}" loading="lazy"></a>''')
     return f'''<section class="home-sec vb" aria-labelledby="vb-t">
