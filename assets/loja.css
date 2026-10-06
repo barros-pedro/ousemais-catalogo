@@ -738,3 +738,10 @@ body{overflow-x:clip}
 .pdp-wa{padding:8px 0}
 .catlink{display:inline-block;padding:6px 0}
 .vb-card[hidden]{display:none}
+
+.vd-dicas{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+.vd-dica{background:var(--vf);border-radius:20px;padding:20px;position:relative;overflow:hidden}
+.vd-dica::before{content:"";position:absolute;right:-24px;top:-24px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.45)}
+.vd-dica b{position:relative;display:block;font-family:var(--display);font-weight:700;font-size:1rem;color:var(--plum);margin-bottom:6px}
+.vd-dica p{position:relative;margin:0;font-size:.94rem;color:#4b3352}
+@media (max-width:760px){.vd-dicas{grid-template-columns:1fr}}
