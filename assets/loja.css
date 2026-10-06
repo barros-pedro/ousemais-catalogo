@@ -723,3 +723,9 @@ body{overflow-x:clip}
 .vb-intro .vb-it > span{margin-inline:auto}
 .vb-intro .vb-foto{max-width:none}
 @media (max-width:1000px){.vb-intro:has(.vb-foto) .vb-foto{max-width:560px}}
+
+/* topo de calcinhas, lingeries e fantasias: fotos inteiras, sem misturar com o fundo */
+.ch-art.trio.fotos{gap:10px;align-items:center}
+.ch-art.trio.fotos img{mix-blend-mode:normal;object-fit:cover;border-radius:18px;margin:0;width:31%;box-shadow:0 14px 26px -18px rgba(42,20,48,.6)}
+.ch-art.trio.fotos img:nth-child(2){width:36%}
+.ch-art.trio img[src$=".webp"]{mix-blend-mode:normal;filter:drop-shadow(0 14px 18px rgba(42,20,48,.22))}
