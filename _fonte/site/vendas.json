@@ -701,8 +701,8 @@
     "É onde vibra"
    ],
    [
-    "Disfarçado",
-    "Fica na nécessaire"
+    "Funcional",
+    "Pincel de maquiagem de verdade"
    ],
    [
     "Sigiloso",
@@ -712,15 +712,15 @@
   "historias": [
    {
     "kicker": "Disfarce",
-    "titulo": "Fica na nécessaire. Ninguém desconfia.",
-    "texto": "Ele tem formato de pincel de maquiagem e pode ficar junto com as suas coisas sem levantar suspeita.",
+    "titulo": "Um pincel de verdade. Com um segredo.",
+    "texto": "O pincel funciona de verdade, com cerdas macias para maquiagem, e pode ficar na nécessaire sem levantar suspeita. O segredo está no cabo.",
     "img": "img/pincel-vibratorio.jpg",
     "tema": "fundo"
    },
    {
     "kicker": "Sensação",
     "titulo": "Quem vibra é o cabo.",
-    "texto": "A vibração fica no cabo, com 10 velocidades: é ele que você encosta nos mamilos e no clitóris. As cerdas macias completam o disfarce e servem para carícias leves.",
+    "texto": "A vibração fica no cabo, com 10 velocidades: é ele que você encosta nos mamilos e no clitóris. As cerdas não vibram; elas são de um pincel de maquiagem que funciona normalmente.",
     "img": "recorte",
     "tema": "branco"
    },
@@ -753,11 +753,11 @@
   "specs": [
    [
     "Formato",
-    "Pincel de maquiagem"
+    "Pincel de maquiagem funcional"
    ],
    [
     "Onde vibra",
-    "No cabo"
+    "No cabo (as cerdas não vibram)"
    ],
    [
     "Velocidades",
@@ -779,7 +779,7 @@
   "card": {
    "titulo": "Pincel Vibratório",
    "sub": "Cabo que vibra",
-   "texto": "Parece pincel de maquiagem: o cabo vibra em 10 velocidades.",
+   "texto": "Pincel de maquiagem que funciona de verdade, com cabo que vibra em 10 velocidades.",
    "cor": "#e6f4c6",
    "tinta": "#4e6a12"
   },
