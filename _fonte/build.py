@@ -291,6 +291,8 @@ def venda_main(p):
         hist.append(f'<section class="vd-story vd-band t-{tema}"><div class="vd-in vd-story-in{" rev" if i % 2 else ""}">'
                     f'<div class="vd-story-copy reveal">{head}</div><div class="vd-story-fig reveal">{fig}</div></div></section>')
     steps = ''.join(f'<li><span class="n">{i + 1}</span><b>{e(b)}</b><span>{e(t)}</span></li>' for i, (b, t) in enumerate(v.get('passos', [])))
+    dicas = ''.join(f'<div class="vd-dica"><b>{e(t)}</b><p>{e(x)}</p></div>' for t, x in v.get('dicas', []))
+    dicas = f'<section class="vd-sec" aria-labelledby="d-t"><h2 id="d-t">Dicas para aproveitar mais</h2><div class="vd-dicas">{dicas}</div></section>' if dicas else ''
     rows = []
     for k, val in v.get('specs', []):
         if val:
@@ -331,6 +333,7 @@ def venda_main(p):
 {chr(10).join(hist)}
 <section class="vd-sec vd-galsec" id="vd-galsec" hidden aria-labelledby="g-t"><h2 id="g-t">Veja de perto</h2><div class="pdp-media vd-gal" id="vd-gal"></div></section>
 <section class="vd-sec" aria-labelledby="h-t"><h2 id="h-t">Como usar</h2><ol class="vd-steps">{steps}</ol></section>
+{dicas}
 {junto}
 <section class="vd-sec vd-specs" aria-labelledby="s-t"><h2 id="s-t">Especificações</h2><table>{"".join(rows)}</table></section>
 <section class="vd-sec faq" aria-labelledby="f-t"><h2 id="f-t">Dúvidas frequentes</h2>{faq_h}</section>
