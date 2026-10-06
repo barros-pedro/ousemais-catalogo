@@ -6,7 +6,8 @@
   "title": "Lubrificantes",
   "desc": "Lubrificantes íntimos à base de água e de silicone, que esquentam, refrescam ou têm aroma. Embalagem sigilosa e pedido pelo WhatsApp, em Campestre/AL.",
   "intro": "Lubrificante deixa tudo mais confortável e gostoso, a sós ou a dois. Tem opção à base de água para o dia a dia, com efeito que esquenta ou refresca, com aroma e à base de silicone, que resiste à água.",
-  "capa": "img/categorias/lubrificantes.jpg"
+  "capa": "img/categorias/lubrificantes.jpg",
+  "fileira": "#d6ebff"
  },
  {
   "id": "anal",
@@ -22,7 +23,8 @@
   "label": "Comestíveis",
   "title": "Comestíveis e beijáveis",
   "desc": "Géis beijáveis, sprays e comestíveis com sabor para preliminares e sexo oral. Embalagem sigilosa e pedido pelo WhatsApp, em Campestre/AL.",
-  "intro": "Géis beijáveis e comestíveis com sabor, alguns com efeito que esquenta, gela ou vibra. Feitos para as preliminares e o sexo oral ficarem ainda mais gostosos."
+  "intro": "Géis beijáveis e comestíveis com sabor, alguns com efeito que esquenta, gela ou vibra. Feitos para as preliminares e o sexo oral ficarem ainda mais gostosos.",
+  "fileira": "#ffe2c4"
  },
  {
   "id": "jogos",
@@ -38,7 +40,8 @@
   "label": "Calcinhas",
   "title": "Calcinhas",
   "desc": "Calcinhas sensuais em renda, com laço e com frase. Escolha a cor e a numeração. Embalagem sigilosa e pedido pelo WhatsApp, em Campestre/AL.",
-  "intro": "Calcinhas sensuais para usar no dia a dia ou para surpreender. Em cada produto você vê as cores, as opções e a numeração que veste."
+  "intro": "Calcinhas sensuais para usar no dia a dia ou para surpreender. Em cada produto você vê as cores, as opções e a numeração que veste.",
+  "fileira": "#f0dcff"
  },
  {
   "id": "lingeries",

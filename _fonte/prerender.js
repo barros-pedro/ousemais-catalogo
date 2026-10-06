@@ -36,6 +36,9 @@ const server = http.createServer((req, res) => {
       const el = document.getElementById(i); if (!el) return [i, ''];
       const c = el.cloneNode(true);
       c.querySelectorAll('[data-wired]').forEach(x => x.removeAttribute('data-wired'));
+      c.querySelectorAll('.rs-nav').forEach(x => x.remove());
+      c.querySelectorAll('.rs').forEach(w => w.replaceWith(...w.childNodes));
+      c.querySelectorAll('[data-rw]').forEach(x => x.removeAttribute('data-rw'));
       return [i, c.innerHTML.trim()];
     })), ids);
     const fp = path.join(cfg.raiz, file);

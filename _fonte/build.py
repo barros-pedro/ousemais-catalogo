@@ -185,7 +185,7 @@ if os.path.exists(_imp):
             print('aviso: não importei', nome, ex)
 
 # ---------------- 2. arquivos de CSS e JS ----------------
-cats_js = [{k: c.get(k, '') for k in ('id', 'slug', 'label', 'title', 'intro', 'capa', 'cheia', 'cor') if c.get(k)} for c in CATS]
+cats_js = [{k: c.get(k, '') for k in ('id', 'slug', 'label', 'title', 'intro', 'capa', 'cheia', 'cor', 'fileira') if c.get(k)} for c in CATS]
 JS_OUT = JS.replace('/*CATEGORIAS*/[]', json.dumps(cats_js, ensure_ascii=False))
 JS_OUT = JS_OUT.replace('/*CORES*/{}', json.dumps(CORES))
 assert JS_OUT != JS, 'marcador /*CATEGORIAS*/ não encontrado no loja.js'
@@ -374,11 +374,12 @@ faq = re.findall(r'<details><summary>(.*?)</summary><p>(.*?)</p></details>', hom
 faq_ld = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": re.sub('<[^>]+>', '', a)}} for q, a in faq]}
 home_main = home_main.replace('<!--vitrine-->', vitrine_html())
 home_main = home_main.replace('id="grid" data-pre></div>', f'id="grid" data-pre>{pre("grid")}</div>').replace('id="cat-tiles" data-pre></div>', f'id="cat-tiles" data-pre>{pre("cat-tiles")}</div>')
-for i_ in ('h-kits', 'h-top', 'h-promo'): home_main = home_main.replace(f'id="{i_}" data-pre>', f'id="{i_}" data-pre>{pre(i_)}')
+HOME_PRE = ['grid', 'cat-tiles'] + [m for m in re.findall(r'id="([\w-]+)"[^>]*data-pre>', home_main) if m not in ('grid', 'cat-tiles')]
+home_main = re.sub(r'(id="(?!grid"|cat-tiles")([\w-]+)"[^>]*data-pre>)', lambda m: m.group(1) + pre(m.group(2)), home_main)
 GERADAS['index.html'] = page(title="Ouse Mais | Sex Shop e Moda Íntima em Campestre/AL", desc=DESC_HOME, path='/', image=SITE + 'img/compartilhar.jpg',
     main=home_main, cfg={"type": "home"}, lds=[store, website, faq_ld],
     extra='<meta property="og:image:type" content="image/jpeg">\n<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">\n<meta property="og:image:alt" content="Vitrine de produtos da Ouse Mais">\n')
-PRERENDER.append(('index.html', '/', ['grid', 'cat-tiles', 'h-kits', 'h-top', 'h-promo']))
+PRERENDER.append(('index.html', '/', HOME_PRE))
 
 # categorias
 CAT_PATHS = []

@@ -278,6 +278,30 @@ function renderCatHero(){
 }
 
 /* ---------- Página inicial: kits, mais vendidos e promoções ---------- */
+function miniBuy(p){
+  if (p.soldOut) return `<span class="mini-out">Esgotado</span>`;
+  if (p.variants) return `<a class="mini-add opt" href="${purl(p)}">Escolher ${p.variants.type==="combo"?"opções":p.variants.label.toLowerCase()}</a>`;
+  const q = cart[p.id]||0;
+  return q ? qtyHTML(p.id,q) : `<button type="button" class="mini-add" data-act="inc" data-key="${p.id}">+ Adicionar</button>`;
+}
+// fileiras que rolam para o lado: setas e arrastar com o mouse no computador
+function wireRows(){
+  document.querySelectorAll(".row-scroll").forEach(r=>{
+    if (r.dataset.rw) { r.dispatchEvent(new Event("scroll")); return; }
+    r.dataset.rw = 1;
+    const box = document.createElement("div"); box.className = "rs"; r.parentNode.insertBefore(box, r); box.appendChild(r);
+    const mk = (d,t) => { const b = document.createElement("button"); b.type = "button"; b.className = `rs-nav ${d<0?"prev":"next"}`; b.setAttribute("aria-label", t); b.textContent = d<0?"‹":"›"; b.onclick = () => r.scrollBy({left:d*Math.max(240, r.clientWidth*.8), behavior:reduce?"auto":"smooth"}); box.appendChild(b); return b; };
+    const pv = mk(-1,"Ver anteriores"), nx = mk(1,"Ver mais");
+    const upd = () => { pv.hidden = r.scrollLeft < 8; nx.hidden = r.scrollLeft + r.clientWidth > r.scrollWidth - 8; };
+    r.addEventListener("scroll", upd, {passive:true}); addEventListener("resize", upd); upd(); setTimeout(upd, 400);
+    let down = null, moved = false;
+    r.addEventListener("pointerdown", e=>{ if (e.pointerType!=="mouse" || e.button) return; down = {x:e.clientX, l:r.scrollLeft}; moved = false; });
+    addEventListener("pointermove", e=>{ if (!down) return; const dx = e.clientX-down.x; if (Math.abs(dx)>6){ moved = true; r.classList.add("drag"); } if (moved) r.scrollLeft = down.l - dx; });
+    addEventListener("pointerup", ()=>{ if (!down) return; down = null; setTimeout(()=>r.classList.remove("drag"), 0); });
+    r.addEventListener("click", e=>{ if (moved){ e.preventDefault(); e.stopPropagation(); moved = false; } }, true);
+    r.addEventListener("dragstart", e=>e.preventDefault());
+  });
+}
 const keepScroll = (el, html) => { const x = el.scrollLeft; el.innerHTML = html; el.scrollLeft = x; };
 function renderHome(){
   if (PAGE.type!=="home" || !READY) return;
@@ -307,11 +331,28 @@ function renderHome(){
     const pct = p => (p.oldPrice-p.price)/p.oldPrice;
     const promo = PRODUCTS.filter(p=>!p.items && p.price!=null && p.oldPrice>p.price && !p.soldOut).sort((a,b)=>pct(b)-pct(a) || ORDER.get(a.id)-ORDER.get(b.id));
     $("sec-promo").hidden = !promo.length;
-    if ($("hp-n")) $("hp-n").textContent = promo.length ? `${promo.length} ${promo.length===1?"produto":"produtos"} com desconto` : "";
+    if ($("hp-n")) $("hp-n").textContent = promo.length ? `${promo.length} ${promo.length===1?"produto":"produtos"} com preço menor` : "";
+    if ($("hp-max") && promo.length) $("hp-max").innerHTML = `<small>até</small>−${Math.round(pct(promo[0])*100)}%`;
     keepScroll(hp, promo.map(p=>`<article class="hp-card${keysOf(p).length?" in":""}">
-      <a class="hp-img" href="${purl(p)}" aria-label="Ver ${p.name}"><span class="hp-off">−${Math.round(pct(p)*100)}%</span><img src="${IMG(p)}" alt="${altOf(p)}" loading="lazy"${p.imgFull||!(CORES[p.id]||[1,1])[1]?' class="photo"':''}></a>
-      <div class="hp-b"><h3 class="name"><a href="${purl(p)}">${p.name}</a></h3><div class="buy">${buyHTML(p,"o")}</div></div></article>`).join(""));
+      <a class="hp-img" href="${purl(p)}" aria-label="Ver ${p.name}"><img src="${IMG(p)}" alt="${altOf(p)}" loading="lazy"${p.imgFull||!(CORES[p.id]||[1,1])[1]?' class="photo"':''}></a>
+      <div class="hp-b"><span class="hp-off">−${Math.round(pct(p)*100)}%</span><h3 class="hp-name"><a href="${purl(p)}">${p.name}</a></h3>
+        <div class="hp-pr"><s>${brl(p.oldPrice)}</s><b>${brl(p.price)}</b></div>${miniBuy(p)}</div></article>`).join(""));
   }
+  document.querySelectorAll("[data-crow]").forEach(sec=>{
+    const c = catOf(sec.dataset.crow), ps = c ? PRODUCTS.filter(p=>p.cat===c.id && !p.items) : [];
+    sec.hidden = !ps.length; if (!ps.length) return;
+    const avail = ps.filter(p=>!p.soldOut).concat(ps.filter(p=>p.soldOut)).slice(0,12);
+    const p0 = ps.find(p=>CORES[p.id]) || ps[0], cor = c.fileira || c.cor || (CORES[p0.id]||[])[0] || "#f3d6e8";
+    const row = sec.querySelector(".row-scroll");
+    const items = avail.map(p=>`<article class="mc${keysOf(p).length?" in":""}${p.soldOut?" sold":""}">
+        <a class="mc-img" href="${purl(p)}" aria-label="Ver ${p.name}"><img src="${IMG(p)}" alt="${altOf(p)}" loading="lazy"${p.imgFull||!(CORES[p.id]||[1,1])[1]?' class="photo"':''}></a>
+        <div class="mc-b">${p.brand && !/^(vibrador|moda íntima)$/i.test(p.brand)?`<span class="brand">${p.brand}</span>`:""}<h3 class="mc-name"><a href="${purl(p)}">${p.name}</a></h3>
+        <div class="mc-pr">${p.price!=null?`${p.oldPrice>p.price?`<s>${brl(p.oldPrice)}</s>`:""}<b>${brl(p.price)}</b>`:`<span class="ask">Preço sob consulta</span>`}</div>${miniBuy(p)}</div></article>`).join("");
+    const cover = `<a class="mc-cover" href="${catUrl(c.id)}" style="--cc:${cor}"><span class="mc-ct">${c.title}</span><span class="mc-ci">${c.intro||""}</span><span class="mc-cn">${ps.length} ${ps.length===1?"produto":"produtos"}</span><em>Ver todos →</em></a>`;
+    if (row) keepScroll(row, cover + items);
+    else sec.innerHTML = `<div class="home-h"><div><p class="eyebrow">Categoria</p><h2>${c.label}</h2></div><a class="catlink" href="${catUrl(c.id)}">Ver todos →</a></div><div class="row-scroll crow-row">${cover}${items}</div>`;
+  });
+  wireRows();
   const ie = $("info-ent");
   if (ie && (ENTREGA.freteLocal || ENTREGA.prazo || ENTREGA.pag)){
     const t = ["A loja fica em Campestre/AL."];
