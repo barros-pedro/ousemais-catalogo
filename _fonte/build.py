@@ -262,10 +262,14 @@ FAQ_VENDA = [
     ('Como limpar?', "Antes e depois de usar, limpe com água morna e sabonete neutro, sem molhar a parte elétrica se o brinquedo não for à prova d'água. Seque bem e confira as instruções da embalagem."),
     ('Como faço o pedido?', 'Toque em Adicionar à sacola e depois em Enviar pedido: a mensagem vai pronta para o WhatsApp da loja, e a gente confirma valor, entrega e pagamento por lá.')]
 
+def vimg(u):
+    """Caminho da imagem com a versão do arquivo: foto trocada com o mesmo nome aparece na hora (sem cache antigo)."""
+    f = os.path.join(RAIZ, u)
+    return '/' + u + ('?v=' + hashlib.sha1(open(f, 'rb').read()).hexdigest()[:8] if os.path.exists(f) else '')
 def venda_main(p):
     v = VENDAS[p['id']]; c = CAT[p['cat']]; nm = e(p['name'])
     msg = f"Olá, Ouse Mais! Tenho interesse no {p['name']}. Pode me tirar umas dúvidas?"
-    cut = '/' + v['img']
+    cut = vimg(v['img'])
     calls = ''.join(f'<span class="vd-call k{i + 1}" aria-hidden="true">{e(t)}</span>' for i, t in enumerate(v.get('callouts', [])[:3]))
     facts = ''.join(f'<div class="vd-fact"><b>{e(b)}</b><span>{e(t)}</span></div>' for b, t in v.get('destaques', []))
     hist = []
@@ -279,7 +283,7 @@ def venda_main(p):
         if h.get('img') == 'recorte':
             fig = f'<img class="vd-tilt" src="{cut}" alt="" loading="lazy">'
         elif h.get('img'):
-            fig = f'<img class="vd-photo" src="/{e(h["img"])}" alt="{nm}" loading="lazy">'
+            fig = f'<img class="vd-photo" src="{e(vimg(h["img"]))}" alt="{nm}" loading="lazy">'
         else:
             fig = f'<div class="vd-orb" aria-hidden="true"><span>{e(h.get("selo", ""))}</span></div>'
         hist.append(f'<section class="vd-story vd-band t-{tema}"><div class="vd-in vd-story-in{" rev" if i % 2 else ""}">'
@@ -342,14 +346,17 @@ def vitrine_html():
     ps = [x for x in ps if not x['soldOut']] + [x for x in ps if x['soldOut']]
     if not ps: return ''
     vib = next((c for c in CATS if c['id'] == 'vib'), None)
-    bol = ''.join(f'<span class="vb-b b{n + 1}"><img src="/{VENDAS[i]["img"]}" alt="" loading="lazy"></span>'
-                  for n, i in enumerate([x for x in VITRINE.get('bolhas', []) if x in BY][:3]))
+    if VITRINE.get('foto'):
+        bol = f'<span class="vb-foto"><img src="{vimg(VITRINE["foto"])}" alt="Vibradores da Ouse Mais" loading="lazy"></span>'
+    else:
+        bol = ''.join(f'<span class="vb-b b{n + 1}"><img src="{vimg(VENDAS[i]["img"])}" alt="" loading="lazy"></span>'
+                      for n, i in enumerate([x for x in VITRINE.get('bolhas', []) if x in BY][:3]))
     cards = []
     for p in ps:
         v = VENDAS[p['id']]; k = v['card']
         cards.append(f'''<a class="vb-card{" largo" if k.get("largo") else ""}{" base" if v.get("base") else ""}" href="{purl(p)}" style="--cc:{k["cor"]};--ct:{k["tinta"]}">
 <span class="vb-txt"><b class="vb-t">{e(k["titulo"])}</b><span class="vb-s">{e(k["sub"])}</span><span class="vb-p">{e(k["texto"])}</span><span class="vb-go">Ver detalhes <span aria-hidden="true">→</span></span></span>
-<img src="/{v["img"]}" alt="{e(p["name"])}" loading="lazy"></a>''')
+<img src="{vimg(v["img"])}" alt="{e(p["name"])}" loading="lazy"></a>''')
     return f'''<section class="home-sec vb" aria-labelledby="vb-t">
   <div class="vb-grid">
     <a class="vb-intro" href="{curl(vib) if vib else "/"}"><span class="vb-it"><h2 id="vb-t">{e(VITRINE.get("titulo", "Vibradores"))}</h2><span>{e(VITRINE.get("texto", ""))}</span><em>Ver todos os vibradores →</em></span>{bol}</a>

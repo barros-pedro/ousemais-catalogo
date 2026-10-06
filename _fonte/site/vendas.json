@@ -6,7 +6,8 @@
    "porquinho",
    "varinha-magica",
    "golfinho"
-  ]
+  ],
+  "foto": "img/categorias/vibradores.jpg"
  },
  "vibrador-curvo": {
   "indexar": true,
