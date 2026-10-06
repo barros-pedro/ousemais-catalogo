@@ -70,6 +70,9 @@ button{font-family:inherit}
 .s4{background:#f1e6fa}
 .s2{background:#fde0ea}
 .s3{background:#ffe6e1}
+.s5{background:#ffe0ee}
+.vib-art{aspect-ratio:4/3}
+.vib-art img{object-position:center 55%}
 .kitart{display:flex;justify-content:center}
 .kitart img{width:min(78%,360px);mix-blend-mode:multiply}
 .eyebrow{font-size:.76rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--magenta)}
