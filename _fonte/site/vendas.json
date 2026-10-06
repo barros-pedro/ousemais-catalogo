@@ -14,12 +14,12 @@
   "cor": "#e6197f",
   "fundo": "#ffe0ee",
   "img": "img/venda/vibrador-curvo.webp",
-  "eyebrow": "Novo na Ouse Mais",
+  "eyebrow": "Controlado por aplicativo",
   "tagline": "Feito para acompanhar o seu corpo.",
   "callouts": [
    "Ponta fina e arredondada",
    "Corpo maior, que preenche",
-   "Curva em U"
+   "Controle pelo app"
   ],
   "destaques": [
    [
@@ -31,8 +31,8 @@
     "Formato que se adapta ao corpo"
    ],
    [
-    "A sós ou a dois",
-    "Para explorar no seu ritmo"
+    "App",
+    "Controle pelo celular"
    ],
    [
     "Sigiloso",
@@ -48,6 +48,13 @@
     "tema": "fundo"
    },
    {
+    "kicker": "Aplicativo",
+    "titulo": "O controle fica no celular.",
+    "texto": "Ele pode ser controlado por aplicativo: você comanda a vibração pela tela do celular, a sós, ou entrega o celular para quem você quiser.",
+    "img": "img/vibrador-curvo-app.jpg",
+    "tema": "branco"
+   },
+   {
     "kicker": "Material",
     "titulo": "Silicone macio. Do jeito que tem que ser.",
     "texto": "O silicone tem toque aveludado e é liso, sem poros onde a sujeira se acumula. Use sempre lubrificante à base de água, que não danifica o material.",
@@ -57,7 +64,7 @@
    {
     "kicker": "Do seu jeito",
     "titulo": "A sós ou a dois. Você escolhe o ritmo.",
-    "texto": "Para quem está começando a explorar ou para quem quer trazer uma novidade para o casal. Quer saber os modos de vibração e como ele é controlado? A gente explica tudo no WhatsApp, sem constrangimento.",
+    "texto": "Para quem está começando a explorar ou para quem quer trazer uma novidade para o casal. Ficou com alguma dúvida sobre o aplicativo ou os modos de vibração? A gente explica tudo no WhatsApp, sem constrangimento.",
     "tema": "branco",
     "centro": true
    }
@@ -100,6 +107,10 @@
    ],
    [
     "Como controla",
+    "Por aplicativo no celular"
+   ],
+   [
+    "Nome do aplicativo",
     null
    ],
    [
@@ -117,8 +128,8 @@
   ],
   "card": {
    "titulo": "Vibrador Curvo",
-   "sub": "Em U, de silicone",
-   "texto": "Formato que acompanha o corpo, com toque macio de silicone.",
+   "sub": "Controlado por app",
+   "texto": "Formato em U de silicone macio, controlado pelo celular.",
    "cor": "#fcd3e3",
    "tinta": "#b0125f",
    "largo": true
