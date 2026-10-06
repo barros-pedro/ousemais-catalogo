@@ -41,7 +41,8 @@
   "title": "Calcinhas",
   "desc": "Calcinhas sensuais em renda, com laço e com frase. Escolha a cor e a numeração. Embalagem sigilosa e pedido pelo WhatsApp, em Campestre/AL.",
   "intro": "Calcinhas sensuais para usar no dia a dia ou para surpreender. Em cada produto você vê as cores, as opções e a numeração que veste.",
-  "fileira": "#f0dcff"
+  "fileira": "#f0dcff",
+  "cheia": "recorte"
  },
  {
   "id": "lingeries",
@@ -49,7 +50,8 @@
   "label": "Lingeries",
   "title": "Lingeries",
   "desc": "Lingeries sensuais da Ouse Mais. Embalagem sigilosa e pedido pelo WhatsApp, em Campestre/AL.",
-  "intro": "Lingeries para se sentir poderosa. Em cada produto você vê as cores e a numeração que veste."
+  "intro": "Lingeries para se sentir poderosa. Em cada produto você vê as cores e a numeração que veste.",
+  "cheia": "recorte"
  },
  {
   "id": "fantasias",
@@ -75,7 +77,9 @@
   "title": "Vibradores",
   "desc": "Vibradores em silicone da Ouse Mais. Embalagem sigilosa e pedido pelo WhatsApp, em Campestre/AL.",
   "intro": "Vibradores para explorar o prazer a sós ou a dois. Com brinquedos de silicone, use lubrificante à base de água.",
-  "capa": "img/categorias/vibradores.jpg"
+  "capa": "img/categorias/vibradores.jpg",
+  "tileimg": "img/bullet-controle-estudio.jpg",
+  "cor": "#f9c6e3"
  },
  {
   "id": "kit",

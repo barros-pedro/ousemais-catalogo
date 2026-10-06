@@ -211,9 +211,9 @@ function tilesHTML(except){
     const emb = pool.filter(p=>CORES[p.id] && CORES[p.id][1]);
     const p0 = (emb.length ? emb.slice().sort((a,b)=>(dist(hueOf(CORES[b.id][0]))>=60)-(dist(hueOf(CORES[a.id][0]))>=60) || pool.indexOf(a)-pool.indexOf(b))[0] : null) || pool.find(p=>CORES[p.id]) || pool[0];
     if (CORES[p0.id]) used.push(hueOf(CORES[p0.id][0]));
-    const cor = c.cor || (CORES[p0.id]||[])[0] || "#f3d6e8", foto = !(CORES[p0.id]||[])[1];
+    const cor = c.cor || (CORES[p0.id]||[])[0] || "#f3d6e8", foto = c.tileimg ? false : !(CORES[p0.id]||[])[1];
     // caixa "cheia": usa a foto recortada rente ao produto, para ele ocupar o quadrado todo
-    const src = c.cheia==="recorte" && (CORES[p0.id]||[])[2] ? `/img/recorte/${p0.id}.jpg` : IMG(p0);
+    const src = c.tileimg ? A(c.tileimg) : c.cheia==="recorte" && (CORES[p0.id]||[])[2] ? `/img/recorte/${p0.id}.jpg` : IMG(p0);
     return `<a class="tile" href="${catUrl(c.id)}"><span class="tile-img${foto?" foto":""}${c.cheia?" cheia":""}" style="background:${cor}"><img src="${src}" alt="" loading="lazy"></span><span class="tile-t">${c.label}</span><span class="tile-n">${ps.length} ${ps.length===1?"produto":"produtos"}</span></a>`;
   }).join("");
 }

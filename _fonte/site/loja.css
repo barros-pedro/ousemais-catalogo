@@ -334,7 +334,7 @@ a.gal-slide{display:block;cursor:pointer;color:inherit;text-decoration:none}
 .tile-img img{width:100%;height:100%;object-fit:contain;display:block;padding:10%;mix-blend-mode:multiply}
 .tile-img.foto img{object-fit:cover;padding:0;mix-blend-mode:normal}
 /* fetiches e fantasias: mesma cor de fundo, mas o produto ocupa a caixa inteira */
-.tile-img.cheia img{object-fit:cover;padding:0}
+.tile-img.cheia img{object-fit:cover;padding:0;transform:scale(1.06)}
 .tile-t{font-family:var(--display);font-weight:500;font-size:.88rem;line-height:1.15;letter-spacing:-.01em;overflow-wrap:anywhere;hyphens:auto}
 .tile-n{font-size:.76rem;color:var(--muted);font-weight:600}
 @media (min-width:1000px){.cat-tiles{display:flex;flex-wrap:wrap;justify-content:center;overflow:visible}.cat-tiles .tile{flex:1 1 118px;max-width:150px}}
