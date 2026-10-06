@@ -689,7 +689,7 @@
   "callouts": [
    "Cerdas macias",
    "Botão de ligar",
-   "Cabo de pincel"
+   "Cabo que vibra"
   ],
   "destaques": [
    [
@@ -697,8 +697,8 @@
     "Velocidades"
    ],
    [
-    "Cerdas",
-    "Macias"
+    "No cabo",
+    "É onde vibra"
    ],
    [
     "Disfarçado",
@@ -719,8 +719,8 @@
    },
    {
     "kicker": "Sensação",
-    "titulo": "Cerdas macias que vibram.",
-    "texto": "As cerdas macias vibram e estimulam os mamilos e o clitóris com um toque leve, diferente de tudo.",
+    "titulo": "Quem vibra é o cabo.",
+    "texto": "A vibração fica no cabo, com 10 velocidades: é ele que você encosta nos mamilos e no clitóris. As cerdas macias completam o disfarce e servem para carícias leves.",
     "img": "recorte",
     "tema": "branco"
    },
@@ -743,7 +743,7 @@
    ],
    [
     "Explore com leveza",
-    "Passe nos mamilos e no clitóris."
+    "Encoste o cabo nos mamilos e no clitóris."
    ],
    [
     "Guarde protegido",
@@ -754,6 +754,10 @@
    [
     "Formato",
     "Pincel de maquiagem"
+   ],
+   [
+    "Onde vibra",
+    "No cabo"
    ],
    [
     "Velocidades",
@@ -768,18 +772,14 @@
     null
    ],
    [
-    "Material das cerdas",
-    null
-   ],
-   [
     "Resistente à água",
     null
    ]
   ],
   "card": {
    "titulo": "Pincel Vibratório",
-   "sub": "Cerdas que vibram",
-   "texto": "Parece pincel de maquiagem: 10 velocidades e cerdas macias.",
+   "sub": "Cabo que vibra",
+   "texto": "Parece pincel de maquiagem: o cabo vibra em 10 velocidades.",
    "cor": "#e6f4c6",
    "tinta": "#4e6a12"
   },
