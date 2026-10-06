@@ -194,10 +194,10 @@ function cardHTML(p){
     </article>`;
 }
 const moreHTML = () => `
-    <a class="more" href="${wa("Olá! Vi o catálogo da Ouse Mais e quero saber se vocês têm outro produto.")}" target="_blank" rel="noopener">
-      <strong>Procurando outro produto?</strong>
-      <span>A loja tem moda íntima, outros sabores e muito mais.</span>
-      <em>Perguntar no WhatsApp →</em>
+    <a class="more" href="${wa("Olá! Vi o site da Ouse Mais e quero ajuda para escolher um produto.")}" target="_blank" rel="noopener">
+      <strong>Precisa de ajuda para escolher?</strong>
+      <span>Conte o que você procura e a gente indica o produto certo.</span>
+      <em>Falar no WhatsApp →</em>
     </a>`;
 const hueOf = hex => { const n = parseInt(hex.slice(1),16), r=(n>>16&255)/255, g=(n>>8&255)/255, b=(n&255)/255, mx=Math.max(r,g,b), mn=Math.min(r,g,b), d=mx-mn; if (!d) return 0; const h = mx===r ? ((g-b)/d)%6 : mx===g ? (b-r)/d+2 : (r-g)/d+4; return (h*60+360)%360; };
 function tilesHTML(except){
@@ -235,19 +235,24 @@ function renderGrid(){
   if (!grid || !READY) return;
   const terms = norm(query).split(/\s+/).filter(Boolean);
   const searching = terms.length>0;
+  if (PAGE.type==="home"){
+    const b = $("busca"), vh = $("vitrine-home");
+    if (b) b.hidden = !searching; if (vh) vh.hidden = searching;
+    if (!searching){ grid.innerHTML = ""; return; }
+  }
   const base = searching ? PRODUCTS : (current==="all" ? PRODUCTS : PRODUCTS.filter(p=>p.cat===current));
   const list = base.filter(p=>terms.every(t=>(HAY.get(p.id)||"").includes(t))).sort(SORTS[sortBy]);
   if (filters) filters.setAttribute("aria-disabled", searching);
   const c = catOf(current);
-  if ($("sec-title")) $("sec-title").textContent = searching ? `Resultados para “${query.trim()}”` : (PAGE.type==="cat" ? `Todos os produtos de ${c.label.toLowerCase()}` : c.title);
+  if ($("sec-title")) $("sec-title").textContent = searching ? `Resultados para “${query.trim()}”` : (PAGE.type==="cat" && c.id!=="all" ? `Todos os produtos de ${c.label.toLowerCase()}` : c.title);
   if ($("count")) $("count").textContent = `${list.length} ${list.length===1?"produto":"produtos"}`;
   const cl = $("cat-link"); if (cl){ cl.hidden = searching || current==="all" || !list.length; if (!cl.hidden){ cl.href = catUrl(current); cl.textContent = `Abrir a página de ${c.label.toLowerCase()} →`; } }
   if (!searching && !list.length){
-    grid.innerHTML = `<div class="noresult"><strong>${c.label}: em breve no catálogo</strong><p>A loja tem produtos dessa categoria. Pergunte no WhatsApp quais estão disponíveis.</p><a class="btn" href="${wa(`Olá! Quero ver as opções de ${c.label.toLowerCase()} da Ouse Mais.`)}" target="_blank" rel="noopener">Ver opções no WhatsApp</a></div>`;
+    grid.innerHTML = `<div class="noresult"><strong>${c.label}: em breve no site</strong><p>No momento não há produtos dessa categoria. Pergunte no WhatsApp quando chegam novidades.</p><a class="btn" href="${wa(`Olá! Quero ver as opções de ${c.label.toLowerCase()} da Ouse Mais.`)}" target="_blank" rel="noopener">Ver opções no WhatsApp</a></div>`;
     return;
   }
   if (searching && !list.length){
-    grid.innerHTML = `<div class="noresult"><strong>Nenhum produto encontrado</strong><p>Pode ser que a loja tenha e ele só não esteja no catálogo.</p><a class="btn" href="${wa(`Olá! Procurei por "${query.trim()}" no catálogo da Ouse Mais. Vocês têm?`)}" target="_blank" rel="noopener">Perguntar no WhatsApp</a></div>`;
+    grid.innerHTML = `<div class="noresult"><strong>Nenhum produto encontrado</strong><p>Tente outra palavra ou navegue pelas categorias. Se preferir, a gente ajuda pelo WhatsApp.</p><a class="btn" href="${wa(`Olá! Procurei por "${query.trim()}" no site da Ouse Mais e não achei. Podem me ajudar?`)}" target="_blank" rel="noopener">Pedir ajuda no WhatsApp</a></div>`;
     return;
   }
   const keep = {}; grid.querySelectorAll("[data-gal]").forEach(g=>{ keep[g.dataset.kit] = g.querySelector(".gal-track").scrollLeft; });
@@ -263,13 +268,102 @@ function renderTiles(){
 function renderCatHero(){
   const h = $("cat-hero"); if (!h || !READY) return;
   const c = catOf(PAGE.cat); if (!c) return;
-  const ps = PRODUCTS.filter(p=>p.cat===c.id);
+  const ps = c.id==="all" ? PRODUCTS : PRODUCTS.filter(p=>p.cat===c.id);
   const art = c.capa
     ? `<div class="ch-art photo"><img src="${A(c.capa)}" alt="${c.title} da Ouse Mais" fetchpriority="high"></div>`
     : (ps.length ? `<div class="ch-art trio">${ps.filter(p=>!p.items).concat(ps.filter(p=>p.items)).slice(0,3).map((p,i)=>`<img src="${IMG(p)}" alt="${i?"":altOf(p)}"${i?' loading="lazy"':' fetchpriority="high"'}>`).join("")}</div>` : "");
-  h.innerHTML = `<nav class="crumbs" aria-label="Você está em"><a href="/${Q}">Início</a><span aria-hidden="true">›</span><span aria-current="page">${c.label}</span></nav>
-    <div class="ch${art?"":" noart"}"><div class="ch-txt"><p class="eyebrow">Ouse Mais · Campestre/AL</p><h1>${c.title}</h1><p>${c.intro||""}</p>
+  h.innerHTML = `<nav class="crumbs" aria-label="Você está em"><a href="/${Q}">Início</a><span aria-hidden="true">›</span><span aria-current="page">${c.id==="all" ? c.title : c.label}</span></nav>
+    <div class="ch${art?"":" noart"}"><div class="ch-txt"><p class="eyebrow">Ouse Mais · Campestre/AL</p><h1>${c.title}</h1><p>${c.intro||(c.id==="all"?"Tudo o que a Ouse Mais tem para você, num lugar só. Use a busca ou escolha uma categoria para filtrar.":"")}</p>
     <p class="ch-n">${ps.length} ${ps.length===1?"produto":"produtos"} · embalagem sigilosa · pedido pelo WhatsApp</p></div>${art}</div>`;
+}
+
+/* ---------- Página inicial: kits, mais vendidos e promoções ---------- */
+const keepScroll = (el, html) => { const x = el.scrollLeft; el.innerHTML = html; el.scrollLeft = x; };
+function renderHome(){
+  if (PAGE.type!=="home" || !READY) return;
+  const hk = $("h-kits");
+  if (hk){
+    const kits = PRODUCTS.filter(p=>p.items && p.items.length);
+    hk.closest("section").hidden = !kits.length;
+    keepScroll(hk, kits.map(p=>`<article class="hk-card${keysOf(p).length?" in":""}${p.soldOut?" sold":""}">
+      <a class="hk-img" href="${purl(p)}" aria-label="Ver ${p.name}"><img src="${IMG(p)}" alt="${altOf(p)}" loading="lazy"></a>
+      <div class="hk-b"><h3 class="name"><a href="${purl(p)}">${p.name}</a></h3>
+        <ul class="hk-items">${p.items.filter(byId).map(i=>{ const x = byId(i); return `<li><img src="${IMG(x)}" alt="" loading="lazy"><span>${x.name}</span></li>`; }).join("")}</ul>
+        <div class="buy">${buyHTML(p,"k")}</div></div></article>`).join(""));
+  }
+  const ht = $("h-top");
+  if (ht){
+    const top = PRODUCTS.filter(p=>p.vendidos>0).sort((a,b)=>b.vendidos-a.vendidos).slice(0,6);
+    $("sec-top").hidden = !top.length;
+    ht.dataset.n = top.length;
+    ht.innerHTML = top.map((p,i)=>`<li class="ht-i${keysOf(p).length?" in":""}">
+      <span class="ht-n" aria-hidden="true">${i+1}</span>
+      <a class="ht-img" href="${purl(p)}" aria-label="Ver ${p.name}"><img src="${IMG(p)}" alt="${altOf(p)}" loading="lazy"></a>
+      <div class="ht-b"><span class="ht-pos">${i+1}º mais vendido</span><h3 class="name"><a href="${purl(p)}">${p.name}</a></h3>${p.brand && !/^(vibrador|moda íntima|kit ouse mais)$/i.test(p.brand)?`<div class="brand">${p.brand}</div>`:""}
+      <div class="buy">${buyHTML(p,"t")}</div></div></li>`).join("");
+  }
+  const hp = $("h-promo");
+  if (hp){
+    const pct = p => (p.oldPrice-p.price)/p.oldPrice;
+    const promo = PRODUCTS.filter(p=>!p.items && p.price!=null && p.oldPrice>p.price && !p.soldOut).sort((a,b)=>pct(b)-pct(a) || ORDER.get(a.id)-ORDER.get(b.id));
+    $("sec-promo").hidden = !promo.length;
+    if ($("hp-n")) $("hp-n").textContent = promo.length ? `${promo.length} ${promo.length===1?"produto":"produtos"} com desconto` : "";
+    keepScroll(hp, promo.map(p=>`<article class="hp-card${keysOf(p).length?" in":""}">
+      <a class="hp-img" href="${purl(p)}" aria-label="Ver ${p.name}"><span class="hp-off">−${Math.round(pct(p)*100)}%</span><img src="${IMG(p)}" alt="${altOf(p)}" loading="lazy"${p.imgFull||!(CORES[p.id]||[1,1])[1]?' class="photo"':''}></a>
+      <div class="hp-b"><h3 class="name"><a href="${purl(p)}">${p.name}</a></h3><div class="buy">${buyHTML(p,"o")}</div></div></article>`).join(""));
+  }
+  const ie = $("info-ent");
+  if (ie && (ENTREGA.freteLocal || ENTREGA.prazo || ENTREGA.pag)){
+    const t = ["A loja fica em Campestre/AL."];
+    if (ENTREGA.freteLocal) t.push(`Frete em Campestre: ${ENTREGA.freteLocal}.`);
+    if (ENTREGA.freteFora) t.push(`Outras cidades: ${ENTREGA.freteFora}.`);
+    if (ENTREGA.gratis) t.push(`Frete grátis acima de ${brl(ENTREGA.gratis)}.`);
+    if (ENTREGA.prazo) t.push(`Prazo: ${ENTREGA.prazo}.`);
+    if (ENTREGA.pag) t.push(`Pagamento: ${ENTREGA.pag}${ENTREGA.parc?` (${ENTREGA.parc})`:""}.`);
+    ie.textContent = t.join(" ");
+  }
+}
+
+/* ---------- Página de venda (vibradores) ---------- */
+let vdWired = false;
+function renderVenda(){
+  if (!PAGE.venda || !READY) return;
+  const p = byId(PAGE.id);
+  const buys = document.querySelectorAll(".vd-buy");
+  if (!p){
+    if (!FINAL) return;
+    buys.forEach(b=>{ b.innerHTML = `<p class="pdp-stock">Este produto não está disponível agora.</p><a class="soon" href="${wa(`Olá! Vi a página do ${document.querySelector(".vd-hero h1").textContent} no site. Ele vai voltar?`)}" target="_blank" rel="noopener">Perguntar no WhatsApp</a>`; });
+    return;
+  }
+  buys.forEach(b=>{ b.innerHTML = buyHTML(p, b.dataset.ctx||"p"); });
+  document.querySelectorAll("[data-vd-price]").forEach(x=>{ x.innerHTML = p.price!=null ? brl(p.price) : ""; });
+  const k = curKey(p), q = cart[k]||0, sb = document.querySelector("[data-vd-sbtn]");
+  if (sb) sb.innerHTML = p.soldOut ? `<span class="vd-out">Esgotado</span>` : (q ? `<button type="button" class="vd-sadd" data-cart>Ver sacola (${itemsCount()})</button>` : `<button type="button" class="vd-sadd" data-act="inc" data-key="${k}">Adicionar</button>`);
+  let sum = 0, ok = true;
+  document.querySelectorAll("[data-jprice]").forEach(x=>{ const y = byId(x.dataset.jprice); if (y && y.price!=null){ x.textContent = brl(y.price); sum += y.price; } else { x.textContent = "Preço sob consulta"; ok = false; } });
+  if ($("vd-jsum")) $("vd-jsum").textContent = ok ? brl(sum) : "Preço no WhatsApp";
+  const g = $("vd-gal");
+  if (g && g.dataset.v !== String(DATAV)){
+    g.dataset.v = DATAV;
+    const n = slidesOf(p, true).length;
+    $("vd-galsec").hidden = n < 2;
+    if (n >= 2){ g.innerHTML = galHTML(p,false) + thumbsHTML(p); wireGals(g); }
+  }
+  if (!vdWired){
+    vdWired = true;
+    renderRelated(p);
+    const st = $("vd-sticky"), hero = $("vd-buy");
+    if (st && hero && "IntersectionObserver" in window) new IntersectionObserver(([en])=>{
+      const show = !en.isIntersecting && en.boundingClientRect.top < 0;
+      st.classList.toggle("on", show); st.setAttribute("aria-hidden", String(!show));
+    }).observe(hero);
+  }
+}
+const revealEls = document.querySelectorAll(".reveal");
+if (revealEls.length && !reduce && "IntersectionObserver" in window){
+  document.documentElement.classList.add("js-reveal");
+  const io = new IntersectionObserver(es=>es.forEach(en=>{ if (en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); } }), {threshold:.15});
+  revealEls.forEach(el=>io.observe(el));
 }
 
 /* ---------- Página do produto ---------- */
@@ -373,7 +467,7 @@ function renderCart(){
   $("c-note").textContent = lines.join(" ");
 }
 function refresh(){
-  renderGrid(); renderProduct(); renderBag();
+  renderGrid(); renderProduct(); renderHome(); renderVenda(); renderBag();
   if ($("cart").open) renderCart();
 }
 function renderAll(){ renderFilters(); renderTiles(); renderCatHero(); refresh(); }
@@ -434,6 +528,8 @@ document.addEventListener("click", e=>{
   if (f){ current = f.dataset.cat; clearQuery(); renderFilters(); renderGrid(); try{ history.replaceState(null, "", current==="all" ? location.pathname + location.search : "#"+current); }catch(_){} return; }
   const sw = e.target.closest("[data-var]");
   if (sw){ selVar[sw.dataset.var] = sw.dataset.opt; refresh(); return; }
+  const many = e.target.closest("[data-add-many]");
+  if (many){ many.dataset.addMany.split(",").forEach(id=>{ const x = byId(id); if (x && !x.soldOut) change(curKey(x), 1); }); return; }
   const a = e.target.closest("[data-act]");
   if (a){ change(a.dataset.key, a.dataset.act==="inc"?1:-1); }
 });

@@ -21,5 +21,9 @@ Esta pasta não é publicada (o GitHub Pages ignora pastas que começam com `_`)
 - `prerender.js` – grava o HTML já montado nas páginas (Google e prévias de link).
 - `dados/catalogo.csv` – última cópia da planilha publicada.
 - `painel/` – painel no Google Apps Script (`Code.gs` + `Painel.html`).
-- `especiais/` – página de venda do vibrador (`/vibradores/vibrador-curvo/`), feita à parte. Produtos em
-  `ESPECIAIS` no `build.py` não têm a página trocada pelo gerador.
+- `site/vendas.json` – páginas de venda (vibradores): chamada, etiquetas da foto, blocos de história, passos,
+  especificações (null = "Confirme no WhatsApp"), "compre junto" e o cartão da vitrine da página inicial.
+  Produto listado aqui ganha página de venda no lugar da página simples. `"indexar": true` só depois de aprovada.
+  Fotos recortadas (fundo transparente) ficam em `img/venda/<id>.webp`.
+- Página inicial: banners, categorias com busca, kits, mais vendidos (coluna Ranking), vitrine de vibradores
+  (de `vendas.json`), promoções (Preço antigo maior que o preço) e informações úteis. `/produtos/` lista tudo.

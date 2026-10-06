@@ -19,7 +19,7 @@ RAIZ = os.path.dirname(FONTE)
 S = os.path.join(FONTE, 'site')
 SITE = "https://ousemaisoficial.com.br/"
 MARCA = 'data-gerado="ouse"'          # páginas geradas aqui (as outras nunca são apagadas)
-ESPECIAIS = {"vibrador-curvo"}        # produtos com página de venda feita à mão: o gerador não sobrescreve
+ESPECIAIS = set()                     # produtos com página feita à mão: o gerador não sobrescreve
 
 e = lambda s: html.escape(str(s or ''), quote=True)
 rd = lambda p: open(p, encoding='utf-8').read()
@@ -32,6 +32,9 @@ def slug(s):
     return re.sub(r'^-|-$', '', re.sub(r'[^a-z0-9]+', '-', norm(s)))
 
 CATS = json.load(open(os.path.join(S, 'categorias.json'), encoding='utf-8'))
+# páginas de venda (vibradores): textos, fotos recortadas e especificações em site/vendas.json
+VENDAS = json.load(open(os.path.join(S, 'vendas.json'), encoding='utf-8'))
+VITRINE = VENDAS.pop('_vitrine', {})
 JS = rd(os.path.join(S, 'loja.js'))
 CSS = rd(os.path.join(S, 'loja.css'))
 CAT_URL = re.search(r'catalogo:\s*"([^"]+)"', JS).group(1)
@@ -248,6 +251,112 @@ SORT = '''<label class="sort" for="sort">Ordenar por
         <select id="sort"><option value="destaque">Destaques</option><option value="vendidos">Mais vendidos</option><option value="menor">Menor preço</option><option value="maior">Maior preço</option><option value="az">Nome (A a Z)</option></select>
       </label>'''
 
+# ---------------- páginas de venda (vibradores) e vitrine da página inicial ----------------
+from urllib.parse import quote as _q
+WA = "5582999080594"
+wa = lambda m: f"https://wa.me/{WA}?text={_q(m)}"
+WA_SVG = '<svg viewBox="0 0 32 32" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M16 3C8.8 3 3 8.7 3 15.8c0 2.5.7 4.9 2 7L3 29l6.4-2c2 1.1 4.3 1.7 6.6 1.7 7.2 0 13-5.7 13-12.9S23.2 3 16 3z"/></svg>'
+FAQ_VENDA = [
+    ('É discreto?', 'O pedido chega em embalagem sem nenhuma identificação do conteúdo, e a conversa toda acontece no WhatsApp da loja.'),
+    ('Qual lubrificante usar?', 'Com brinquedos, use lubrificante à base de água. Lubrificante de silicone pode danificar o material.'),
+    ('Como limpar?', "Antes e depois de usar, limpe com água morna e sabonete neutro, sem molhar a parte elétrica se o brinquedo não for à prova d'água. Seque bem e confira as instruções da embalagem."),
+    ('Como faço o pedido?', 'Toque em Adicionar à sacola e depois em Enviar pedido: a mensagem vai pronta para o WhatsApp da loja, e a gente confirma valor, entrega e pagamento por lá.')]
+
+def venda_main(p):
+    v = VENDAS[p['id']]; c = CAT[p['cat']]; nm = e(p['name'])
+    msg = f"Olá, Ouse Mais! Tenho interesse no {p['name']}. Pode me tirar umas dúvidas?"
+    cut = '/' + v['img']
+    calls = ''.join(f'<span class="vd-call k{i + 1}" aria-hidden="true">{e(t)}</span>' for i, t in enumerate(v.get('callouts', [])[:3]))
+    facts = ''.join(f'<div class="vd-fact"><b>{e(b)}</b><span>{e(t)}</span></div>' for b, t in v.get('destaques', []))
+    hist = []
+    for i, h in enumerate(v.get('historias', [])):
+        tema = h.get('tema', 'branco')
+        head = f'<p class="kicker">{e(h["kicker"])}</p><h2>{e(h["titulo"])}</h2><p>{e(h["texto"])}</p>'
+        if h.get('centro'):
+            hist.append(f'<section class="vd-story vd-band t-{tema}"><div class="vd-in vd-center reveal">{head}'
+                        f'<a class="btn ghost" href="{e(wa(msg))}" target="_blank" rel="noopener">Perguntar no WhatsApp</a></div></section>')
+            continue
+        if h.get('img') == 'recorte':
+            fig = f'<img class="vd-tilt" src="{cut}" alt="" loading="lazy">'
+        elif h.get('img'):
+            fig = f'<img class="vd-photo" src="/{e(h["img"])}" alt="{nm}" loading="lazy">'
+        else:
+            fig = f'<div class="vd-orb" aria-hidden="true"><span>{e(h.get("selo", ""))}</span></div>'
+        hist.append(f'<section class="vd-story vd-band t-{tema}"><div class="vd-in vd-story-in{" rev" if i % 2 else ""}">'
+                    f'<div class="vd-story-copy reveal">{head}</div><div class="vd-story-fig reveal">{fig}</div></div></section>')
+    steps = ''.join(f'<li><span class="n">{i + 1}</span><b>{e(b)}</b><span>{e(t)}</span></li>' for i, (b, t) in enumerate(v.get('passos', [])))
+    rows = []
+    for k, val in v.get('specs', []):
+        if val:
+            cell = e(val)
+        else:
+            cell = f'<a href="{e(wa("Olá! Sobre o " + p["name"] + ": " + k.lower() + "?"))}" target="_blank" rel="noopener">Confirme no WhatsApp</a>'
+        rows.append(f'<tr><th scope="row">{e(k)}</th><td>{cell}</td></tr>')
+    faq = [tuple(x) for x in v.get('faq', [])] + FAQ_VENDA
+    faq_h = ''.join(f'<details><summary>{e(q)}</summary><p>{e(a)}</p></details>' for q, a in faq)
+    par = BY.get(v.get('par') or '')
+    junto = ''
+    if par:
+        kit = next((k for k in PRODS if k['kit'] and set(k['items']) == {p['id'], par['id']}), None)
+        nota = (f'Também vendemos juntos no <a href="{purl(kit)}">{e(kit["name"])}</a>.' if kit
+                else 'Lubrificante à base de água: o par certo para brinquedos.')
+        junto = f'''<section class="vd-sec vd-junto" aria-labelledby="j-t"><h2 id="j-t">Compre junto</h2>
+<div class="vd-jbox"><div class="vd-jitems">
+<a class="vd-jit" href="#vd-topo"><img src="{cut}" alt="" loading="lazy"><b>{nm}</b><span data-jprice="{p["id"]}">–</span></a><span class="vd-plus" aria-hidden="true">+</span>
+<a class="vd-jit" href="{purl(par)}"><img src="{e(img_of(par).replace(SITE, "/"))}" alt="" loading="lazy"><b>{e(par["name"])}</b><span data-jprice="{par["id"]}">–</span></a></div>
+<div class="vd-jtot"><span>Os dois juntos</span><strong id="vd-jsum">–</strong><button type="button" class="btn" data-add-many="{p["id"]},{par["id"]}">Adicionar os dois à sacola</button><small>{nota}</small></div></div></section>'''
+    first = p['desc'].splitlines()[0] if p['desc'] else ''
+    main = f'''<div class="vd" style="--vc:{v["cor"]};--vf:{v["fundo"]}">
+<div class="vd-sticky" id="vd-sticky" aria-hidden="true"><div class="vd-sticky-in"><span class="vd-sname">{nm}</span><span class="vd-sprice" data-vd-price></span><span class="vd-sbtn" data-vd-sbtn></span></div></div>
+<nav class="crumbs" aria-label="Você está em"><a href="/">Início</a><span aria-hidden="true">›</span><a href="{curl(c)}">{e(c["label"])}</a><span aria-hidden="true">›</span><span aria-current="page">{nm}</span></nav>
+<section class="vd-hero" id="vd-topo">
+  <div class="vd-copy">
+    <p class="eyebrow">{e(v.get("eyebrow", ""))}</p>
+    <h1>{nm}</h1>
+    <p class="vd-tag">{e(v.get("tagline", ""))}</p>
+    <p class="vd-desc">{e(first)}</p>
+    <div class="buy pdp-buy vd-buy" id="vd-buy" data-ctx="p" data-pre>{pre("vd-buy")}</div>
+    <a class="pdp-wa" href="{e(wa(msg))}" target="_blank" rel="noopener">{WA_SVG}Tirar dúvidas no WhatsApp</a>
+    <ul class="vd-assure"><li>Embalagem sigilosa</li><li>Pedido pelo WhatsApp</li><li>Campestre/AL</li></ul>
+  </div>
+  <figure class="vd-fig{" base" if v.get("base") else ""}"><div class="vd-halo" aria-hidden="true"></div><img src="{cut}" alt="{nm}" fetchpriority="high">{calls}</figure>
+</section>
+<section class="vd-facts vd-band" aria-label="Destaques"><div class="vd-in vd-facts-in">{facts}</div></section>
+{chr(10).join(hist)}
+<section class="vd-sec vd-galsec" id="vd-galsec" hidden aria-labelledby="g-t"><h2 id="g-t">Veja de perto</h2><div class="pdp-media vd-gal" id="vd-gal"></div></section>
+<section class="vd-sec" aria-labelledby="h-t"><h2 id="h-t">Como usar</h2><ol class="vd-steps">{steps}</ol></section>
+{junto}
+<section class="vd-sec vd-specs" aria-labelledby="s-t"><h2 id="s-t">Especificações</h2><table>{"".join(rows)}</table></section>
+<section class="vd-sec faq" aria-labelledby="f-t"><h2 id="f-t">Dúvidas frequentes</h2>{faq_h}</section>
+<section class="vd-final vd-band"><div class="vd-in vd-center">
+  <img src="{cut}" alt="" loading="lazy"><h2>Pronta para ousar?</h2>
+  <div class="buy pdp-buy vd-buy vd-fbuy" data-ctx="f"></div>
+</div></section>
+</div>
+<section class="related" id="related" data-pre>{pre("related")}</section>
+{TILES("Navegue por categoria")}'''
+    return main, faq
+
+def vitrine_html():
+    ps = [BY[i] for i in VENDAS if i in BY]
+    ps = [x for x in ps if not x['soldOut']] + [x for x in ps if x['soldOut']]
+    if not ps: return ''
+    vib = next((c for c in CATS if c['id'] == 'vib'), None)
+    bol = ''.join(f'<span class="vb-b b{n + 1}"><img src="/{VENDAS[i]["img"]}" alt="" loading="lazy"></span>'
+                  for n, i in enumerate([x for x in VITRINE.get('bolhas', []) if x in BY][:3]))
+    cards = []
+    for p in ps:
+        v = VENDAS[p['id']]; k = v['card']
+        cards.append(f'''<a class="vb-card{" largo" if k.get("largo") else ""}{" base" if v.get("base") else ""}" href="{purl(p)}" style="--cc:{k["cor"]};--ct:{k["tinta"]}">
+<span class="vb-txt"><b class="vb-t">{e(k["titulo"])}</b><span class="vb-s">{e(k["sub"])}</span><span class="vb-p">{e(k["texto"])}</span><span class="vb-go">Ver detalhes <span aria-hidden="true">→</span></span></span>
+<img src="/{v["img"]}" alt="{e(p["name"])}" loading="lazy"></a>''')
+    return f'''<section class="home-sec vb" aria-labelledby="vb-t">
+  <div class="vb-grid">
+    <a class="vb-intro" href="{curl(vib) if vib else "/"}"><span class="vb-it"><h2 id="vb-t">{e(VITRINE.get("titulo", "Vibradores"))}</h2><span>{e(VITRINE.get("texto", ""))}</span><em>Ver todos os vibradores →</em></span>{bol}</a>
+    {"".join(cards)}
+  </div>
+</section>'''
+
 GERADAS = {}   # caminho do arquivo -> html
 PRERENDER = [] # (caminho do arquivo, endereço, [ids])
 
@@ -263,11 +372,13 @@ website = {"@context": "https://schema.org", "@type": "WebSite", "name": "Ouse M
 home_main = rd(os.path.join(S, 'home.html'))
 faq = re.findall(r'<details><summary>(.*?)</summary><p>(.*?)</p></details>', home_main)
 faq_ld = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": re.sub('<[^>]+>', '', a)}} for q, a in faq]}
+home_main = home_main.replace('<!--vitrine-->', vitrine_html())
 home_main = home_main.replace('id="grid" data-pre></div>', f'id="grid" data-pre>{pre("grid")}</div>').replace('id="cat-tiles" data-pre></div>', f'id="cat-tiles" data-pre>{pre("cat-tiles")}</div>')
+for i_ in ('h-kits', 'h-top', 'h-promo'): home_main = home_main.replace(f'id="{i_}" data-pre>', f'id="{i_}" data-pre>{pre(i_)}')
 GERADAS['index.html'] = page(title="Ouse Mais | Sex Shop e Moda Íntima em Campestre/AL", desc=DESC_HOME, path='/', image=SITE + 'img/compartilhar.jpg',
     main=home_main, cfg={"type": "home"}, lds=[store, website, faq_ld],
     extra='<meta property="og:image:type" content="image/jpeg">\n<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">\n<meta property="og:image:alt" content="Vitrine de produtos da Ouse Mais">\n')
-PRERENDER.append(('index.html', '/', ['grid', 'cat-tiles']))
+PRERENDER.append(('index.html', '/', ['grid', 'cat-tiles', 'h-kits', 'h-top', 'h-promo']))
 
 # categorias
 CAT_PATHS = []
@@ -294,8 +405,26 @@ for c in CATS:
     PRERENDER.append((f, path, ['cat-hero', 'grid', 'cat-tiles']))
     if ps: CAT_PATHS.append(path)
 
+# todos os produtos
+TODOS = '/produtos/'
+GERADAS['produtos/index.html'] = page(title="Todos os produtos | Ouse Mais", desc="Todos os produtos da Ouse Mais, sex shop e moda íntima em Campestre/AL: lubrificantes, comestíveis, calcinhas, vibradores e kits. Embalagem sigilosa e pedido pelo WhatsApp.",
+    path=TODOS, image=SITE + 'img/compartilhar.jpg', cfg={"type": "cat", "cat": "all"}, lds=[crumb([("Início", "/"), ("Todos os produtos", TODOS)])],
+    main=f'''<section id="cat-hero" data-pre>{pre("cat-hero")}</section>
+<nav class="bar" aria-label="Busca e categorias" id="produtos">
+    <div class="search" role="search"><label for="q" class="sr">Buscar produtos</label><input type="search" id="q" placeholder="Buscar produto, marca ou sabor" autocomplete="off" enterkeyhint="search"><button type="button" class="s-clear" id="q-clear" aria-label="Limpar busca" hidden>×</button></div>
+    <div class="filters" id="filters"></div>
+</nav>
+<section class="catgrid" aria-labelledby="sec-title">
+    <div class="section-h"><div class="sh-l"><h2 id="sec-title">Todos os produtos</h2><span class="count" id="count"></span></div>{SORT}</div>
+    <div class="grid" id="grid" data-pre>{pre("grid")}</div>
+</section>
+{TILES("Navegue por categoria")}''')
+PRERENDER.append(('produtos/index.html', TODOS, ['cat-hero', 'grid', 'cat-tiles']))
+CAT_PATHS.append(TODOS)
+
 # produtos
 PROD_PATHS = []
+SEM_INDICE = set()
 for p in PRODS:
     path = purl(p); c = CAT[p['cat']]
     PROD_PATHS.append((path, p))
@@ -312,12 +441,22 @@ for p in PRODS:
                           "availability": "https://schema.org/OutOfStock" if p['soldOut'] else "https://schema.org/InStock",
                           "itemCondition": "https://schema.org/NewCondition", "seller": {"@type": "Organization", "name": "Ouse Mais"}}
         extra = f'<meta property="product:price:amount" content="{"%.2f" % p["price"]}">\n<meta property="product:price:currency" content="BRL">\n'
+    f = path.strip('/') + '/index.html'
+    lds = [prod, crumb([("Início", "/"), (c['label'], curl(c)), (p['name'], path)])]
+    if p['id'] in VENDAS:   # página de venda (vibradores): só entra no Google depois de aprovada ("indexar": true)
+        main, vfaq = venda_main(p)
+        lds.append({"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in vfaq]})
+        vi = VENDAS[p['id']].get('indexar')
+        GERADAS[f] = page(title=f"{nm} | Ouse Mais", desc=desc, path=path, image=img, main=main, og_type='product', lds=lds, extra=extra,
+                          cfg={"type": "prod", "id": p['id'], "cat": p['cat'], "venda": 1}, robots='index, follow, max-image-preview:large' if vi else 'noindex, follow')
+        if not vi: SEM_INDICE.add(path)
+        PRERENDER.append((f, path, ['vd-buy', 'related', 'cat-tiles']))
+        continue
     main = f'''<div id="prod" data-pre>{pre("prod")}</div>
 <section class="related" id="related" data-pre>{pre("related")}</section>
 {TILES("Navegue por categoria")}'''
-    f = path.strip('/') + '/index.html'
     GERADAS[f] = page(title=f"{nm} | Ouse Mais", desc=desc, path=path, image=img, main=main, og_type='product',
-                      cfg={"type": "prod", "id": p['id'], "cat": p['cat']}, lds=[prod, crumb([("Início", "/"), (c['label'], curl(c)), (p['name'], path)])], extra=extra)
+                      cfg={"type": "prod", "id": p['id'], "cat": p['cat']}, lds=lds, extra=extra)
     PRERENDER.append((f, path, ['prod', 'related', 'cat-tiles']))
 
 # 404: monta na hora produto/categoria que ainda não tem página
@@ -343,7 +482,7 @@ for c in CATS:
         print('aviso: capa não encontrada:', c['capa'])
 
 # sitemap (sem data para não mudar à toa)
-urls = ['/'] + CAT_PATHS + [pth for pth, _ in PROD_PATHS]
+urls = ['/'] + CAT_PATHS + [pth for pth, _ in PROD_PATHS if pth not in SEM_INDICE]
 imgs = {pth: img_of(p) for pth, p in PROD_PATHS}
 wr(os.path.join(RAIZ, 'sitemap.xml'), '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n'
    + ''.join(f'<url><loc>{SITE}{u.lstrip("/")}</loc>' + (f'<image:image><image:loc>{e(imgs[u])}</image:loc></image:image>' if u in imgs else '') + '</url>\n' for u in urls) + '</urlset>\n')
