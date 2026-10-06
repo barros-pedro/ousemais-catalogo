@@ -380,6 +380,7 @@ home_main = rd(os.path.join(S, 'home.html'))
 faq = re.findall(r'<details><summary>(.*?)</summary><p>(.*?)</p></details>', home_main)
 faq_ld = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": re.sub('<[^>]+>', '', a)}} for q, a in faq]}
 home_main = home_main.replace('<!--vitrine-->', vitrine_html())
+home_main = re.sub(r'src="/(img/[\w/.-]+\.(?:jpg|webp|png))"', lambda m: f'src="{vimg(m.group(1))}"', home_main)
 home_main = home_main.replace('id="grid" data-pre></div>', f'id="grid" data-pre>{pre("grid")}</div>').replace('id="cat-tiles" data-pre></div>', f'id="cat-tiles" data-pre>{pre("cat-tiles")}</div>')
 HOME_PRE = ['grid', 'cat-tiles'] + [m for m in re.findall(r'id="([\w-]+)"[^>]*data-pre>', home_main) if m not in ('grid', 'cat-tiles')]
 home_main = re.sub(r'(id="(?!grid"|cat-tiles")([\w-]+)"[^>]*data-pre>)', lambda m: m.group(1) + pre(m.group(2)), home_main)

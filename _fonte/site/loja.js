@@ -35,6 +35,7 @@ const IMG = p => p.img ? A(p.img) : (p.items && p.items.length && byId(p.items[0
 const FULL = p => p.imgFull ? A(p.imgFull) : IMG(p);
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const fitText = v => { const [m, o] = String(v||"").split(" · "); if (!m) return ""; const t = /^tamanho/i.test(m) ? "Tamanho único" : (m.includes(" ao ") ? `Veste do ${m}` : `Veste ${m}`); return o ? `${t} · ${o}` : t; };
+const brandOf = p => p.brand && !/^(moda íntima|vibrador|kit ouse mais)$/i.test(p.brand) ? p.brand : "";
 const altOf = p => `${p.name}${p.brand && !p.items && !p.name.includes(p.brand) && !/^(moda íntima|vibrador)$/i.test(p.brand) ? ` – ${p.brand}` : ""}`;
 
 /* ---------- Sacola ---------- */
@@ -185,7 +186,7 @@ function cardHTML(p){
         ? `<div class="plate has-gal">${tagsHTML(p)}${galHTML(p,true)}</div>`
         : `<a class="plate" href="${href}" aria-label="Ver ${p.name}">${tagsHTML(p)}<img src="${IMG(p)}" alt="${altOf(p)}" loading="lazy"${p.imgFull?' class="photo"':''}></a>`}
       <div class="info">
-        <div class="brand">${p.brand}</div>
+        <div class="brand">${brandOf(p)}</div>
         <h3 class="name"><a href="${href}">${p.name}</a></h3>
         ${p.fits?`<div class="fits">${fitText(p.fits.split(" · ")[0])}</div>`:""}
         <ul class="specs">${p.specs.map(s=>`<li>${s}</li>`).join("")}</ul>
@@ -460,7 +461,7 @@ function renderProduct(){
   <article class="pdp${p.soldOut?" sold":""}">
     <div class="pdp-media">${tagsHTML(p)}${hasGal(p) ? galHTML(p,false) : `<img class="pdp-img" src="${FULL(p)}" alt="${altOf(p)}" fetchpriority="high">`}${thumbsHTML(p)}</div>
     <div class="pdp-info">
-      ${p.brand?`<div class="brand">${p.brand}</div>`:""}
+      ${brandOf(p)?`<div class="brand">${brandOf(p)}</div>`:""}
       <h1>${p.name}</h1>
       ${p.fits?`<p class="fits">${fitText(p.fits)}</p>`:""}
       <p class="pdp-desc">${p.desc}</p>
@@ -509,7 +510,7 @@ function renderCart(){
   $("c-lines").innerHTML = ids.length ? ids.map(k=>{ const p=P(k), q=cart[k]; return `
     <li class="line">
       <a href="${purl(p)}" tabindex="-1" aria-hidden="true"><img src="${IMG(p)}" alt=""></a>
-      <div><div class="lb">${p.brand}</div><a class="ln" href="${purl(p)}">${p.name}</a>${lineLabel(k)?`<div class="lv">${lineLabel(k)}${p.variants.note?` · ${p.variants.note}`:""}</div>`:""}<div class="lp">${p.price!=null?brl(p.price*q):"Preço sob consulta"}</div></div>
+      <div><div class="lb">${brandOf(p)}</div><a class="ln" href="${purl(p)}">${p.name}</a>${lineLabel(k)?`<div class="lv">${lineLabel(k)}${p.variants.note?` · ${p.variants.note}`:""}</div>`:""}<div class="lp">${p.price!=null?brl(p.price*q):"Preço sob consulta"}</div></div>
       ${qtyHTML(k,q)}
     </li>`;}).join("") : `<li class="empty">Sua sacola está vazia. Toque em “+ Adicionar” nos produtos ou kits para montar o pedido.</li>`;
   $("c-foot").hidden = !ids.length;
@@ -686,6 +687,7 @@ function pruneCart(){ let ch = false; for (const k in cart){ const p = P(k); if 
 function applySheets(d){
   if (!d.catalogo || !applyCatalog(d.catalogo)) return false;
   // kit: preço "de" = soma dos itens separados, quando todos têm preço
+  PRODUCTS.filter(k=>k.items).forEach(k=>{ if (k.items.some(i=>byId(i) && byId(i).soldOut)) k.soldOut = true; });
   PRODUCTS.filter(k=>k.items).forEach(k=>{ if (k.oldPrice) return; const ps = k.items.map(i=>byId(i)?.price); k.oldPrice = ps.length && ps.every(x=>x!=null) ? ps.reduce((a,b)=>a+b,0) : null; });
   if (d.entrega){
     const m = {}; d.entrega.slice(1).forEach(r=>{ m[norm(r[0]||"")] = clean(r[1]); });

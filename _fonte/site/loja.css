@@ -732,3 +732,8 @@ body{overflow-x:clip}
 .ch-art.trio.fotos img:nth-child(2){width:36%}
 .ch-art.trio img[src$=".webp"]{mix-blend-mode:normal;filter:drop-shadow(0 14px 18px rgba(42,20,48,.22))}
 @media (max-width:560px){.cats .cat-tiles.row-scroll{margin-inline:-16px;padding-inline:16px;scroll-padding-inline:16px}}
+
+/* áreas de toque maiores no celular */
+.crumbs a{display:inline-block;padding:6px 2px}
+.pdp-wa{padding:8px 0}
+.catlink{display:inline-block;padding:6px 0}
