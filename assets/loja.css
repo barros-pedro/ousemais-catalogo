@@ -714,3 +714,12 @@ body{overflow-x:clip}
 .vb-intro:has(.vb-foto)::after{height:calc(100% - 290px)}
 @media (max-width:1000px){.vb-foto{position:relative;left:auto;right:auto;bottom:auto;height:auto;aspect-ratio:4/3;margin:18px 0 18px}.vb-intro:has(.vb-foto)::after{display:none}}
 @media (max-width:560px){.vb-intro:has(.vb-foto){display:flex;padding-bottom:0}.vb-foto{width:100%;margin:18px 0}}
+@media (max-width:1000px){
+  .vb-intro:has(.vb-foto){display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;padding:26px 18px 18px;grid-template-columns:none;grid-template-areas:none}
+  .vb-intro:has(.vb-foto) .vb-it{width:100%;align-self:stretch}
+  .vb-intro:has(.vb-foto) .vb-foto{position:relative;inset:auto;width:100%;max-width:560px;align-self:center;margin:18px 0 0}
+}
+.vb-intro .vb-it{max-width:none;width:100%}
+.vb-intro .vb-it > span{margin-inline:auto}
+.vb-intro .vb-foto{max-width:none}
+@media (max-width:1000px){.vb-intro:has(.vb-foto) .vb-foto{max-width:560px}}
