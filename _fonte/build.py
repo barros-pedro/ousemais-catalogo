@@ -188,8 +188,8 @@ if os.path.exists(_imp):
 cats_js = [{k: c.get(k, '') for k in ('id', 'slug', 'label', 'title', 'intro', 'capa', 'cheia', 'cor', 'fileira', 'tileimg', 'trio') if c.get(k)} for c in CATS]
 JS_OUT = JS.replace('/*CATEGORIAS*/[]', json.dumps(cats_js, ensure_ascii=False))
 JS_OUT = JS_OUT.replace('/*CORES*/{}', json.dumps(CORES))
-# foto de cada cor (só onde a foto mostra exatamente aquela cor)
-JS_OUT = JS_OUT.replace('/*FOTOSCOR*/{}', json.dumps(json.load(open(os.path.join(S, 'fotos-cor.json'), encoding='utf-8'))))
+# foto de cada opção (cor, aroma, modelo…), só onde a foto mostra exatamente aquela opção
+JS_OUT = JS_OUT.replace('/*FOTOSCOR*/{}', json.dumps(json.load(open(os.path.join(S, 'fotos-opcao.json'), encoding='utf-8'))))
 assert JS_OUT != JS, 'marcador /*CATEGORIAS*/ não encontrado no loja.js'
 V = hashlib.sha1((CSS + JS_OUT).encode()).hexdigest()[:10]
 wr(os.path.join(RAIZ, 'assets', 'loja.css'), CSS)
