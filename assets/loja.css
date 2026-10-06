@@ -602,7 +602,7 @@ body{overflow-x:clip}
 .vd-assure li::before{content:"✓ ";color:var(--vc)}
 .vd-fig{position:relative;margin:0;aspect-ratio:1/1;display:grid;place-items:center}
 .vd-halo{position:absolute;inset:5%;border-radius:50%;background:radial-gradient(circle at 50% 45%,#fff 0%,var(--vf) 48%,transparent 72%)}
-.vd-fig img{position:relative;max-width:76%;max-height:84%;width:auto;object-fit:contain;filter:drop-shadow(0 30px 36px rgba(42,20,48,.25));animation:vdfloat 6s ease-in-out infinite}
+.vd-fig img{position:relative;max-width:76%;max-height:74%;width:auto;object-fit:contain;filter:drop-shadow(0 30px 36px rgba(42,20,48,.25));animation:vdfloat 6s ease-in-out infinite}
 .vd-fig.base{place-items:end center}
 .vd-fig.base .vd-halo{inset:5% 5% 0}
 .vd-fig.base img{max-height:84%;animation:none;filter:none;-webkit-mask-image:linear-gradient(to bottom,#000 72%,transparent 99%);mask-image:linear-gradient(to bottom,#000 72%,transparent 99%)}
@@ -704,3 +704,10 @@ body{overflow-x:clip}
   .foot .phone{display:none}
   .contact{align-items:center}
 }
+
+/* foto no card de abertura dos vibradores */
+.vb-foto{position:absolute;left:16px;right:16px;bottom:16px;height:calc(100% - 290px);min-height:200px;border-radius:18px;overflow:hidden;box-shadow:0 18px 30px -18px rgba(80,0,40,.6)}
+.vb-foto img{width:100%;height:100%;object-fit:cover;display:block}
+.vb-intro:has(.vb-foto)::after{height:calc(100% - 290px)}
+@media (max-width:1000px){.vb-foto{position:relative;left:auto;right:auto;bottom:auto;height:auto;aspect-ratio:4/3;margin:18px 0 18px}.vb-intro:has(.vb-foto)::after{display:none}}
+@media (max-width:560px){.vb-intro:has(.vb-foto){display:flex;padding-bottom:0}.vb-foto{width:100%;margin:18px 0}}
