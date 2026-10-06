@@ -262,8 +262,25 @@ function renderGrid(){
 }
 function renderTiles(){
   const t = $("cat-tiles"); if (!t || !READY) return;
+  const x = t.scrollLeft;
   t.innerHTML = tilesHTML(PAGE.type==="cat" ? PAGE.cat : null);
+  t.scrollLeft = x;
   const box = t.closest("section"); if (box) box.hidden = !t.innerHTML.trim();
+  t.classList.add("row-scroll"); wireRows();
+  // carrossel: passa sozinho devagar; para quando a pessoa mexe
+  if (!t.dataset.auto && !reduce){
+    t.dataset.auto = 1;
+    let pause = false, timer;
+    const stop = () => { pause = true; clearTimeout(timer); timer = setTimeout(()=>{ pause = false; }, 8000); };
+    ["pointerdown","wheel","touchstart","mouseenter","focusin"].forEach(ev=>t.parentNode.addEventListener(ev, stop, {passive:true}));
+    setInterval(()=>{
+      if (pause || document.hidden || t.scrollWidth <= t.clientWidth + 4) return;
+      const r = t.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return;
+      const step = (t.firstElementChild ? t.firstElementChild.getBoundingClientRect().width : 150) + 12;
+      if (t.scrollLeft + t.clientWidth >= t.scrollWidth - 4) t.scrollTo({left:0, behavior:"smooth"});
+      else t.scrollBy({left:step, behavior:"smooth"});
+    }, 2600);
+  }
 }
 function renderCatHero(){
   const h = $("cat-hero"); if (!h || !READY) return;
