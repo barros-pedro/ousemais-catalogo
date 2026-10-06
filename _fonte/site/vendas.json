@@ -2,124 +2,781 @@
  "_vitrine": {
   "titulo": "Vibradores da Ouse",
   "texto": "Brinquedos escolhidos a dedo pela loja para você se jogar sem medo, a sós ou a dois.",
-  "bolhas": ["porquinho", "varinha-magica", "golfinho"]
+  "bolhas": [
+   "porquinho",
+   "varinha-magica",
+   "golfinho"
+  ]
  },
  "vibrador-curvo": {
   "indexar": true,
-  "cor": "#e6197f", "fundo": "#ffe0ee",
+  "cor": "#e6197f",
+  "fundo": "#ffe0ee",
   "img": "img/venda/vibrador-curvo.webp",
   "eyebrow": "Novo na Ouse Mais",
   "tagline": "Feito para acompanhar o seu corpo.",
-  "callouts": ["Ponta fina e arredondada", "Corpo maior, que preenche", "Curva em U"],
-  "destaques": [["Silicone", "Toque macio, liso e fácil de limpar"], ["Em U", "Formato que se adapta ao corpo"], ["A sós ou a dois", "Para explorar no seu ritmo"], ["Sigiloso", "Chega sem identificação do conteúdo"]],
-  "historias": [
-   {"kicker": "Design", "titulo": "Uma curva pensada para encaixar.", "texto": "De um lado, uma ponta fina e arredondada. Do outro, um corpo maior e macio. A curva em U une os dois e acompanha o formato do corpo, sem ângulos nem quinas.", "img": "recorte", "tema": "fundo"},
-   {"kicker": "Material", "titulo": "Silicone macio. Do jeito que tem que ser.", "texto": "O silicone tem toque aveludado e é liso, sem poros onde a sujeira se acumula. Use sempre lubrificante à base de água, que não danifica o material.", "tema": "lilas", "selo": "Silicone"},
-   {"kicker": "Do seu jeito", "titulo": "A sós ou a dois. Você escolhe o ritmo.", "texto": "Para quem está começando a explorar ou para quem quer trazer uma novidade para o casal. Quer saber os modos de vibração e como ele é controlado? A gente explica tudo no WhatsApp, sem constrangimento.", "tema": "branco", "centro": true}
+  "callouts": [
+   "Ponta fina e arredondada",
+   "Corpo maior, que preenche",
+   "Curva em U"
   ],
-  "passos": [["Lave antes", "Siga as instruções da embalagem e seque bem."], ["Use lubrificante à base de água", "Deixa tudo mais confortável e não danifica o silicone."], ["Encontre a posição", "Teste com calma e ajuste a curva ao seu corpo."], ["Limpe e guarde", "Depois de seco, guarde num saquinho, separado de outros brinquedos."]],
+  "destaques": [
+   [
+    "Silicone",
+    "Toque macio, liso e fácil de limpar"
+   ],
+   [
+    "Em U",
+    "Formato que se adapta ao corpo"
+   ],
+   [
+    "A sós ou a dois",
+    "Para explorar no seu ritmo"
+   ],
+   [
+    "Sigiloso",
+    "Chega sem identificação do conteúdo"
+   ]
+  ],
+  "historias": [
+   {
+    "kicker": "Design",
+    "titulo": "Uma curva pensada para encaixar.",
+    "texto": "De um lado, uma ponta fina e arredondada. Do outro, um corpo maior e macio. A curva em U une os dois e acompanha o formato do corpo, sem ângulos nem quinas.",
+    "img": "recorte",
+    "tema": "fundo"
+   },
+   {
+    "kicker": "Material",
+    "titulo": "Silicone macio. Do jeito que tem que ser.",
+    "texto": "O silicone tem toque aveludado e é liso, sem poros onde a sujeira se acumula. Use sempre lubrificante à base de água, que não danifica o material.",
+    "tema": "lilas",
+    "selo": "Silicone"
+   },
+   {
+    "kicker": "Do seu jeito",
+    "titulo": "A sós ou a dois. Você escolhe o ritmo.",
+    "texto": "Para quem está começando a explorar ou para quem quer trazer uma novidade para o casal. Quer saber os modos de vibração e como ele é controlado? A gente explica tudo no WhatsApp, sem constrangimento.",
+    "tema": "branco",
+    "centro": true
+   }
+  ],
+  "passos": [
+   [
+    "Lave antes",
+    "Siga as instruções da embalagem e seque bem."
+   ],
+   [
+    "Use lubrificante à base de água",
+    "Deixa tudo mais confortável e não danifica o silicone."
+   ],
+   [
+    "Encontre a posição",
+    "Teste com calma e ajuste a curva ao seu corpo."
+   ],
+   [
+    "Limpe e guarde",
+    "Depois de seco, guarde num saquinho, separado de outros brinquedos."
+   ]
+  ],
   "par": "love-lub-neutro",
-  "specs": [["Material", "Silicone"], ["Cor", "Rosa"], ["Formato", "Curvo, em U"], ["Modos de vibração", null], ["Como controla", null], ["Bateria e recarga", null], ["Resistente à água", null], ["Medidas", null]],
-  "card": {"titulo": "Vibrador Curvo", "sub": "Em U, de silicone", "texto": "Formato que acompanha o corpo, com toque macio de silicone.", "cor": "#fcd3e3", "tinta": "#b0125f", "largo": true}
+  "specs": [
+   [
+    "Material",
+    "Silicone"
+   ],
+   [
+    "Cor",
+    "Rosa"
+   ],
+   [
+    "Formato",
+    "Curvo, em U"
+   ],
+   [
+    "Modos de vibração",
+    null
+   ],
+   [
+    "Como controla",
+    null
+   ],
+   [
+    "Bateria e recarga",
+    null
+   ],
+   [
+    "Resistente à água",
+    null
+   ],
+   [
+    "Medidas",
+    null
+   ]
+  ],
+  "card": {
+   "titulo": "Vibrador Curvo",
+   "sub": "Em U, de silicone",
+   "texto": "Formato que acompanha o corpo, com toque macio de silicone.",
+   "cor": "#fcd3e3",
+   "tinta": "#b0125f",
+   "largo": true
+  }
  },
  "bullet-controle": {
-  "cor": "#c2187a", "fundo": "#f9dcef",
+  "cor": "#c2187a",
+  "fundo": "#f9dcef",
   "img": "img/venda/bullet-controle.webp",
   "eyebrow": "Controle remoto sem fio",
   "tagline": "Então, quem vai segurar o controle?",
-  "callouts": ["Cápsula de 6,2 cm", "Controle sem fio", "12 modos de vibração"],
-  "destaques": [["12 modos", "Para variar o ritmo"], ["Sem fio", "Controle remoto separado"], ["6,2 cm", "Cápsula pequena e discreta"], ["Sigiloso", "Chega sem identificação do conteúdo"]],
-  "historias": [
-   {"kicker": "Controle remoto", "titulo": "O controle fica com quem você escolher.", "texto": "A cápsula vibra e o controle remoto, sem fio, vai para a sua mão ou para a mão de quem você quiser. Dá para usar a sós ou transformar em brincadeira a dois.", "img": "img/bullet-controle-3.jpg", "tema": "fundo"},
-   {"kicker": "12 modos", "titulo": "Doze jeitos de vibrar.", "texto": "São 12 modos de vibração para variar o ritmo e descobrir o que mais combina com você. É só ir trocando pelo controle.", "tema": "escuro", "selo": "12"},
-   {"kicker": "Tamanho", "titulo": "Pequena por fora. Do tamanho certo.", "texto": "A cápsula tem 6,2 cm de comprimento e 2,2 cm de largura. O controle tem 7 cm e cabe na palma da mão.", "img": "img/bullet-controle-2.jpg", "tema": "branco"}
+  "callouts": [
+   "Cápsula de 6,2 cm",
+   "Controle sem fio",
+   "12 modos de vibração"
   ],
-  "passos": [["Lave antes", "Siga as instruções da embalagem e seque bem."], ["Use lubrificante à base de água", "Deixa tudo mais confortável."], ["Escolha o modo", "Troque pelo controle até achar o seu ritmo."], ["Limpe e guarde", "Guarde a cápsula e o controle juntos, num saquinho."]],
+  "destaques": [
+   [
+    "12 modos",
+    "Para variar o ritmo"
+   ],
+   [
+    "Sem fio",
+    "Controle remoto separado"
+   ],
+   [
+    "6,2 cm",
+    "Cápsula pequena e discreta"
+   ],
+   [
+    "Sigiloso",
+    "Chega sem identificação do conteúdo"
+   ]
+  ],
+  "historias": [
+   {
+    "kicker": "Controle remoto",
+    "titulo": "O controle fica com quem você escolher.",
+    "texto": "A cápsula vibra e o controle remoto, sem fio, vai para a sua mão ou para a mão de quem você quiser. Dá para usar a sós ou transformar em brincadeira a dois.",
+    "img": "img/bullet-controle-3.jpg",
+    "tema": "fundo"
+   },
+   {
+    "kicker": "12 modos",
+    "titulo": "Doze jeitos de vibrar.",
+    "texto": "São 12 modos de vibração para variar o ritmo e descobrir o que mais combina com você. É só ir trocando pelo controle.",
+    "tema": "escuro",
+    "selo": "12"
+   },
+   {
+    "kicker": "Tamanho",
+    "titulo": "Pequena por fora. Do tamanho certo.",
+    "texto": "A cápsula tem 6,2 cm de comprimento e 2,2 cm de largura. O controle tem 7 cm e cabe na palma da mão.",
+    "img": "img/bullet-controle-2.jpg",
+    "tema": "branco"
+   }
+  ],
+  "passos": [
+   [
+    "Lave antes",
+    "Siga as instruções da embalagem e seque bem."
+   ],
+   [
+    "Use lubrificante à base de água",
+    "Deixa tudo mais confortável."
+   ],
+   [
+    "Escolha o modo",
+    "Troque pelo controle até achar o seu ritmo."
+   ],
+   [
+    "Limpe e guarde",
+    "Guarde a cápsula e o controle juntos, num saquinho."
+   ]
+  ],
   "par": "love-lub-neutro",
-  "specs": [["Marca", "Pretty Love"], ["Modos de vibração", "12"], ["Controle", "Remoto, sem fio"], ["Medidas da cápsula", "6,2 × 2,2 cm"], ["Medidas do controle", "7 × 3,5 cm"], ["Cor", "Pink"], ["Material", null], ["Bateria e recarga", null], ["Resistente à água", null]],
-  "card": {"titulo": "Cápsula com controle", "sub": "Controle remoto sem fio", "texto": "12 modos de vibração e o controle na mão de quem você escolher.", "cor": "#e7dafc", "tinta": "#5b2aa0"}
+  "specs": [
+   [
+    "Marca",
+    "Pretty Love"
+   ],
+   [
+    "Modos de vibração",
+    "12"
+   ],
+   [
+    "Controle",
+    "Remoto, sem fio"
+   ],
+   [
+    "Medidas da cápsula",
+    "6,2 × 2,2 cm"
+   ],
+   [
+    "Medidas do controle",
+    "7 × 3,5 cm"
+   ],
+   [
+    "Cor",
+    "Pink"
+   ],
+   [
+    "Material",
+    null
+   ],
+   [
+    "Bateria e recarga",
+    null
+   ],
+   [
+    "Resistente à água",
+    null
+   ]
+  ],
+  "card": {
+   "titulo": "Cápsula com controle",
+   "sub": "Controle remoto sem fio",
+   "texto": "12 modos de vibração e o controle na mão de quem você escolher.",
+   "cor": "#e7dafc",
+   "tinta": "#5b2aa0"
+  }
  },
  "varinha-magica": {
-  "cor": "#d9577a", "fundo": "#fde6ea",
+  "cor": "#d9577a",
+  "fundo": "#fde6ea",
   "img": "img/venda/varinha-magica.webp",
   "eyebrow": "Recarregável por USB",
   "tagline": "Macia, silenciosa e sempre carregada.",
-  "callouts": ["Cabeça arredondada", "Toque aveludado", "Botões no corpo"],
-  "destaques": [["10 modos", "De vibração"], ["USB", "Recarregável, sem pilha"], ["Silenciosa", "Discreta até no som"], ["10 cm", "Cabe na bolsa"]],
-  "historias": [
-   {"kicker": "Toque", "titulo": "Macia do jeito que tem que ser.", "texto": "Feita de silicone e ABS, com toque macio e aveludado. A cabeça arredondada foi pensada para o clitóris e os mamilos, a sós ou acompanhada.", "img": "recorte", "tema": "fundo"},
-   {"kicker": "Modos", "titulo": "Dez modos para você descobrir.", "texto": "São 10 modos de vibração para ir testando com calma até encontrar o seu preferido. E ela é silenciosa: ninguém precisa ouvir.", "tema": "lilas", "selo": "10"},
-   {"kicker": "Recarga", "titulo": "Acabou a bateria? É só ligar no USB.", "texto": "Nada de pilha: a varinha recarrega pelo cabo USB, no carregador do celular ou no computador.", "img": "img/varinha-magica-v2-3.jpg", "tema": "branco"}
+  "callouts": [
+   "Cabeça arredondada",
+   "Toque aveludado",
+   "Botões no corpo"
   ],
-  "passos": [["Carregue antes", "Ligue no cabo USB antes da primeira vez."], ["Lave antes", "Siga as instruções da embalagem e seque bem."], ["Escolha o modo", "Comece pelo mais suave e vá trocando."], ["Limpe e guarde", "Guarde num saquinho, separada de outros brinquedos."]],
+  "destaques": [
+   [
+    "10 modos",
+    "De vibração"
+   ],
+   [
+    "USB",
+    "Recarregável, sem pilha"
+   ],
+   [
+    "Silenciosa",
+    "Discreta até no som"
+   ],
+   [
+    "10 cm",
+    "Cabe na bolsa"
+   ]
+  ],
+  "historias": [
+   {
+    "kicker": "Toque",
+    "titulo": "Macia do jeito que tem que ser.",
+    "texto": "Feita de silicone e ABS, com toque macio e aveludado. A cabeça arredondada foi pensada para o clitóris e os mamilos, a sós ou acompanhada.",
+    "img": "recorte",
+    "tema": "fundo"
+   },
+   {
+    "kicker": "Modos",
+    "titulo": "Dez modos para você descobrir.",
+    "texto": "São 10 modos de vibração para ir testando com calma até encontrar o seu preferido. E ela é silenciosa: ninguém precisa ouvir.",
+    "tema": "lilas",
+    "selo": "10"
+   },
+   {
+    "kicker": "Recarga",
+    "titulo": "Acabou a bateria? É só ligar no USB.",
+    "texto": "Nada de pilha: a varinha recarrega pelo cabo USB, no carregador do celular ou no computador.",
+    "img": "img/varinha-magica-v2-3.jpg",
+    "tema": "branco"
+   }
+  ],
+  "passos": [
+   [
+    "Carregue antes",
+    "Ligue no cabo USB antes da primeira vez."
+   ],
+   [
+    "Lave antes",
+    "Siga as instruções da embalagem e seque bem."
+   ],
+   [
+    "Escolha o modo",
+    "Comece pelo mais suave e vá trocando."
+   ],
+   [
+    "Limpe e guarde",
+    "Guarde num saquinho, separada de outros brinquedos."
+   ]
+  ],
   "par": "love-lub-neutro",
-  "specs": [["Material", "Silicone e ABS"], ["Modos de vibração", "10"], ["Recarga", "Por cabo USB"], ["Medidas", "4,2 × 10 cm"], ["Cor", "Rosa claro"], ["Barulho", "Silenciosa"], ["Tempo de bateria", null], ["Resistente à água", null]],
-  "card": {"titulo": "Varinha Mágica", "sub": "Massageadora recarregável", "texto": "10 modos, silenciosa e com toque aveludado.", "cor": "#d4eefa", "tinta": "#1f6a92"}
+  "specs": [
+   [
+    "Material",
+    "Silicone e ABS"
+   ],
+   [
+    "Modos de vibração",
+    "10"
+   ],
+   [
+    "Recarga",
+    "Por cabo USB"
+   ],
+   [
+    "Medidas",
+    "4,2 × 10 cm"
+   ],
+   [
+    "Cor",
+    "Rosa claro"
+   ],
+   [
+    "Barulho",
+    "Silenciosa"
+   ],
+   [
+    "Tempo de bateria",
+    null
+   ],
+   [
+    "Resistente à água",
+    null
+   ]
+  ],
+  "card": {
+   "titulo": "Varinha Mágica",
+   "sub": "Massageadora recarregável",
+   "texto": "10 modos, silenciosa e com toque aveludado.",
+   "cor": "#d4eefa",
+   "tinta": "#1f6a92"
+  }
  },
  "porquinho": {
-  "cor": "#e8708f", "fundo": "#ffe9ee",
+  "cor": "#e8708f",
+  "fundo": "#ffe9ee",
   "img": "img/venda/porquinho.webp",
   "eyebrow": "Discreto e recarregável",
   "tagline": "Fofo por fora. Ousado por dentro.",
-  "callouts": ["Carinha de bichinho", "Recarga por USB", "Ponta escondida embaixo"],
-  "destaques": [["Disfarçado", "Ninguém desconfia"], ["USB", "Recarregável, com cabo"], ["Clitóris", "E mamilos"], ["Sigiloso", "Chega sem identificação do conteúdo"]],
-  "historias": [
-   {"kicker": "Disfarce", "titulo": "Parece enfeite. Não é.", "texto": "Em cima da mesa de cabeceira, ele passa por um bichinho de decoração. Ninguém desconfia do que é.", "img": "recorte", "tema": "fundo"},
-   {"kicker": "Por baixo", "titulo": "A surpresa fica embaixo.", "texto": "Tirando a parte de baixo, aparece a ponta que estimula o clitóris e os mamilos.", "img": "img/porquinho-v2-2.jpg", "tema": "branco"},
-   {"kicker": "Recarga", "titulo": "Recarregável. O cabo vem junto.", "texto": "Sem pilha: ele recarrega pelo cabo USB que acompanha o produto.", "tema": "lilas", "selo": "USB"}
+  "callouts": [
+   "Carinha de bichinho",
+   "Recarga por USB",
+   "Ponta escondida embaixo"
   ],
-  "passos": [["Carregue antes", "Ligue no cabo USB antes da primeira vez."], ["Lave antes", "Siga as instruções da embalagem e seque bem."], ["Comece devagar", "Teste com calma e descubra o que funciona para você."], ["Limpe e guarde", "Encaixe a tampa e guarde num saquinho."]],
+  "destaques": [
+   [
+    "Disfarçado",
+    "Ninguém desconfia"
+   ],
+   [
+    "USB",
+    "Recarregável, com cabo"
+   ],
+   [
+    "Clitóris",
+    "E mamilos"
+   ],
+   [
+    "Sigiloso",
+    "Chega sem identificação do conteúdo"
+   ]
+  ],
+  "historias": [
+   {
+    "kicker": "Disfarce",
+    "titulo": "Parece enfeite. Não é.",
+    "texto": "Em cima da mesa de cabeceira, ele passa por um bichinho de decoração. Ninguém desconfia do que é.",
+    "img": "recorte",
+    "tema": "fundo"
+   },
+   {
+    "kicker": "Por baixo",
+    "titulo": "A surpresa fica embaixo.",
+    "texto": "Tirando a parte de baixo, aparece a ponta que estimula o clitóris e os mamilos.",
+    "img": "img/porquinho-v2-2.jpg",
+    "tema": "branco"
+   },
+   {
+    "kicker": "Recarga",
+    "titulo": "Recarregável. O cabo vem junto.",
+    "texto": "Sem pilha: ele recarrega pelo cabo USB que acompanha o produto.",
+    "tema": "lilas",
+    "selo": "USB"
+   }
+  ],
+  "passos": [
+   [
+    "Carregue antes",
+    "Ligue no cabo USB antes da primeira vez."
+   ],
+   [
+    "Lave antes",
+    "Siga as instruções da embalagem e seque bem."
+   ],
+   [
+    "Comece devagar",
+    "Teste com calma e descubra o que funciona para você."
+   ],
+   [
+    "Limpe e guarde",
+    "Encaixe a tampa e guarde num saquinho."
+   ]
+  ],
   "par": "love-lub-neutro",
-  "specs": [["Indicado para", "Clitóris e mamilos"], ["Recarga", "Por cabo USB (acompanha)"], ["Cor", "Rosa"], ["Modos", null], ["Material", null], ["Medidas", null], ["Resistente à água", null]],
-  "card": {"titulo": "Porquinho", "sub": "Estimulador de clitóris", "texto": "Fofo e discreto: ninguém desconfia do que é.", "cor": "#fde0e2", "tinta": "#c0335a"}
+  "specs": [
+   [
+    "Indicado para",
+    "Clitóris e mamilos"
+   ],
+   [
+    "Recarga",
+    "Por cabo USB (acompanha)"
+   ],
+   [
+    "Cor",
+    "Rosa"
+   ],
+   [
+    "Modos",
+    null
+   ],
+   [
+    "Material",
+    null
+   ],
+   [
+    "Medidas",
+    null
+   ],
+   [
+    "Resistente à água",
+    null
+   ]
+  ],
+  "card": {
+   "titulo": "Porquinho",
+   "sub": "Estimulador de clitóris",
+   "texto": "Fofo e discreto: ninguém desconfia do que é.",
+   "cor": "#fde0e2",
+   "tinta": "#c0335a"
+  }
  },
  "sugador-clitoris": {
-  "cor": "#b5487a", "fundo": "#f6dde9",
+  "cor": "#b5487a",
+  "fundo": "#f6dde9",
   "img": "img/venda/sugador-clitoris.webp",
   "eyebrow": "Estímulo por sucção",
   "tagline": "Sucção que envolve, sem penetração.",
-  "callouts": ["Bocal de sucção", "Botão de controle", "Encaixa na mão"],
-  "destaques": [["Sucção", "Em vez de vibração comum"], ["Externo", "Sem penetração"], ["Clitóris", "E mamilos"], ["Sigiloso", "Chega sem identificação do conteúdo"]],
-  "historias": [
-   {"kicker": "Como funciona", "titulo": "O bocal encaixa. A sucção faz o resto.", "texto": "O bocal se encaixa sobre o clitóris ou os mamilos e faz sucção, um estímulo diferente da vibração comum.", "img": "recorte", "tema": "fundo"},
-   {"kicker": "Sem penetração", "titulo": "Todo o foco no estímulo externo.", "texto": "Para quem prefere o estímulo por fora ou quer descobrir uma sensação nova, a sós ou a dois.", "img": "img/sugador-clitoris.jpg", "tema": "branco"}
+  "callouts": [
+   "Bocal de sucção",
+   "Botão de controle",
+   "Encaixa na mão"
   ],
-  "passos": [["Lave antes", "Siga as instruções da embalagem e seque bem."], ["Use um pouco de lubrificante", "À base de água, no bocal: ajuda a vedar e deixa mais gostoso."], ["Encaixe o bocal", "Posicione sobre o clitóris ou o mamilo e ligue."], ["Limpe e guarde", "Limpe bem o bocal e guarde num saquinho."]],
+  "destaques": [
+   [
+    "Sucção",
+    "Em vez de vibração comum"
+   ],
+   [
+    "Externo",
+    "Sem penetração"
+   ],
+   [
+    "Clitóris",
+    "E mamilos"
+   ],
+   [
+    "Sigiloso",
+    "Chega sem identificação do conteúdo"
+   ]
+  ],
+  "historias": [
+   {
+    "kicker": "Como funciona",
+    "titulo": "O bocal encaixa. A sucção faz o resto.",
+    "texto": "O bocal se encaixa sobre o clitóris ou os mamilos e faz sucção, um estímulo diferente da vibração comum.",
+    "img": "recorte",
+    "tema": "fundo"
+   },
+   {
+    "kicker": "Sem penetração",
+    "titulo": "Todo o foco no estímulo externo.",
+    "texto": "Para quem prefere o estímulo por fora ou quer descobrir uma sensação nova, a sós ou a dois.",
+    "img": "img/sugador-clitoris.jpg",
+    "tema": "branco"
+   }
+  ],
+  "passos": [
+   [
+    "Lave antes",
+    "Siga as instruções da embalagem e seque bem."
+   ],
+   [
+    "Use um pouco de lubrificante",
+    "À base de água, no bocal: ajuda a vedar e deixa mais gostoso."
+   ],
+   [
+    "Encaixe o bocal",
+    "Posicione sobre o clitóris ou o mamilo e ligue."
+   ],
+   [
+    "Limpe e guarde",
+    "Limpe bem o bocal e guarde num saquinho."
+   ]
+  ],
   "par": "love-lub-neutro",
-  "specs": [["Tipo de estímulo", "Sucção"], ["Indicado para", "Clitóris e mamilos"], ["Modos", null], ["Bateria e recarga", null], ["Material", null], ["Resistente à água", null]],
-  "card": {"titulo": "Sugador", "sub": "Clitóris e mamilos", "texto": "Bocal de sucção que envolve, sem penetração.", "cor": "#f0d6f6", "tinta": "#86307f", "largo": true}
+  "specs": [
+   [
+    "Tipo de estímulo",
+    "Sucção"
+   ],
+   [
+    "Indicado para",
+    "Clitóris e mamilos"
+   ],
+   [
+    "Modos",
+    null
+   ],
+   [
+    "Bateria e recarga",
+    null
+   ],
+   [
+    "Material",
+    null
+   ],
+   [
+    "Resistente à água",
+    null
+   ]
+  ],
+  "card": {
+   "titulo": "Sugador",
+   "sub": "Clitóris e mamilos",
+   "texto": "Bocal de sucção que envolve, sem penetração.",
+   "cor": "#f0d6f6",
+   "tinta": "#86307f",
+   "largo": true
+  }
  },
  "golfinho": {
-  "cor": "#e0302e", "fundo": "#ffe4dc",
-  "img": "img/venda/golfinho.webp", "base": true,
+  "cor": "#e6197f",
+  "fundo": "#ffe0ee",
+  "img": "img/venda/golfinho.webp",
   "eyebrow": "Mini vibrador",
   "tagline": "Pequeno, discreto e no ponto certo.",
-  "callouts": ["Ponta curvada", "Toque aveludado", "Liga e desliga na base"],
-  "destaques": [["Mini", "Pequeno e discreto"], ["Ponto G", "Ponta curvada"], ["Pilha AA", "Simples de usar"], ["3 cores", "Rosa, roxo e vermelho"]],
-  "historias": [
-   {"kicker": "Formato", "titulo": "A curva certa para o ponto G.", "texto": "A ponta curvada, em formato de golfinho, foi pensada para estimular o ponto G e o clitóris. Tem toque aveludado e é pequeno, fácil de guardar.", "img": "img/golfinho-v2-3.jpg", "tema": "fundo"},
-   {"kicker": "Cores", "titulo": "Rosa, roxo ou vermelho.", "texto": "Escolha a sua cor lá em cima, na hora de colocar na sacola.", "img": "img/golfinho-v2-2.jpg", "tema": "branco"},
-   {"kicker": "Simples", "titulo": "Liga, desliga e pronto.", "texto": "O controle fica na base e ele funciona com pilha AA. Um bom primeiro vibrador para quem está começando.", "tema": "lilas", "selo": "AA"}
+  "callouts": [
+   "Ponta curvada",
+   "Toque aveludado",
+   "Liga e desliga na base"
   ],
-  "passos": [["Coloque a pilha", "Ele funciona com pilha AA."], ["Lave antes", "Siga as instruções da embalagem e seque bem."], ["Use lubrificante à base de água", "Deixa tudo mais confortável."], ["Limpe e guarde", "Tire a pilha se for ficar muito tempo sem usar."]],
+  "destaques": [
+   [
+    "Mini",
+    "Pequeno e discreto"
+   ],
+   [
+    "Ponto G",
+    "Ponta curvada"
+   ],
+   [
+    "Pilha AA",
+    "Simples de usar"
+   ],
+   [
+    "3 cores",
+    "Rosa, roxo e vermelho"
+   ]
+  ],
+  "historias": [
+   {
+    "kicker": "Formato",
+    "titulo": "A curva certa para o ponto G.",
+    "texto": "A ponta curvada, em formato de golfinho, foi pensada para estimular o ponto G e o clitóris. Tem toque aveludado e é pequeno, fácil de guardar.",
+    "img": "img/golfinho-v2-3.jpg",
+    "tema": "fundo"
+   },
+   {
+    "kicker": "Cores",
+    "titulo": "Rosa, roxo ou vermelho.",
+    "texto": "Escolha a sua cor lá em cima, na hora de colocar na sacola.",
+    "img": "img/golfinho-roxo.jpg",
+    "tema": "branco"
+   },
+   {
+    "kicker": "Simples",
+    "titulo": "Liga, desliga e pronto.",
+    "texto": "O controle fica na base e ele funciona com pilha AA. Um bom primeiro vibrador para quem está começando.",
+    "tema": "lilas",
+    "selo": "AA"
+   }
+  ],
+  "passos": [
+   [
+    "Coloque a pilha",
+    "Ele funciona com pilha AA."
+   ],
+   [
+    "Lave antes",
+    "Siga as instruções da embalagem e seque bem."
+   ],
+   [
+    "Use lubrificante à base de água",
+    "Deixa tudo mais confortável."
+   ],
+   [
+    "Limpe e guarde",
+    "Tire a pilha se for ficar muito tempo sem usar."
+   ]
+  ],
   "par": "love-lub-neutro",
-  "specs": [["Marca", "Miss Collection"], ["Indicado para", "Ponto G e clitóris"], ["Alimentação", "Pilha AA"], ["Controle", "Liga e desliga na base"], ["Cores", "Rosa, roxo e vermelho"], ["Material", null], ["Medidas", null], ["Resistente à água", null]],
-  "card": {"titulo": "Golfinho", "sub": "Mini vibrador", "texto": "Ponta curvada para o ponto G, em três cores.", "cor": "#fde6c9", "tinta": "#b23a12"}
+  "specs": [
+   [
+    "Marca",
+    "Miss Collection"
+   ],
+   [
+    "Indicado para",
+    "Ponto G e clitóris"
+   ],
+   [
+    "Alimentação",
+    "Pilha AA"
+   ],
+   [
+    "Controle",
+    "Liga e desliga na base"
+   ],
+   [
+    "Cores",
+    "Rosa, roxo e vermelho"
+   ],
+   [
+    "Material",
+    null
+   ],
+   [
+    "Medidas",
+    null
+   ],
+   [
+    "Resistente à água",
+    null
+   ]
+  ],
+  "card": {
+   "titulo": "Golfinho",
+   "sub": "Mini vibrador",
+   "texto": "Ponta curvada para o ponto G, em três cores.",
+   "cor": "#fde6c9",
+   "tinta": "#b23a12"
+  }
  },
  "pincel-vibratorio": {
-  "cor": "#4a4a63", "fundo": "#ececf3",
-  "img": "img/venda/pincel-vibratorio.webp", "base": true,
+  "cor": "#4a4a63",
+  "fundo": "#ececf3",
+  "img": "img/venda/pincel-vibratorio.webp",
+  "base": true,
   "eyebrow": "Discreto",
   "tagline": "Parece maquiagem. Não é.",
-  "callouts": ["Cerdas macias", "10 velocidades", "Cabo de pincel"],
-  "destaques": [["10", "Velocidades"], ["Cerdas", "Macias"], ["Disfarçado", "Fica na nécessaire"], ["Sigiloso", "Chega sem identificação do conteúdo"]],
-  "historias": [
-   {"kicker": "Disfarce", "titulo": "Fica na nécessaire. Ninguém desconfia.", "texto": "Ele tem formato de pincel de maquiagem e pode ficar junto com as suas coisas sem levantar suspeita.", "img": "img/pincel-vibratorio.jpg", "tema": "fundo"},
-   {"kicker": "Sensação", "titulo": "Cerdas macias que vibram.", "texto": "As cerdas macias vibram e estimulam os mamilos e o clitóris com um toque leve, diferente de tudo.", "img": "recorte", "tema": "branco"},
-   {"kicker": "Velocidades", "titulo": "Dez velocidades.", "texto": "Comece devagar e vá aumentando até achar a intensidade certa para você.", "tema": "escuro", "selo": "10"}
+  "callouts": [
+   "Cerdas macias",
+   "10 velocidades",
+   "Cabo de pincel"
   ],
-  "passos": [["Limpe as cerdas", "Siga as instruções da embalagem."], ["Comece devagar", "Na velocidade mais baixa."], ["Explore com leveza", "Passe nos mamilos e no clitóris."], ["Guarde protegido", "Guarde com as cerdas cobertas, longe de poeira."]],
-  "specs": [["Formato", "Pincel de maquiagem"], ["Velocidades", "10"], ["Indicado para", "Mamilos e clitóris"], ["Alimentação", null], ["Material das cerdas", null], ["Resistente à água", null]],
-  "card": {"titulo": "Pincel Vibratório", "sub": "Cerdas que vibram", "texto": "Parece pincel de maquiagem: 10 velocidades e cerdas macias.", "cor": "#e6f4c6", "tinta": "#4e6a12"}
+  "destaques": [
+   [
+    "10",
+    "Velocidades"
+   ],
+   [
+    "Cerdas",
+    "Macias"
+   ],
+   [
+    "Disfarçado",
+    "Fica na nécessaire"
+   ],
+   [
+    "Sigiloso",
+    "Chega sem identificação do conteúdo"
+   ]
+  ],
+  "historias": [
+   {
+    "kicker": "Disfarce",
+    "titulo": "Fica na nécessaire. Ninguém desconfia.",
+    "texto": "Ele tem formato de pincel de maquiagem e pode ficar junto com as suas coisas sem levantar suspeita.",
+    "img": "img/pincel-vibratorio.jpg",
+    "tema": "fundo"
+   },
+   {
+    "kicker": "Sensação",
+    "titulo": "Cerdas macias que vibram.",
+    "texto": "As cerdas macias vibram e estimulam os mamilos e o clitóris com um toque leve, diferente de tudo.",
+    "img": "recorte",
+    "tema": "branco"
+   },
+   {
+    "kicker": "Velocidades",
+    "titulo": "Dez velocidades.",
+    "texto": "Comece devagar e vá aumentando até achar a intensidade certa para você.",
+    "tema": "escuro",
+    "selo": "10"
+   }
+  ],
+  "passos": [
+   [
+    "Limpe as cerdas",
+    "Siga as instruções da embalagem."
+   ],
+   [
+    "Comece devagar",
+    "Na velocidade mais baixa."
+   ],
+   [
+    "Explore com leveza",
+    "Passe nos mamilos e no clitóris."
+   ],
+   [
+    "Guarde protegido",
+    "Guarde com as cerdas cobertas, longe de poeira."
+   ]
+  ],
+  "specs": [
+   [
+    "Formato",
+    "Pincel de maquiagem"
+   ],
+   [
+    "Velocidades",
+    "10"
+   ],
+   [
+    "Indicado para",
+    "Mamilos e clitóris"
+   ],
+   [
+    "Alimentação",
+    null
+   ],
+   [
+    "Material das cerdas",
+    null
+   ],
+   [
+    "Resistente à água",
+    null
+   ]
+  ],
+  "card": {
+   "titulo": "Pincel Vibratório",
+   "sub": "Cerdas que vibram",
+   "texto": "Parece pincel de maquiagem: 10 velocidades e cerdas macias.",
+   "cor": "#e6f4c6",
+   "tinta": "#4e6a12"
+  }
  }
 }
