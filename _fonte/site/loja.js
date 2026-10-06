@@ -271,6 +271,8 @@ function renderCatHero(){
   const ps = c.id==="all" ? PRODUCTS : PRODUCTS.filter(p=>p.cat===c.id);
   const art = c.capa
     ? `<div class="ch-art photo"><img src="${A(c.capa)}" alt="${c.title} da Ouse Mais" fetchpriority="high"></div>`
+    : c.trio ? `<div class="ch-art trio">${c.trio.map((u,i)=>`<img src="${A(u)}" alt="${i?"":c.title+" da Ouse Mais"}"${i?' loading="lazy"':' fetchpriority="high"'}>`).join("")}</div>`
+    : c.cheia && ps.length ? `<div class="ch-art trio fotos">${ps.filter(p=>!p.items).slice(0,3).map((p,i)=>`<img src="${(CORES[p.id]||[])[2] ? `/img/recorte/${p.id}.jpg` : IMG(p)}" alt="${i?"":altOf(p)}"${i?' loading="lazy"':' fetchpriority="high"'}>`).join("")}</div>`
     : (ps.length ? `<div class="ch-art trio">${ps.filter(p=>!p.items).concat(ps.filter(p=>p.items)).slice(0,3).map((p,i)=>`<img src="${IMG(p)}" alt="${i?"":altOf(p)}"${i?' loading="lazy"':' fetchpriority="high"'}>`).join("")}</div>` : "");
   h.innerHTML = `<nav class="crumbs" aria-label="Você está em"><a href="/${Q}">Início</a><span aria-hidden="true">›</span><span aria-current="page">${c.id==="all" ? c.title : c.label}</span></nav>
     <div class="ch${art?"":" noart"}"><div class="ch-txt"><p class="eyebrow">Ouse Mais · Campestre/AL</p><h1>${c.title}</h1><p>${c.intro||(c.id==="all"?"Tudo o que a Ouse Mais tem para você, num lugar só. Use a busca ou escolha uma categoria para filtrar.":"")}</p>

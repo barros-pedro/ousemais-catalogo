@@ -77,9 +77,13 @@
   "title": "Vibradores",
   "desc": "Vibradores em silicone da Ouse Mais. Embalagem sigilosa e pedido pelo WhatsApp, em Campestre/AL.",
   "intro": "Vibradores para explorar o prazer a sós ou a dois. Com brinquedos de silicone, use lubrificante à base de água.",
-  "capa": "img/categorias/vibradores.jpg",
   "tileimg": "img/bullet-controle-estudio.jpg",
-  "cor": "#f9c6e3"
+  "cor": "#f9c6e3",
+  "trio": [
+   "img/venda/varinha-magica.webp",
+   "img/venda/bullet-controle.webp",
+   "img/venda/sugador-clitoris.webp"
+  ]
  },
  {
   "id": "kit",
