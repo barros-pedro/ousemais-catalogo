@@ -350,7 +350,7 @@ function saveProduct(token, obj) {
 }
 
 // Para revisar: tira o produto da lista de revisão (coluna Revisar do rascunho)
-function markReviewed(token, id) {
+function markReviewed(token, id, flag) {
   guard_(token);
   const lock = LockService.getDocumentLock();
   lock.waitLock(20000);
@@ -362,7 +362,7 @@ function markReviewed(token, id) {
     const iId = head.indexOf('Código'), iV = head.indexOf('Revisar');
     if (iV < 0) throw new Error('A planilha está sem a coluna Revisar.');
     for (let r = 1; r < values.length; r++) {
-      if (String(values[r][iId]).trim() === String(id)) sh.getRange(r + 1, iV + 1).setValue('');
+      if (String(values[r][iId]).trim() === String(id)) sh.getRange(r + 1, iV + 1).setValue(flag ? 'Sim' : '');
     }
     return { draft: readTab_(TAB_DRAFT) };
   } finally {

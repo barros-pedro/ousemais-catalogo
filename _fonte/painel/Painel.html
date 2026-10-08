@@ -75,6 +75,7 @@ header .sym{border-radius:50%;box-shadow:0 0 0 2px rgba(255,255,255,.55)}
 .tab-n{background:#1d4fa8;color:#fff;border-radius:999px;font-size:.72rem;min-width:20px;height:20px;padding:0 6px;display:inline-grid;place-items:center}
 .tab-n:empty{display:none}
 .rev-lead{background:#eef3ff;border:1px solid #cfdcf7;color:#23345c;border-radius:12px;padding:10px 12px;font-size:.9rem;margin:0 0 12px}
+.ed-torev{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px;font-size:.85rem;color:var(--muted)}
 .rvw{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:stretch}
 .ok-btn{border:1px solid #1d4fa8;background:#fff;color:#1d4fa8;border-radius:14px;font:inherit;font-weight:700;padding:0 14px;cursor:pointer;white-space:nowrap}
 .ok-btn:hover{background:#eef3ff}
@@ -307,6 +308,8 @@ details.hist summary{font-weight:700;cursor:pointer}
     <button type="button" class="x" data-close="ed" aria-label="Fechar">×</button>
     <h2 id="ed-title">Editar produto</h2>
     <div class="ed-rev" id="ed-rev" hidden><span>Este produto está em <b>Para revisar</b>.</span><button type="button" class="ok-btn" id="ed-ok" style="padding:8px 12px">✓ Revisado</button></div>
+    <div class="ed-torev" id="ed-torev" hidden><button type="button" class="btn ghost small" id="ed-send">⚑ Mandar para revisar</button><span>Coloca este produto na aba Para revisar, para conferir depois.</span></div>
+    <label class="ed-torev" id="ed-newrev" hidden><input type="checkbox" id="f-rev"> <span><b>Mandar para revisar</b> depois de salvar</span></label>
 
     <fieldset>
       <legend>Foto</legend>
@@ -672,6 +675,8 @@ function openEdit(p, isKit){
   media = String(editing.media||"").split(/\s+/).filter(u=>/^(https?:|img\/)/.test(u)).map(url=>({url})); renderMedia(); $("yt").value = "";
   renderPhoto(); if (kit){ $("kq").value = ""; renderKitPick(); }
   $("ed-rev").hidden = editing.review!=="Sim";
+  $("ed-torev").hidden = editing.review==="Sim" || !editing.id;
+  $("ed-newrev").hidden = !!editing.id; $("f-rev").checked = false;
   $("ed").hidden = false; $("ed").scrollTop = 0;
   // no celular não abre o teclado sozinho (o botão voltar fechava o painel)
   if (!matchMedia("(hover:none)").matches) setTimeout(()=>{ const a = document.activeElement; if (!a || a===document.body || !$("ed").contains(a)) $("f-name").focus(); }, 50);
@@ -719,6 +724,7 @@ async function onPhotoChange(){
 }
 function readForm(){
   const p = {...editing};
+  if (!editing.id && $("f-rev").checked) p.review = "Sim";
   p.name = $("f-name").value.trim(); p.cat = $("f-cat").value; p.brand = $("f-brand").value.trim(); p.tag = $("f-tag").value.trim();
   obFlushPending();
   p.desc = $("f-desc").value.trim(); p.specs = $("f-specs").value.trim(); p.opts = $("f-opts").value.trim();
@@ -1084,7 +1090,8 @@ $("q").addEventListener("input", renderList);
 $("fcat").addEventListener("change", renderList);
 $("add-prod").onclick = ()=>openEdit(null,false);
 $("add-kit").onclick = ()=>openEdit(null,true);
-$("ed-ok").onclick = async ()=>{ await okReview(editing.id); editing.review = ""; $("ed-rev").hidden = true; };
+$("ed-ok").onclick = async ()=>{ await okReview(editing.id); editing.review = ""; $("ed-rev").hidden = true; $("ed-torev").hidden = false; };
+$("ed-send").onclick = async ()=>{ await sendReview(editing.id); editing.review = "Sim"; $("ed-torev").hidden = true; $("ed-rev").hidden = false; };
 /* botão voltar do celular: fecha a janela aberta em vez de sair do painel */
 (function(){
   const H = window.google && google.script && google.script.history;
@@ -1100,7 +1107,8 @@ $("ed-ok").onclick = async ()=>{ await okReview(editing.id); editing.review = ""
 /* ---------------- abas: todos / para revisar ---------------- */
 let VIEW = "all";
 document.querySelectorAll(".tab").forEach(t=>t.onclick = ()=>{ VIEW = t.dataset.view; renderList(); });
-async function okReview(id){ const r = await call("markReviewed", [id], "Marcando como revisado…"); S.draft = r.draft; renderAll(); toast("Revisado ✓"); }
+async function okReview(id){ const r = await call("markReviewed", [id, false], "Marcando como revisado…"); S.draft = r.draft; renderAll(); toast("Revisado ✓"); }
+async function sendReview(id){ const r = await call("markReviewed", [id, true], "Mandando para revisar…"); S.draft = r.draft; renderAll(); toast("Está na aba Para revisar."); }
 $("list").addEventListener("click", e=>{ const b = e.target.closest("[data-ok]"); if (b){ e.stopPropagation(); okReview(b.dataset.ok); } }, true);
 /* ---------------- mais vendidos ---------------- */
 let RK = [];
