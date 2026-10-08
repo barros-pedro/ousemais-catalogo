@@ -68,6 +68,18 @@ header .sym{border-radius:50%;box-shadow:0 0 0 2px rgba(255,255,255,.55)}
 .rk-res button b{color:var(--accent,#d4136f)}
 .rk-info{margin-top:10px;font-size:.9rem;color:var(--muted)}
 .chip.top{background:#fff3cf;color:#8a5a00}
+.chip.rev{background:#e2ecff;color:#1d4fa8}
+.tabs{display:flex;gap:6px;margin:0 0 12px;border-bottom:1px solid var(--line)}
+.tab{border:0;background:none;font:inherit;font-weight:700;color:var(--muted);padding:10px 12px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;display:inline-flex;align-items:center;gap:6px}
+.tab[aria-selected="true"]{color:var(--mag);border-bottom-color:var(--mag)}
+.tab-n{background:#1d4fa8;color:#fff;border-radius:999px;font-size:.72rem;min-width:20px;height:20px;padding:0 6px;display:inline-grid;place-items:center}
+.tab-n:empty{display:none}
+.rev-lead{background:#eef3ff;border:1px solid #cfdcf7;color:#23345c;border-radius:12px;padding:10px 12px;font-size:.9rem;margin:0 0 12px}
+.rvw{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:stretch}
+.ok-btn{border:1px solid #1d4fa8;background:#fff;color:#1d4fa8;border-radius:14px;font:inherit;font-weight:700;padding:0 14px;cursor:pointer;white-space:nowrap}
+.ok-btn:hover{background:#eef3ff}
+.ed-rev{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#eef3ff;border:1px solid #cfdcf7;border-radius:12px;padding:10px 12px;margin:0 0 12px;font-size:.9rem;color:#23345c}
+@media (max-width:560px){.rvw{grid-template-columns:1fr}.ok-btn{padding:10px}}
 .adds .btn{flex:1}
 
 /* lista */
@@ -257,6 +269,11 @@ details.hist summary{font-weight:700;cursor:pointer}
 <main class="wrap">
   <div class="status clean" id="status"><div><b>Carregando…</b></div></div>
 
+  <div class="tabs" role="tablist" aria-label="Lista de produtos">
+    <button type="button" role="tab" class="tab" id="tab-all" data-view="all" aria-selected="true">Todos os produtos</button>
+    <button type="button" role="tab" class="tab" id="tab-rev" data-view="rev" aria-selected="false">Para revisar <span class="tab-n" id="rev-n"></span></button>
+  </div>
+  <div class="rev-lead" id="rev-lead" hidden>Produtos que o Claude cadastrou ou alterou. Abra, confira foto, texto, preço e estoque e toque em <b>✓ Revisado</b> para tirar da lista.</div>
   <div class="tools">
     <input type="search" id="q" placeholder="Buscar produto" aria-label="Buscar produto">
     <select id="fcat" aria-label="Filtrar por categoria"></select>
@@ -289,6 +306,7 @@ details.hist summary{font-weight:700;cursor:pointer}
   <form class="panel" id="form" novalidate>
     <button type="button" class="x" data-close="ed" aria-label="Fechar">×</button>
     <h2 id="ed-title">Editar produto</h2>
+    <div class="ed-rev" id="ed-rev" hidden><span>Este produto está em <b>Para revisar</b>.</span><button type="button" class="ok-btn" id="ed-ok" style="padding:8px 12px">✓ Revisado</button></div>
 
     <fieldset>
       <legend>Foto</legend>
@@ -577,19 +595,25 @@ function renderStatus(){
 function renderList(){
   const q = norm($("q").value), fc = $("fcat").value;
   const d = {}; diffs().forEach(x=>d[x.p.id]=x.kind);
-  const list = S.draft.filter(p=>(!fc || p.cat===fc) && (!q || norm([p.name,p.brand,p.cat,p.desc].join(" ")).includes(q)));
+  const revs = S.draft.filter(p=>p.review==="Sim");
+  $("rev-n").textContent = revs.length || "";
+  $("tab-all").setAttribute("aria-selected", VIEW==="all"); $("tab-rev").setAttribute("aria-selected", VIEW==="rev");
+  $("rev-lead").hidden = VIEW!=="rev" || !revs.length;
+  const list = (VIEW==="rev" ? revs : S.draft).filter(p=>(!fc || p.cat===fc) && (!q || norm([p.name,p.brand,p.cat,p.desc].join(" ")).includes(q)));
   $("list").innerHTML = list.length ? list.map(p=>{
     const thumb = p.img ? `<img class="thumb" src="${esc(imgUrl(p.img))}" alt="" loading="lazy">` : (p.tipo==="Kit" && firstItemImg(p) ? `<img class="thumb" src="${esc(firstItemImg(p))}" alt="" loading="lazy">` : `<div class="thumb empty">sem foto</div>`);
     const chips = [
       d[p.id]==="new" ? `<span class="chip new">Novo</span>` : d[p.id]==="chg" ? `<span class="chip chg">Alterado</span>` : "",
       p.tipo==="Kit" ? `<span class="chip">Kit</span>` : "",
       p.rank ? `<span class="chip top">★ ${p.rank}º mais vendido</span>` : "",
+      p.review==="Sim" ? `<span class="chip rev">Para revisar</span>` : "",
       p.show==="Não" ? `<span class="chip hide">Escondido</span>` : "",
       (p.avail==="Não" || p.qty===0) ? `<span class="chip out">Esgotado</span>` : "",
       p.last==="Sim" && !(p.avail==="Não" || p.qty===0) ? `<span class="chip chg">Últimas unidades</span>` : "",
     ].join("");
-    return `<button type="button" class="item" data-edit="${esc(p.id)}">${thumb}<div><div class="nm">${esc(p.name)}</div><div class="meta">${esc(p.cat)}${p.brand?" · "+esc(p.brand):""}</div><div class="chips">${chips}</div></div><div class="pr">${p.price===""?"<small>sob consulta</small>":money(p.price)}${p.tipo==="Kit" ? (k=>k.n ? `<small>itens somam ${money(k.sum)}${k.priced?"":" (faltam preços)"}</small>` : "")(kitSum((p.items||"").split(",").filter(x=>x.trim()))) : ""}<small>${p.qty===""?"estoque livre":p.qty+" em estoque"}</small></div></button>`;
-  }).join("") : `<div class="empty-list">Nenhum produto encontrado.</div>`;
+    const btn = `<button type="button" class="item" data-edit="${esc(p.id)}">${thumb}<div><div class="nm">${esc(p.name)}</div><div class="meta">${esc(p.cat)}${p.brand?" · "+esc(p.brand):""}</div><div class="chips">${chips}</div></div><div class="pr">${p.price===""?"<small>sob consulta</small>":money(p.price)}${p.tipo==="Kit" ? (k=>k.n ? `<small>itens somam ${money(k.sum)}${k.priced?"":" (faltam preços)"}</small>` : "")(kitSum((p.items||"").split(",").filter(x=>x.trim()))) : ""}<small>${p.qty===""?"estoque livre":p.qty+" em estoque"}</small></div></button>`;
+    return VIEW==="rev" ? `<div class="rvw">${btn}<button type="button" class="ok-btn" data-ok="${esc(p.id)}">✓ Revisado</button></div>` : btn;
+  }).join("") : `<div class="empty-list">${VIEW==="rev" ? "Nada para revisar agora. ✓" : "Nenhum produto encontrado."}</div>`;
 }
 function kitSum(ids){
   const its = ids.map(i=>byId(S.draft,String(i).trim())).filter(Boolean);
@@ -647,7 +671,10 @@ function openEdit(p, isKit){
   document.querySelector('input[name="fit"][value="contain"]').checked = true;
   media = String(editing.media||"").split(/\s+/).filter(u=>/^(https?:|img\/)/.test(u)).map(url=>({url})); renderMedia(); $("yt").value = "";
   renderPhoto(); if (kit){ $("kq").value = ""; renderKitPick(); }
-  $("ed").hidden = false; $("ed").scrollTop = 0; setTimeout(()=>{ const a = document.activeElement; if (!a || a===document.body || !$("ed").contains(a)) $("f-name").focus(); }, 50);
+  $("ed-rev").hidden = editing.review!=="Sim";
+  $("ed").hidden = false; $("ed").scrollTop = 0;
+  // no celular não abre o teclado sozinho (o botão voltar fechava o painel)
+  if (!matchMedia("(hover:none)").matches) setTimeout(()=>{ const a = document.activeElement; if (!a || a===document.body || !$("ed").contains(a)) $("f-name").focus(); }, 50);
 }
 function renderPhoto(){
   const src = pendingPhoto ? "data:image/jpeg;base64," + pendingPhoto.square : imgUrl(editing.img) || (editing.tipo==="Kit" ? firstItemImg(editing) : "");
@@ -1057,6 +1084,24 @@ $("q").addEventListener("input", renderList);
 $("fcat").addEventListener("change", renderList);
 $("add-prod").onclick = ()=>openEdit(null,false);
 $("add-kit").onclick = ()=>openEdit(null,true);
+$("ed-ok").onclick = async ()=>{ await okReview(editing.id); editing.review = ""; $("ed-rev").hidden = true; };
+/* botão voltar do celular: fecha a janela aberta em vez de sair do painel */
+(function(){
+  const H = window.google && google.script && google.script.history;
+  const order = ["lb","rk","rv","ed"];
+  const openNow = () => order.filter(id=>$(id) && !$(id).hidden);
+  let pushed = 0;
+  new MutationObserver(ms=>ms.forEach(m=>{
+    const el = m.target; if (!order.includes(el.id)) return;
+    if (!el.hidden && H){ pushed++; try{ H.push({s:el.id, n:pushed}, {}, ""); }catch(e){} }
+  })).observe(document.body, {subtree:true, attributes:true, attributeFilter:["hidden"]});
+  if (H) H.setChangeHandler(()=>{ const o = openNow(); if (!o.length) return; const id = o[0]; if (id==="lb") lbClose(); else $(id).hidden = true; });
+})();
+/* ---------------- abas: todos / para revisar ---------------- */
+let VIEW = "all";
+document.querySelectorAll(".tab").forEach(t=>t.onclick = ()=>{ VIEW = t.dataset.view; renderList(); });
+async function okReview(id){ const r = await call("markReviewed", [id], "Marcando como revisado…"); S.draft = r.draft; renderAll(); toast("Revisado ✓"); }
+$("list").addEventListener("click", e=>{ const b = e.target.closest("[data-ok]"); if (b){ e.stopPropagation(); okReview(b.dataset.ok); } }, true);
 /* ---------------- mais vendidos ---------------- */
 let RK = [];
 function rkThumb(p){ const u = p.img ? imgUrl(p.img) : (p.tipo==="Kit" ? firstItemImg(p) : ""); return u ? `<img src="${esc(u)}" alt="" loading="lazy">` : `<img alt="">`; }

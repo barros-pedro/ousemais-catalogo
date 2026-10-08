@@ -28,9 +28,9 @@ const TAB_LOG = 'Histórico';
 
 const HEAD = ['Código', 'Tipo', 'Categoria', 'Produto', 'Marca', 'Selo', 'Descrição', 'Detalhes', 'Opções', 'Itens do kit',
   'Foto', 'Foto ampliada', 'Preço', 'Preço antigo', 'Quantidade', 'Disponível', 'Mostrar no site', 'Ranking', 'Atualizado em', 'Atualizado por',
-  'Mais fotos e vídeos', 'Últimas unidades', 'Veste'];
+  'Mais fotos e vídeos', 'Últimas unidades', 'Veste', 'Revisar'];
 const KEYS = ['id', 'tipo', 'cat', 'name', 'brand', 'tag', 'desc', 'specs', 'opts', 'items',
-  'img', 'imgFull', 'price', 'oldPrice', 'qty', 'avail', 'show', 'rank', 'updatedAt', 'updatedBy', 'media', 'last', 'fits'];
+  'img', 'imgFull', 'price', 'oldPrice', 'qty', 'avail', 'show', 'rank', 'updatedAt', 'updatedBy', 'media', 'last', 'fits', 'review'];
 const NUMERIC = ['price', 'oldPrice', 'qty', 'rank'];
 
 const CATS = ["Lubrificantes", "Anais", "Comestíveis", "Jogos", "Calcinhas", "Lingeries", "Fantasias", "Anéis", "Vibradores", "Kits", "Fetiches", "Masturbadores", "Cuidados"];
@@ -349,6 +349,27 @@ function saveProduct(token, obj) {
   }
 }
 
+// Para revisar: tira o produto da lista de revisão (coluna Revisar do rascunho)
+function markReviewed(token, id) {
+  guard_(token);
+  const lock = LockService.getDocumentLock();
+  lock.waitLock(20000);
+  try {
+    const sh = sheet_(TAB_DRAFT);
+    readTab_(TAB_DRAFT); // garante a coluna Revisar no cabeçalho
+    const values = sh.getDataRange().getValues();
+    const head = values[0].map(String);
+    const iId = head.indexOf('Código'), iV = head.indexOf('Revisar');
+    if (iV < 0) throw new Error('A planilha está sem a coluna Revisar.');
+    for (let r = 1; r < values.length; r++) {
+      if (String(values[r][iId]).trim() === String(id)) sh.getRange(r + 1, iV + 1).setValue('');
+    }
+    return { draft: readTab_(TAB_DRAFT) };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
 // Mais vendidos: recebe a lista de códigos na ordem (1º, 2º, 3º…) e grava a coluna Ranking do rascunho
 function saveRanking(token, ids) {
   const email = guard_(token);
@@ -590,7 +611,7 @@ function yesNo_(v, dflt) {
 function clean_(o) {
   const p = {};
   KEYS.forEach(function (k) { p[k] = o[k] === undefined || o[k] === null ? '' : o[k]; });
-  ['id', 'tipo', 'cat', 'name', 'brand', 'tag', 'desc', 'specs', 'opts', 'items', 'img', 'imgFull', 'updatedAt', 'updatedBy', 'media', 'fits']
+  ['id', 'tipo', 'cat', 'name', 'brand', 'tag', 'desc', 'specs', 'opts', 'items', 'img', 'imgFull', 'updatedAt', 'updatedBy', 'media', 'fits', 'review']
     .forEach(function (k) { p[k] = String(p[k]).trim(); });
   NUMERIC.forEach(function (k) { p[k] = num_(p[k]); });
   if (p.price !== '' && p.price <= 0) p.price = '';
