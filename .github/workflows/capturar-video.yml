@@ -2,6 +2,8 @@ name: Capturar telas para o vídeo
 on:
   push:
     branches: [video-capturas]
+permissions:
+  contents: write
 jobs:
   cap:
     runs-on: ubuntu-latest
@@ -17,7 +19,7 @@ jobs:
       - env:
           NODE_PATH: ${{ runner.temp }}/pw/node_modules
         run: node _video/capture.js https://ousemaisoficial.com.br cap
-      - uses: actions/upload-artifact@v4
-        with:
-          name: cap
-          path: cap
+      - run: |
+          git config user.name "Captura"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add cap && git commit -qm "Capturas" && git push
