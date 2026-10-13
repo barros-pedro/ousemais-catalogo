@@ -1,0 +1,25 @@
+home_clean_full
+tiles 12
+cat_vib_top
+cards 7
+srch_0
+srch_1
+srch_2
+srch_3
+srch_4
+srch_5
+srch_6
+srch_7
+srch_8
+srch_9
+srch_10
+srch_11
+srch_12
+srch_res
+kit_top
+kit_full
+buy_0
+buy_1
+buy_2
+bag_bar
+cart_open
