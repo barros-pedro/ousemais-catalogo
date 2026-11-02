@@ -53,6 +53,12 @@ const colorImg = (p, k) => { const m = FOTOCOR[p.id]; if (!m || !p.variants) ret
 const keysOf = p => Object.keys(cart).filter(k=>k===p.id || k.startsWith(p.id+"|"));
 const save = () => { try{ if (Object.keys(cart).length) localStorage.setItem("ousemais-sacola", JSON.stringify({t:Date.now(), items:cart})); else localStorage.removeItem("ousemais-sacola"); }catch(e){} };
 const liveKeys = () => Object.keys(cart).filter(k=>P(k));
+/* ---------- Google Analytics: produto visto, sacola, envio do pedido ---------- */
+const gaItem = (k, q) => { const p = P(k); if (!p) return null; const o = optOf(p,k), c = catOf(p.cat); return {item_id:p.id, item_name:p.name, item_brand:brandOf(p)||undefined, item_category:c?c.label:undefined, item_variant:o?o.name:undefined, price:p.price!=null?p.price:undefined, quantity:q||1}; };
+function gaEv(ev, pairs, extra){ try{ if (!window.gtag || IS_PREVIEW) return; const items = pairs.map(([k,q])=>gaItem(k,q)).filter(Boolean); const value = Math.round(items.reduce((s,i)=>s+(i.price||0)*i.quantity,0)*100)/100; gtag("event", ev, Object.assign({currency:"BRL", value, items}, extra||{})); }catch(e){} }
+const gaBag = () => liveKeys().map(k=>[k, cart[k]]);
+let gaViewed = false;
+const gaView = p => { if (p && !gaViewed){ gaViewed = true; gaEv("view_item", [[p.id,1]]); } };
 const itemsCount = () => liveKeys().reduce((s,k)=>s+cart[k],0);
 window.addEventListener("storage", e=>{ if (e.key==="ousemais-sacola"){ try{ const s = JSON.parse(e.newValue||"null"); cart = s && s.items || {}; }catch(_){ cart = {}; } refresh(); } });
 
@@ -394,6 +400,7 @@ let vdWired = false;
 function renderVenda(){
   if (!PAGE.venda || !READY) return;
   const p = byId(PAGE.id);
+  gaView(p);
   const buys = document.querySelectorAll(".vd-buy");
   if (!p){
     if (!FINAL) return;
@@ -448,6 +455,7 @@ function kitsWith(p){ return PRODUCTS.filter(k=>k.items && k.items.includes(p.id
 function renderProduct(){
   const box = $("prod"); if (!box || !READY) return;
   const p = byId(PAGE.id);
+  gaView(p);
   if (!p){
     if (!FINAL) return; // ainda esperando a planilha
     const c = catOf(PAGE.cat);
@@ -559,9 +567,10 @@ function change(id, d){
   cart[id] = was + d;
   if (cart[id]<=0) delete cart[id];
   save(); refresh();
+  if (d>0) gaEv("add_to_cart", [[id,1]]); else gaEv("remove_from_cart", [[id,1]]);
   if (d>0 && !was) toast("Adicionado à sacola ✓");
 }
-function openCart(){ renderCart(); $("cart").showModal(); }
+function openCart(){ renderCart(); $("cart").showModal(); if (liveKeys().length) gaEv("begin_checkout", gaBag()); }
 for (const d of document.querySelectorAll("dialog")) d.addEventListener("click", e=>{ if(e.target===d) d.close(); });
 ["cart-open-top","bag-view","bag-sum"].forEach(id=>{ const el = $(id); if (el) el.addEventListener("click", openCart); });
 $("c-clear").onclick = () => { cart = {}; save(); refresh(); };
@@ -594,6 +603,9 @@ if (track){
 const qIn = $("q");
 const clearQuery = () => { if (qIn && query){ qIn.value = ""; query = ""; $("q-clear").hidden = true; } };
 document.addEventListener("click", e=>{
+  const ws = e.target.closest("#bag-send,#c-send");
+  if (ws){ if (liveKeys().length) gaEv("enviar_pedido_whatsapp", gaBag(), {itens:itemsCount()}); }
+  else { const wl = e.target.closest('a[href*="wa.me"]'); if (wl) try{ if (window.gtag && !IS_PREVIEW) gtag("event", "contato_whatsapp", {local:(wl.textContent||"").trim().slice(0,60), pagina:location.pathname}); }catch(_){} }
   const gn = e.target.closest("[data-gal-nav]");
   if (gn){ e.preventDefault(); const t = gn.closest("[data-gal]").querySelector(".gal-track"); const n = t.children.length, i = Math.round(t.scrollLeft/t.clientWidth); const j = (i + +gn.dataset.galNav + n) % n; t.scrollTo({left:j*t.clientWidth, behavior:reduce?"auto":"smooth"}); return; }
   const th = e.target.closest("[data-thumb]");
