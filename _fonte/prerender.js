@@ -25,6 +25,8 @@ const server = http.createServer((req, res) => {
   await ctx.route(/docs\.google\.com/, r => /gid=1296274691/.test(r.request().url())
     ? r.fulfill({ status: 200, contentType: 'text/csv; charset=utf-8', body: csv }) : r.abort());
   await ctx.route(/fonts\.(googleapis|gstatic)\.com|youtube|ytimg|drive\.google|googleusercontent/, r => r.abort());
+  // Analytics fora: a pré-renderização não pode contar como visita
+  await ctx.route(/googletagmanager\.com|google-analytics\.com|analytics\.google\.com/, r => r.abort());
   const page = await ctx.newPage();
   const errs = [];
   page.on('pageerror', e => errs.push(e.message));

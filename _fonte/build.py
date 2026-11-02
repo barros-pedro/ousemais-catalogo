@@ -205,11 +205,15 @@ ICONS = '''<link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">'''
+GA_ID = 'G-DGEWY1BT7V'  # Google Analytics 4 (propriedade Ouse Mais)
+GA = f'''<script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments);}}gtag('js',new Date());if(!/[?&]previa\\b/.test(location.search))gtag('config','{GA_ID}');</script>'''
 def ld(obj): return '<script type="application/ld+json">' + json.dumps(obj, ensure_ascii=False).replace('</', '<\\/') + '</script>'
 def page(*, title, desc, path, image, main, cfg, lds=(), og_type='website', robots='index, follow, max-image-preview:large', extra=''):
     url = SITE + path.lstrip('/')
     return f'''<!doctype html>
 <html lang="pt-BR" {MARCA}><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+{GA}
 <title>{e(title)}</title>
 <meta name="description" content="{e(desc)}">
 <meta name="robots" content="{robots}">
