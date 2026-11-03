@@ -619,6 +619,12 @@ function clean_(o) {
   if (p.qty !== '') p.qty = Math.max(0, Math.floor(p.qty));
   if (p.rank !== '') p.rank = Math.max(1, Math.floor(p.rank));
   p.tipo = /kit/i.test(p.tipo) || p.items ? 'Kit' : 'Produto';
+  // sem foto principal: a primeira foto de "Mais fotos e vídeos" vira a principal (vídeos ficam no carrossel)
+  if (!p.img && p.media) {
+    const media = p.media.split(/\s+/).filter(String);
+    const i = media.findIndex(function (u) { return !/drive\.google\.com\/file\/d\/|youtu\.?be/i.test(u); });
+    if (i >= 0) { p.img = media[i]; media.splice(i, 1); p.media = media.join('\n'); }
+  }
   p.avail = yesNo_(p.avail, 'Sim');
   p.show = yesNo_(p.show, 'Sim');
   p.last = yesNo_(p.last, 'Não');

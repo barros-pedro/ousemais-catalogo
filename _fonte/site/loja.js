@@ -704,6 +704,8 @@ function applyCatalog(rows){
       const qs = v.options.filter(o=>o.qty!=null);
       if (qs.length === v.options.length){ p.qty = qs.reduce((s,o)=>s+o.qty,0); if (p.qty===0) p.soldOut = true; } }
     p.media = g(r,"media").split(/\s+/).map(url).filter(Boolean);
+    // sem foto principal: a primeira foto de "Mais fotos e vídeos" vira a principal
+    if (!p.img){ const i = p.media.findIndex(u=>!driveId(u) && !ytId(u)); if (i>=0) p.img = p.media.splice(i,1)[0]; }
     list.push(p);
   });
   if (!list.length) return false;

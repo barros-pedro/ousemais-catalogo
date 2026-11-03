@@ -59,6 +59,25 @@ else:
     t = rd(COPIA)
 ROWS = list(csv.reader(io.StringIO(t)))
 
+def promover_foto(rows):
+    """Produto sem foto principal: a primeira foto de "Mais fotos e vídeos" vira a principal (vídeo não conta)."""
+    h = [norm(x) for x in rows[0]]
+    fi = h.index('foto') if 'foto' in h else -1
+    mi = next((i for i, x in enumerate(h) if x.startswith('mais fotos')), -1)
+    if fi < 0 or mi < 0: return False
+    mudou = False
+    for r in rows[1:]:
+        r += [''] * (len(h) - len(r))
+        if r[fi].strip() or not r[mi].strip(): continue
+        media = r[mi].split()
+        i = next((k for k, u in enumerate(media) if not re.search(r'drive\.google\.com/file/d/|youtu\.?be', u)), -1)
+        if i < 0: continue
+        r[fi] = media.pop(i); r[mi] = '\n'.join(media); mudou = True
+        print('foto principal escolhida entre as secundárias:', r[0])
+    return mudou
+if promover_foto(ROWS):
+    buf = io.StringIO(); csv.writer(buf, lineterminator='\r\n').writerows(ROWS); t = buf.getvalue()
+
 def num(v):
     v = re.sub(r'[^\d,.-]', '', str(v or ''))
     if not v or v == '-': return None
