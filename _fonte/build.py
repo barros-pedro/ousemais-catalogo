@@ -32,6 +32,8 @@ def slug(s):
     return re.sub(r'^-|-$', '', re.sub(r'[^a-z0-9]+', '-', norm(s)))
 
 CATS = json.load(open(os.path.join(S, 'categorias.json'), encoding='utf-8'))
+CAMP = json.load(open(os.path.join(S, 'campanha.json'), encoding='utf-8'))   # campanha sazonal (Black Friday)
+if not CAMP.get('ativa'): CAMP = None
 # páginas de venda (vibradores): textos, fotos recortadas e especificações em site/vendas.json
 VENDAS = json.load(open(os.path.join(S, 'vendas.json'), encoding='utf-8'))
 VITRINE = VENDAS.pop('_vitrine', {})
@@ -113,7 +115,7 @@ for r in ROWS[1:]:
     q = g(r, 'qty'); qn = num(q) if q not in ('', '0') else (0 if q == '0' else None)
     p = dict(id=pid, name=name, cat=c['id'], brand=g(r, 'brand'), desc=g(r, 'desc'),
              specs=[s.strip() for s in g(r, 'specs').split(',') if s.strip()], img=url_ok(g(r, 'img')), imgFull=url_ok(g(r, 'imgFull')),
-             price=num(g(r, 'price')), qty=qn, items=[s.strip() for s in g(r, 'items').split(',') if s.strip()],
+             price=num(g(r, 'price')), old=num(g(r, 'old')), qty=qn, items=[s.strip() for s in g(r, 'items').split(',') if s.strip()],
              kit=norm(g(r, 'tipo')) == 'kit' or bool(g(r, 'items')))
     p['soldOut'] = norm(g(r, 'avail')).startswith('n') or p['qty'] == 0
     PRODS.append(p)
@@ -207,6 +209,7 @@ if os.path.exists(_imp):
 cats_js = [{k: c.get(k, '') for k in ('id', 'slug', 'label', 'title', 'intro', 'capa', 'cheia', 'cor', 'fileira', 'tileimg', 'trio') if c.get(k)} for c in CATS]
 JS_OUT = JS.replace('/*CATEGORIAS*/[]', json.dumps(cats_js, ensure_ascii=False))
 JS_OUT = JS_OUT.replace('/*CORES*/{}', json.dumps(CORES))
+JS_OUT = JS_OUT.replace('/*CAMPANHA*/null', json.dumps({k: CAMP[k] for k in ('nome', 'inicio', 'fim', 'pagina')} if CAMP else None, ensure_ascii=False))
 # foto de cada opção (cor, aroma, modelo…), só onde a foto mostra exatamente aquela opção
 JS_OUT = JS_OUT.replace('/*FOTOSCOR*/{}', json.dumps(json.load(open(os.path.join(S, 'fotos-opcao.json'), encoding='utf-8'))))
 assert JS_OUT != JS, 'marcador /*CATEGORIAS*/ não encontrado no loja.js'
@@ -216,7 +219,16 @@ wr(os.path.join(RAIZ, 'assets', 'loja.js'), JS_OUT)
 wr(os.path.join(RAIZ, 'dados', 'catalogo.csv'), t)
 
 # ---------------- 3. moldura das páginas ----------------
-PARTE = {n: rd(os.path.join(S, f'parte-{n}.html')) for n in ('aviso', 'topo', 'rodape', 'fim')}
+OFERTAS = [p for p in PRODS if not p['kit'] and not p['soldOut'] and p['price'] and p['old'] and p['old'] > p['price']]
+BF_MAX = max((round((1 - p['price'] / p['old']) * 100) for p in OFERTAS), default=0)
+def campanha(h):
+    """Blocos <!--bf-->…<!--/bf--> só existem com a campanha ativa; {{BF_MAX}} e {{BF_N}} viram números."""
+    if not CAMP: return re.sub(r'<!--bf-->.*?<!--/bf-->', '', h, flags=re.S)
+    return h.replace('<!--bf-->', '').replace('<!--/bf-->', '').replace('{{BF_MAX}}', str(BF_MAX)).replace('{{BF_N}}', str(len(OFERTAS))).replace('{{BF_URL}}', '/' + CAMP['pagina'] + '/')
+PARTE = {n: campanha(rd(os.path.join(S, f'parte-{n}.html'))) for n in ('aviso', 'topo', 'rodape', 'fim')}
+# liga a classe "bf" no <html> dentro do período da campanha (ou com ?bf no endereço, para conferir antes)
+BF_HEAD = (f'''<script>(function(){{var n=Date.now(),a=Date.parse("{CAMP['inicio']}"),b={json.dumps(CAMP.get('fim'))};if(/[?&]bf\\b/.test(location.search)||(n>=a&&(!b||n<Date.parse(b)))){{document.documentElement.classList.add("bf");var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#14051c";}}}})();</script>
+''' if CAMP else '')
 FONTS = '''<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Figtree:wght@400;500;600;700&display=swap">'''
@@ -254,7 +266,7 @@ def page(*, title, desc, path, image, main, cfg, lds=(), og_type='website', robo
 {extra}{"".join(ld(x) + chr(10) for x in lds)}{ICONS}
 {FONTS}
 <link rel="stylesheet" href="/assets/loja.css?v={V}">
-</head><body>
+{BF_HEAD}</head><body>
 <noscript><p style="padding:16px;font-family:sans-serif">Ative o JavaScript para comprar pelo catálogo da Ouse Mais, ou fale com a loja pelo WhatsApp: (82) 99908-0594.</p></noscript>
 {PARTE["aviso"]}<div class="wrap">
 {PARTE["topo"]}<main>
@@ -273,7 +285,7 @@ crumb = lambda items: {"@context": "https://schema.org", "@type": "BreadcrumbLis
     {"@type": "ListItem", "position": i + 1, "name": n, "item": SITE + u.lstrip('/')} for i, (n, u) in enumerate(items)]}
 TILES = lambda t: f'''<section class="cats more-cats" aria-labelledby="mc-t"><div class="cats-h"><h2 id="mc-t">{t}</h2></div><div class="cat-tiles" id="cat-tiles" data-pre>{pre("cat-tiles")}</div></section>'''
 SORT = '''<label class="sort" for="sort">Ordenar por
-        <select id="sort"><option value="destaque">Destaques</option><option value="vendidos">Mais vendidos</option><option value="menor">Menor preço</option><option value="maior">Maior preço</option><option value="az">Nome (A a Z)</option></select>
+        <select id="sort"><option value="destaque">Destaques</option><option value="desconto">Maior desconto</option><option value="vendidos">Mais vendidos</option><option value="menor">Menor preço</option><option value="maior">Maior preço</option><option value="az">Nome (A a Z)</option></select>
       </label>'''
 
 # ---------------- páginas de venda (vibradores) e vitrine da página inicial ----------------
@@ -403,7 +415,7 @@ store = {"@context": "https://schema.org", "@type": "Store", "name": "Ouse Mais"
          "currenciesAccepted": "BRL", "knowsLanguage": "pt-BR",
          "contactPoint": {"@type": "ContactPoint", "telephone": "+55 82 99908-0594", "contactType": "sales", "availableLanguage": "Portuguese"}}
 website = {"@context": "https://schema.org", "@type": "WebSite", "name": "Ouse Mais", "alternateName": "Ouse Mais Sex Shop", "url": SITE, "inLanguage": "pt-BR"}
-home_main = rd(os.path.join(S, 'home.html'))
+home_main = campanha(rd(os.path.join(S, 'home.html')))
 faq = re.findall(r'<details><summary>(.*?)</summary><p>(.*?)</p></details>', home_main)
 faq_ld = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": re.sub('<[^>]+>', '', a)}} for q, a in faq]}
 home_main = home_main.replace('<!--vitrine-->', vitrine_html())
@@ -457,6 +469,30 @@ GERADAS['produtos/index.html'] = page(title="Todos os produtos | Ouse Mais", des
 {TILES("Navegue por categoria")}''')
 PRERENDER.append(('produtos/index.html', TODOS, ['cat-hero', 'grid', 'cat-tiles']))
 CAT_PATHS.append(TODOS)
+
+# página da campanha (/black-friday/): todos os produtos com desconto, do maior para o menor
+if CAMP:
+    BFP = '/' + CAMP['pagina'] + '/'
+    bf_desc = f"{CAMP['nome']} Ouse Mais: até {BF_MAX}% de desconto em {len(OFERTAS)} produtos. Lingeries, calcinhas, vibradores, comestíveis e mais. Embalagem sigilosa e pedido pelo WhatsApp."
+    GERADAS[CAMP['pagina'] + '/index.html'] = page(title=f"{CAMP['nome']} Ouse Mais | Até {BF_MAX}% OFF", desc=bf_desc, path=BFP,
+        image=SITE + 'img/black-friday.jpg', cfg={"type": "cat", "cat": "ofertas"},
+        lds=[crumb([("Início", "/"), (CAMP['nome'], BFP)]),
+             {"@context": "https://schema.org", "@type": "CollectionPage", "name": f"{CAMP['nome']} | Ouse Mais", "url": SITE + BFP.lstrip('/'), "description": bf_desc,
+              "mainEntity": {"@type": "ItemList", "itemListElement": [{"@type": "ListItem", "position": i + 1, "url": SITE + purl(p).lstrip('/'), "name": p['name']}
+                             for i, p in enumerate(sorted(OFERTAS, key=lambda p: p['price'] / p['old']))]}}],
+        extra='<meta property="og:image:type" content="image/jpeg">\n<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">\n',
+        main=f'''<section id="cat-hero" data-pre>{pre("cat-hero")}</section>
+<nav class="bar bf-bar-f" aria-label="Filtrar ofertas por categoria" id="produtos">
+    <div class="search" role="search"><label for="q" class="sr">Buscar nas ofertas</label><input type="search" id="q" placeholder="Buscar nas ofertas" autocomplete="off" enterkeyhint="search"><button type="button" class="s-clear" id="q-clear" aria-label="Limpar busca" hidden>×</button></div>
+    <div class="filters" id="filters"></div>
+</nav>
+<section class="catgrid" aria-labelledby="sec-title">
+    <div class="section-h"><div class="sh-l"><h2 id="sec-title">Todas as ofertas</h2><span class="count" id="count"></span></div>{SORT.replace('value="desconto">', 'value="desconto" selected>')}</div>
+    <div class="grid" id="grid" data-pre>{pre("grid")}</div>
+</section>
+{TILES("Navegue por categoria")}''')
+    PRERENDER.append((CAMP['pagina'] + '/index.html', BFP, ['cat-hero', 'grid', 'cat-tiles']))
+    CAT_PATHS.append(BFP)
 
 # produtos
 PROD_PATHS = []

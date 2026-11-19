@@ -27,3 +27,14 @@ Esta pasta não é publicada (o GitHub Pages ignora pastas que começam com `_`)
   Fotos recortadas (fundo transparente) ficam em `img/venda/<id>.webp`.
 - Página inicial: banners, categorias com busca, kits, mais vendidos (coluna Ranking), vitrine de vibradores
   (de `vendas.json`), promoções (Preço antigo maior que o preço) e informações úteis. `/produtos/` lista tudo.
+
+## Campanha sazonal (Black Friday)
+- `site/campanha.json` liga a campanha: `ativa`, `nome`, `inicio`, `fim` (null = até desligar) e `pagina` (`black-friday`).
+- No período, um script no `<head>` põe a classe `bf` no `<html>`: troca a faixa de aviso pela faixa da campanha,
+  mostra o banner da Black Friday (com as 3 maiores ofertas de categorias diferentes), sobe as promoções para logo
+  depois das categorias e escreve "Black −X%" nos selos. A mensagem do pedido no WhatsApp cita a campanha.
+- Para conferir fora do período: abra qualquer página com `?bf` no endereço.
+- `/black-friday/`: todos os produtos com Preço antigo maior que o Preço (sem kits nem esgotados), do maior para o
+  menor desconto, com filtro por categoria. Imagem de compartilhamento: `img/black-friday.jpg`.
+- Os números (até X%, N produtos) saem da planilha: mudou preço, muda sozinho. Com `ativa: false`, tudo some e a
+  página `/black-friday/` é apagada na próxima atualização.

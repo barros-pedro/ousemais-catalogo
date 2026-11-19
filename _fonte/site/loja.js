@@ -7,6 +7,10 @@ const WHATS = "5582999080594";
 const SITE = "https://ousemaisoficial.com.br/";
 const CATS = [{id:"all", slug:"", label:"Todos", title:"Todos os produtos"}].concat(/*CATEGORIAS*/[]);
 const PAGE = window.OUSE_PAGE || {type:"home"};
+// campanha sazonal (campanha.json): a classe "bf" no <html> é ligada no <head> dentro do período
+const CAMP = /*CAMPANHA*/null;
+const BF = !!CAMP && document.documentElement.classList.contains("bf");
+const OFERTAS_CAT = {id:"ofertas", slug:CAMP ? CAMP.pagina : "ofertas", label:CAMP ? CAMP.nome : "Ofertas", title:`Ofertas de ${CAMP ? CAMP.nome : "hoje"}`};
 const CORES = /*CORES*/{};
 const FOTOCOR = /*FOTOSCOR*/{}; // id do produto -> {cor: foto} (só fotos que mostram aquela cor) // id do produto -> [cor de fundo pastel, foto com fundo branco?]
 const SHEETS = {
@@ -23,9 +27,12 @@ let READY = false;       // dados carregados
 let FINAL = false;       // dados da planilha (ou da cópia) já chegaram — antes disso pode ser só o cache do aparelho
 const $ = id => document.getElementById(id);
 const brl = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+// desconto em % (preço antigo da planilha); oferta = produto avulso, à venda, com preço menor
+const offPct = p => p && p.price!=null && p.oldPrice>p.price ? Math.round((1-p.price/p.oldPrice)*100) : 0;
+const isOffer = p => !p.items && !p.soldOut && offPct(p)>0;
 const wa = msg => `https://wa.me/${WHATS}?text=${encodeURIComponent(msg)}`;
 const byId = id => PRODUCTS.find(p=>p.id===id);
-const catOf = id => CATS.find(c=>c.id===id);
+const catOf = id => CATS.find(c=>c.id===id) || (id==="ofertas" ? OFERTAS_CAT : undefined);
 const norm = s => (s||"").toString().normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
 const slug = s => norm(s).trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
 const A = u => /^img\//.test(u) ? "/" + u : u;  // caminhos de imagem valem em qualquer página
@@ -87,7 +94,7 @@ function varHTML(p, ctx){
 }
 function priceHTML(p){
   return p.price!=null
-    ? `<span class="price">${p.oldPrice>p.price?`<s>${brl(p.oldPrice)}</s>`:""}${brl(p.price)}</span>${p.oldPrice>p.price?`<span class="save">Economize ${brl(p.oldPrice-p.price)}</span>`:""}`
+    ? `<span class="price">${p.oldPrice>p.price?`<s>${brl(p.oldPrice)}</s>`:""}${brl(p.price)}</span>${p.oldPrice>p.price?`<span class="save">Economize ${brl(p.oldPrice-p.price)}${offPct(p)>=5?` (−${offPct(p)}%)`:""}</span>`:""}`
     : `<span class="price ask">Preço sob consulta</span>`;
 }
 function buyHTML(p, ctx="c"){
@@ -103,7 +110,7 @@ function orderMsg(){
   const known = ids.every(k=>P(k).price!=null);
   const sum = ids.reduce((s,k)=>s+(P(k).price||0)*cart[k],0);
   const lines = ids.map(k=>{ const p=P(k), o=optOf(p,k); return `• ${cart[k]}x ${p.name}${o?` — ${o.msg || `${p.variants.label.toLowerCase()} ${o.name}`}${p.variants.note?` (${p.variants.note})`:""}`:""}${p.items||p.variants||!p.brand||p.name.includes(p.brand)?"":` (${p.brand})`}${p.price!=null?` — ${brl(p.price*cart[k])}`:""}${p.items?`\n   (${p.items.filter(byId).map(i=>byId(i).name).join(" + ")})`:""}`; });
-  return `Olá, Ouse Mais! Montei este pedido pelo catálogo:\n\n${lines.join("\n")}${known&&ids.length?`\n\nTotal: ${brl(sum)}`:""}\n\n${known?"Podem me passar as informações de pagamento para eu finalizar?":"Podem me confirmar os valores e as informações de pagamento?"}`;
+  return `Olá, Ouse Mais! Montei este pedido pelo catálogo${BF?` na ${CAMP.nome}`:""}:\n\n${lines.join("\n")}${known&&ids.length?`\n\nTotal: ${brl(sum)}`:""}\n\n${known?"Podem me passar as informações de pagamento para eu finalizar?":"Podem me confirmar os valores e as informações de pagamento?"}`;
 }
 
 /* ---------- Galeria de fotos e vídeos ---------- */
@@ -165,11 +172,12 @@ function tagsHTML(p){
   else if (p.lastUnits) t.push(`<span class="tag last">Últimas unidades</span>`);
   if (TOP.has(p.id)) t.push(`<span class="tag best">Mais vendido</span>`);
   if (p.tag) t.push(`<span class="tag${p.items?" kit":""}">${p.tag}</span>`);
+  if (!p.soldOut && offPct(p)>=5) t.unshift(`<span class="tag off">${BF?"Black ":""}−${offPct(p)}%</span>`);
   return t.length ? `<div class="tags">${t.join("")}</div>` : "";
 }
 
 /* ---------- Listas e ordenação ---------- */
-let sortBy = "destaque";
+let sortBy = PAGE.cat==="ofertas" ? "desconto" : "destaque";
 const ORDER = new Map();
 let TOP = new Set();
 const byPrice = dir => (a,b)=>{
@@ -181,6 +189,7 @@ const SORTS = {
   destaque:(a,b)=>ORDER.get(a.id)-ORDER.get(b.id),
   vendidos:(a,b)=>(b.vendidos||0)-(a.vendidos||0) || ORDER.get(a.id)-ORDER.get(b.id),
   menor:byPrice(1), maior:byPrice(-1),
+  desconto:(a,b)=>offPct(b)-offPct(a) || ORDER.get(a.id)-ORDER.get(b.id),
   az:(a,b)=>a.name.localeCompare(b.name,"pt-BR"),
 };
 const HAY = new Map();
@@ -232,8 +241,17 @@ let current = PAGE.type==="cat" ? PAGE.cat : "all";
 if (PAGE.type==="home") try{ const h = location.hash.slice(1); if (CATS.some(c=>c.id===h)) current = h; }catch(e){}
 let query = "";
 
+let bfCat = "all"; // categoria escolhida dentro da página de ofertas
 function renderFilters(){
   const filters = $("filters"); if (!filters) return;
+  if (current==="ofertas"){
+    const of = PRODUCTS.filter(isOffer);
+    filters.innerHTML = [{id:"all", label:"Todas"}].concat(CATS.filter(c=>c.id!=="all")).map(c=>{
+      const n = c.id==="all" ? of.length : of.filter(p=>p.cat===c.id).length;
+      return n ? `<button type="button" data-bfcat="${c.id}" aria-pressed="${c.id===bfCat}">${c.label}<span class="n">${n}</span></button>` : "";
+    }).join("");
+    return;
+  }
   filters.innerHTML = CATS.map(c=>{
     const n = c.id==="all" ? PRODUCTS.length : PRODUCTS.filter(p=>p.cat===c.id).length;
     return `<button type="button" id="f-${c.id}" data-cat="${c.id}" aria-pressed="${c.id===current}">${c.label}${n?`<span class="n">${n}</span>`:""}</button>`;
@@ -249,13 +267,18 @@ function renderGrid(){
     if (b) b.hidden = !searching; if (vh) vh.hidden = searching;
     if (!searching){ grid.innerHTML = ""; return; }
   }
-  const base = searching ? PRODUCTS : (current==="all" ? PRODUCTS : PRODUCTS.filter(p=>p.cat===current));
+  const base = current==="ofertas" ? PRODUCTS.filter(p=>isOffer(p) && (searching || bfCat==="all" || p.cat===bfCat))
+    : searching ? PRODUCTS : (current==="all" ? PRODUCTS : PRODUCTS.filter(p=>p.cat===current));
   const list = base.filter(p=>terms.every(t=>(HAY.get(p.id)||"").includes(t))).sort(SORTS[sortBy]);
   if (filters) filters.setAttribute("aria-disabled", searching);
   const c = catOf(current);
-  if ($("sec-title")) $("sec-title").textContent = searching ? `Resultados para “${query.trim()}”` : (PAGE.type==="cat" && c.id!=="all" ? `Todos os produtos de ${c.label.toLowerCase()}` : c.title);
+  if ($("sec-title")) $("sec-title").textContent = searching ? `Resultados para “${query.trim()}”` : current==="ofertas" ? (bfCat==="all" ? "Todas as ofertas" : `Ofertas de ${catOf(bfCat).label.toLowerCase()}`) : (PAGE.type==="cat" && c.id!=="all" ? `Todos os produtos de ${c.label.toLowerCase()}` : c.title);
   if ($("count")) $("count").textContent = `${list.length} ${list.length===1?"produto":"produtos"}`;
   const cl = $("cat-link"); if (cl){ cl.hidden = searching || current==="all" || !list.length; if (!cl.hidden){ cl.href = catUrl(current); cl.textContent = `Abrir a página de ${c.label.toLowerCase()} →`; } }
+  if (!searching && !list.length && current==="ofertas"){
+    grid.innerHTML = `<div class="noresult"><strong>As ofertas acabaram</strong><p>Os produtos com desconto esgotaram. Veja o catálogo completo ou pergunte no WhatsApp.</p><a class="btn" href="/${Q}">Ver o catálogo</a></div>`;
+    return;
+  }
   if (!searching && !list.length){
     grid.innerHTML = `<div class="noresult"><strong>${c.label}: em breve no site</strong><p>No momento não há produtos dessa categoria. Pergunte no WhatsApp quando chegam novidades.</p><a class="btn" href="${wa(`Olá! Quero ver as opções de ${c.label.toLowerCase()} da Ouse Mais.`)}" target="_blank" rel="noopener">Ver opções no WhatsApp</a></div>`;
     return;
@@ -294,6 +317,7 @@ function renderTiles(){
 function renderCatHero(){
   const h = $("cat-hero"); if (!h || !READY) return;
   const c = catOf(PAGE.cat); if (!c) return;
+  if (c.id==="ofertas"){ h.innerHTML = bfHeroHTML(); return; }
   const ps = c.id==="all" ? PRODUCTS : PRODUCTS.filter(p=>p.cat===c.id);
   const art = c.capa
     ? `<div class="ch-art photo"><img src="${A(c.capa)}" alt="${c.title} da Ouse Mais" fetchpriority="high"></div>`
@@ -303,6 +327,32 @@ function renderCatHero(){
   h.innerHTML = `<nav class="crumbs" aria-label="Você está em"><a href="/${Q}">Início</a><span aria-hidden="true">›</span><span aria-current="page">${c.id==="all" ? c.title : c.label}</span></nav>
     <div class="ch${art?"":" noart"}"><div class="ch-txt"><p class="eyebrow">Ouse Mais · Campestre/AL</p><h1>${c.title}</h1><p>${c.intro||(c.id==="all"?"Tudo o que a Ouse Mais tem para você, num lugar só. Use a busca ou escolha uma categoria para filtrar.":"")}</p>
     <p class="ch-n">${ps.length} ${ps.length===1?"produto":"produtos"} · embalagem sigilosa · pedido pelo WhatsApp</p></div>${art}</div>`;
+}
+
+/* ---------- Campanha (Black Friday) ---------- */
+const bfMax = () => PRODUCTS.filter(isOffer).reduce((m,p)=>Math.max(m, offPct(p)), 0);
+// três ofertas de categorias diferentes, as de maior desconto
+function bfPicks(n){
+  const seen = new Set(), out = [];
+  PRODUCTS.filter(p=>isOffer(p) && !p.variants).concat(PRODUCTS.filter(p=>isOffer(p) && p.variants)).sort(SORTS.desconto)
+    .forEach(p=>{ if (out.length<n && !seen.has(p.cat)){ seen.add(p.cat); out.push(p); } });
+  return out;
+}
+const bfCardHTML = (p,i) => `<a class="bfp bfp${i}" href="${purl(p)}"><span class="bfp-img"><img src="${IMG(p)}" alt="${altOf(p)}"${i?' loading="lazy"':""}${p.imgFull||!(CORES[p.id]||[1,1])[1]?' class="photo"':''}></span><span class="bfp-off">−${offPct(p)}%</span><span class="bfp-n">${p.name}</span><span class="bfp-pr"><s>${brl(p.oldPrice)}</s> <b>${brl(p.price)}</b></span></a>`;
+function bfHeroHTML(){
+  const of = PRODUCTS.filter(isOffer), cats = [...new Set(of.map(p=>p.cat))].map(catOf).filter(Boolean);
+  return `<nav class="crumbs" aria-label="Você está em"><a href="/${Q}">Início</a><span aria-hidden="true">›</span><span aria-current="page">${OFERTAS_CAT.label}</span></nav>
+    <div class="bfh"><div class="bfh-t"><p class="bf-kick">Ouse Mais · Campestre/AL</p><h1><span>${OFERTAS_CAT.label.split(" ")[0]}</span> ${OFERTAS_CAT.label.split(" ").slice(1).join(" ")}</h1>
+      <p class="bfh-p">${of.length} produtos com preço de ${OFERTAS_CAT.label}, em ${cats.length} categorias. Monte a sacola e mande o pedido pronto no WhatsApp: a loja confirma pagamento e entrega por lá.</p>
+      <ul class="bfh-f"><li>Embalagem sigilosa</li><li>Pix, cartão ou dinheiro na entrega</li><li>Enquanto durar o estoque</li></ul></div>
+      <div class="bf-stamp" aria-label="Até ${bfMax()}% de desconto"><small>até</small><b>−${bfMax()}%</b><small>off</small></div></div>`;
+}
+function renderBfBits(){
+  if (!CAMP || !READY) return;
+  const m = bfMax(), n = PRODUCTS.filter(isOffer).length;
+  document.querySelectorAll("[data-bf-max]").forEach(x=>{ if (m) x.textContent = m; });
+  document.querySelectorAll("[data-bf-n]").forEach(x=>{ if (n) x.textContent = n; });
+  const art = $("bf-art"); if (art && art.dataset.v!==String(DATAV)){ art.dataset.v = DATAV; art.innerHTML = bfPicks(3).map(bfCardHTML).join(""); }
 }
 
 /* ---------- Página inicial: kits, mais vendidos e promoções ---------- */
@@ -361,6 +411,8 @@ function renderHome(){
     $("sec-promo").hidden = !promo.length;
     if ($("hp-n")) $("hp-n").textContent = promo.length ? `${promo.length} ${promo.length===1?"produto":"produtos"} com preço menor` : "";
     if ($("hp-max") && promo.length) $("hp-max").innerHTML = `<small>até</small>−${Math.round(pct(promo[0])*100)}%`;
+    if (BF){ $("sec-promo").classList.add("is-bf"); if ($("hp-t")) $("hp-t").textContent = `Ofertas de ${CAMP.nome}`; const ey = $("sec-promo").querySelector(".eyebrow"); if (ey) ey.textContent = `${CAMP.nome} Ouse Mais`;
+      if ($("hp-n")) $("hp-n").innerHTML = `${promo.length} produtos com desconto · <a href="/${CAMP.pagina}/${Q}">Ver todas as ofertas →</a>`; }
     keepScroll(hp, promo.map(p=>`<article class="hp-card${keysOf(p).length?" in":""}">
       <a class="hp-img" href="${purl(p)}" aria-label="Ver ${p.name}"><img src="${IMG(p)}" alt="${altOf(p)}" loading="lazy"${p.imgFull||!(CORES[p.id]||[1,1])[1]?' class="photo"':''}></a>
       <div class="hp-b"><span class="hp-off">−${Math.round(pct(p)*100)}%</span><h3 class="hp-name"><a href="${purl(p)}">${p.name}</a></h3>
@@ -553,7 +605,7 @@ function renderCart(){
   $("c-note").textContent = lines.join(" ");
 }
 function refresh(){
-  renderGrid(); renderProduct(); renderHome(); renderVenda(); renderBag();
+  renderBfBits(); renderGrid(); renderProduct(); renderHome(); renderVenda(); renderBag();
   if ($("cart").open) renderCart();
 }
 function renderAll(){ renderFilters(); renderTiles(); renderCatHero(); refresh(); }
@@ -579,7 +631,9 @@ $("cta-bottom").href = $("wa-float").href = wa("Olá! Vi o catálogo da Ouse Mai
 /* ---------- Banners (página inicial) ---------- */
 const track = $("track");
 let go = ()=>{}, start = ()=>{};
+if (track && !BF) track.querySelectorAll("[data-bf]").forEach(s=>s.remove());
 if (track){
+  [...track.children].forEach((s,i,a)=>s.setAttribute("aria-label", `${i+1} de ${a.length}`));
   const slides = track.children.length;
   let idx = 0, timer = null;
   $("dots").innerHTML = Array.from({length:slides},(_, i)=>`<button type="button" aria-label="Banner ${i+1}" data-dot="${i}"></button>`).join("");
@@ -614,6 +668,8 @@ document.addEventListener("click", e=>{
   if (e.target.closest("[data-cart]")){ openCart(); return; }
   const g = e.target.closest("[data-go]");
   if (g){ clearQuery(); current = g.dataset.go; renderFilters(); renderGrid(); $("produtos").scrollIntoView({behavior:reduce?"auto":"smooth"}); return; }
+  const bc = e.target.closest("[data-bfcat]");
+  if (bc){ bfCat = bc.dataset.bfcat; clearQuery(); renderFilters(); renderGrid(); return; }
   const f = e.target.closest("[data-cat]");
   if (f){ current = f.dataset.cat; clearQuery(); renderFilters(); renderGrid(); try{ history.replaceState(null, "", current==="all" ? location.pathname + location.search : "#"+current); }catch(_){} return; }
   const sw = e.target.closest("[data-var]");

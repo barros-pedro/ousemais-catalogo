@@ -1,0 +1,8 @@
+{
+  "_como_usar": "Campanha sazonal do site. 'ativa': false desliga tudo (faixa, banner, página /black-friday/). As datas valem no horário de Maceió. 'fim': null = fica no ar até desligar. Para ver antes do início, abra o site com ?bf no final do endereço.",
+  "ativa": true,
+  "nome": "Black Friday",
+  "inicio": "2026-11-20T00:00:00-03:00",
+  "fim": null,
+  "pagina": "black-friday"
+}
