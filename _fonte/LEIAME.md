@@ -32,8 +32,8 @@ Esta pasta não é publicada (o GitHub Pages ignora pastas que começam com `_`)
 - `site/campanha.json` liga a campanha: `ativa`, `nome`, `inicio`, `fim` (null = até desligar; com data aparece
   "termina em…" na faixa), `pagina` (`black-friday`), `destaque` (produto da foto grande) e `foto`/`foto_alt`.
 - No período, um script no `<head>` põe a classe `bf` no `<html>`: a faixa de aviso vira a faixa da campanha, o
-  carrossel dá lugar a um hero fixo (foto real da loja com a etiqueta de preço do produto em destaque), entra o bloco
-  "Desconto por categoria" (maior desconto por categoria e faixas de preço) e as promoções sobem para depois das categorias.
+  carrossel dá lugar a um hero fixo (foto real da loja com a etiqueta de preço do produto em destaque), "Compre por categoria" vira "Desconto por categoria" (cada caixa com "até −X%",
+  número de ofertas e link para as ofertas dela; atalhos Por preço logo abaixo) e as promoções sobem para depois das categorias.
 - Fora do período nada disso aparece. Para conferir antes: `?bf` no fim do endereço.
 - `/black-friday/`: produtos com Preço antigo maior que o Preço (sem kits nem esgotados), do maior desconto para o
   menor, com filtro por categoria e por faixa de preço. Endereços diretos: `/black-friday/#calcinhas`,
