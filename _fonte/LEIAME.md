@@ -33,7 +33,7 @@ Esta pasta não é publicada (o GitHub Pages ignora pastas que começam com `_`)
   "termina em…" na faixa), `pagina` (`black-friday`), `destaque` (produto da foto grande) e `foto`/`foto_alt`.
 - No período, um script no `<head>` põe a classe `bf` no `<html>`: a faixa de aviso vira a faixa da campanha, o
   carrossel dá lugar a um hero fixo (foto real da loja com a etiqueta de preço do produto em destaque), entra o bloco
-  "Pela categoria ou pelo bolso" (maior desconto por categoria e faixas de preço) e as promoções sobem para depois das categorias.
+  "Desconto por categoria" (maior desconto por categoria e faixas de preço) e as promoções sobem para depois das categorias.
 - Fora do período nada disso aparece. Para conferir antes: `?bf` no fim do endereço.
 - `/black-friday/`: produtos com Preço antigo maior que o Preço (sem kits nem esgotados), do maior desconto para o
   menor, com filtro por categoria e por faixa de preço. Endereços diretos: `/black-friday/#calcinhas`,

@@ -372,7 +372,7 @@ function bfMapHTML(){
 }
 function bfBandsHTML(){
   const of = offers();
-  return `<h3 class="bfm-bt">Quanto quer gastar</h3>` + BANDS.map(b=>{ const n = of.filter(b.t).length; return n ? `<a href="${bfUrl(b.id)}"><b>${b.label}</b><span>${plural(n,"oferta","ofertas")}</span></a>` : ""; }).join("");
+  return `<h3 class="bfm-bt">Por preço</h3>` + BANDS.map(b=>{ const n = of.filter(b.t).length; return n ? `<a href="${bfUrl(b.id)}"><b>${b.label}</b><span>${plural(n,"oferta","ofertas")}</span></a>` : ""; }).join("");
 }
 let bfTimer = 0;
 function renderBfBits(){
