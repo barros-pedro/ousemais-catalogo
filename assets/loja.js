@@ -230,8 +230,11 @@ const hueOf = hex => { const n = parseInt(hex.slice(1),16), r=(n>>16&255)/255, g
 function tilesHTML(except){
   const used = []; // tons já usados: cada caixa tenta um tom diferente da anterior
   const dist = h => used.length ? Math.min(...used.map(u=>Math.min(Math.abs(u-h),360-Math.abs(u-h)))) : 360;
-  return CATS.filter(c=>c.id!=="all" && c.id!==except).map(c=>{
-    const ps = PRODUCTS.filter(p=>p.cat===c.id);
+  const of = BF ? offers() : [], mx = id => Math.max(0, ...of.filter(p=>p.cat===id).map(offPct));
+  const list = CATS.filter(c=>c.id!=="all" && c.id!==except);
+  if (BF) list.sort((a,b)=>mx(b.id)-mx(a.id));
+  return list.map(c=>{
+    const ps = PRODUCTS.filter(p=>p.cat===c.id), nOf = of.filter(p=>p.cat===c.id).length, m = mx(c.id);
     if (!ps.length) return "";
     // foto de embalagem (fundo branco) fica melhor sobre a cor; entre elas, a de tom mais diferente das outras caixas
     const soltos = ps.filter(p=>!p.items), pool = soltos.length ? soltos : ps;
@@ -241,7 +244,8 @@ function tilesHTML(except){
     const cor = c.cor || (CORES[p0.id]||[])[0] || "#f3d6e8", foto = c.tileimg ? false : !(CORES[p0.id]||[])[1];
     // caixa "cheia": usa a foto recortada rente ao produto, para ele ocupar o quadrado todo
     const src = c.tileimg ? A(c.tileimg) : c.cheia==="recorte" && (CORES[p0.id]||[])[2] ? `/img/recorte/${p0.id}.jpg` : IMG(p0);
-    return `<a class="tile" href="${catUrl(c.id)}"><span class="tile-img${foto?" foto":""}${c.cheia?" cheia":""}" style="background:${cor}"><img src="${src}" alt="" loading="lazy"></span><span class="tile-t">${c.label}</span><span class="tile-n">${ps.length} ${ps.length===1?"produto":"produtos"}</span></a>`;
+    const off = BF && nOf;
+    return `<a class="tile${off?" has-off":""}" href="${off ? bfUrl(c.id) : catUrl(c.id)}">${off?`<span class="tile-off">até <b>−${m}%</b></span>`:""}<span class="tile-img${foto?" foto":""}${c.cheia?" cheia":""}" style="background:${cor}"><img src="${src}" alt="" loading="lazy"></span><span class="tile-t">${c.label}</span><span class="tile-n">${off ? plural(nOf,"oferta","ofertas") : plural(ps.length,"produto","produtos")}</span></a>`;
   }).join("");
 }
 
@@ -364,15 +368,9 @@ function bfHeroHTML(){
       <p class="bfx-sub">Até <b>${bfMax()}% off</b> em ${plural(of.length,"produto","produtos")} de ${plural(cats,"categoria","categorias")}. Pedido pelo WhatsApp e embalagem sigilosa, enquanto durar o estoque.</p></div>
       ${bfMediaHTML()}</div>`;
 }
-function bfMapHTML(){
-  const of = offers();
-  return CATS.filter(c=>c.id!=="all").map(c=>({c, ps:of.filter(p=>p.cat===c.id)})).filter(x=>x.ps.length)
-    .map(x=>({...x, m:Math.max(...x.ps.map(offPct))})).sort((a,b)=>b.m-a.m || b.ps.length-a.ps.length)
-    .map(x=>`<li><a href="${bfUrl(x.c.id)}"><span class="bfm-n">${x.c.label}</span><i aria-hidden="true"></i><span class="bfm-q">${plural(x.ps.length,"oferta","ofertas")}</span><b>até −${x.m}%</b></a></li>`).join("");
-}
 function bfBandsHTML(){
   const of = offers();
-  return `<h3 class="bfm-bt">Por preço</h3>` + BANDS.map(b=>{ const n = of.filter(b.t).length; return n ? `<a href="${bfUrl(b.id)}"><b>${b.label}</b><span>${plural(n,"oferta","ofertas")}</span></a>` : ""; }).join("");
+  return `<span class="bfp-t">Por preço</span>` + BANDS.map(b=>{ const n = of.filter(b.t).length; return n ? `<a href="${bfUrl(b.id)}">${b.label}<span>${plural(n,"oferta","ofertas")}</span></a>` : ""; }).join("");
 }
 let bfTimer = 0;
 function renderBfBits(){
@@ -382,8 +380,8 @@ function renderBfBits(){
   document.querySelectorAll("[data-bf-n]").forEach(x=>{ if (n) x.textContent = n; });
   const p = CAMP.destaque ? byId(CAMP.destaque) : null, tag = $("bfx-tag");
   if (tag){ tag.innerHTML = bfTagHTML(p); tag.hidden = !tag.innerHTML; const cap = $("bfx-cap"); if (cap) cap.hidden = tag.hidden; const md = $("bfx-media"); if (md && FINAL) md.href = p && isOffer(p) ? purl(p) : bfUrl(); }
-  const ml = $("bfm-list"); if (ml) ml.innerHTML = bfMapHTML();
-  const mb = $("bfm-bands"); if (mb) mb.innerHTML = bfBandsHTML();
+  const pr = $("bf-precos"); if (pr) pr.innerHTML = bfBandsHTML();
+  if (BF && $("cats-title")) $("cats-title").textContent = "Desconto por categoria";
   // contagem regressiva, só quando a campanha tem data para acabar
   const fe = document.querySelector("[data-bf-fim]");
   if (fe && CAMP.fim && !bfTimer){

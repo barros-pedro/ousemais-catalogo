@@ -808,31 +808,20 @@ body{overflow-x:clip}
   .bfx-page .bfx-h{font-size:clamp(2.4rem,12vw,3.2rem)}
 }
 
-/* onde está o desconto */
-.bf .bfm[data-bf]{display:grid}
-.bfm{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:8px clamp(24px,4vw,56px);background:var(--surface);border-radius:20px;padding:clamp(20px,3.4vw,36px);margin-bottom:40px;box-shadow:0 1px 0 var(--line)}
-.bfm-h{grid-column:1/-1;font-family:var(--display);font-weight:700;font-size:clamp(1.3rem,3vw,1.8rem);letter-spacing:-.02em;color:var(--ink);margin:0}
-.bfm-list{list-style:none;margin:0;padding:0;columns:2;column-gap:clamp(20px,3vw,40px)}
-.bfm-list li{break-inside:avoid}
-.bfm-list a{display:flex;align-items:baseline;gap:8px;padding:11px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink)}
-.bfm-n{font-family:var(--display);font-weight:500;font-size:1rem}
-.bfm-list i{flex:1;align-self:center;border-bottom:2px dotted #d9c3d6;min-width:12px}
-.bfm-q{font-size:.8rem;color:var(--muted);white-space:nowrap}
-.bfm-list b{font-family:var(--display);font-weight:700;font-size:1rem;color:var(--magenta);white-space:nowrap;font-variant-numeric:tabular-nums;min-width:5.6em;text-align:right}
-.bfm-list a:hover .bfm-n{color:var(--magenta)}
-.bfm-bands{display:flex;flex-direction:column;border-left:1px solid var(--line);padding-left:clamp(20px,3vw,40px)}
-.bfm-bt{margin:0;padding:11px 0;border-bottom:1px solid var(--line);font-family:var(--display);font-weight:500;font-size:1rem;color:var(--muted)}
-.bfm-bands a{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:14px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink)}
-.bfm-bands a b{font-family:var(--display);font-weight:700;font-size:1.18rem;letter-spacing:-.01em}
-.bfm-bands a span{font-size:.84rem;color:var(--muted);white-space:nowrap}
-.bfm-bands a span::after{content:"  →";color:var(--magenta);font-weight:700}
-.bfm-bands a:hover b{color:var(--magenta)}
-@media (max-width:760px){
-  .bfm{grid-template-columns:1fr;border-radius:18px;margin-inline:-6px}
-  .bfm-list{columns:1}
-  .bfm-bands{border-left:0;padding-left:0;margin-top:18px}
-  .bfm-q{display:none}
-}
+/* compre por categoria vira "desconto por categoria": selo em cada caixa e atalhos por preço */
+.tile{position:relative}
+.tile-off{position:absolute;top:8px;left:8px;z-index:2;background:var(--ink);color:#fff;font-size:.68rem;font-weight:600;line-height:1;padding:6px 9px 6px 8px;border-radius:999px;box-shadow:0 6px 14px -8px rgba(27,10,34,.7)}
+.tile-off b{font-family:var(--display);font-weight:700;font-size:.92rem;letter-spacing:-.01em;color:#ff7fb6}
+.tile.has-off .tile-n{color:var(--magenta)}
+.bf .bf-precos[data-bf]{display:flex}
+.bf-precos{flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px}
+.bfp-t{font-family:var(--display);font-weight:500;font-size:.92rem;color:var(--ink);margin-right:4px}
+.bf-precos a{display:inline-flex;align-items:baseline;gap:8px;padding:9px 16px;border-radius:999px;background:var(--surface);border:1.5px solid var(--ink);color:var(--ink);font-weight:700;font-size:.92rem;text-decoration:none;transition:background-color .15s,color .15s}
+.bf-precos a span{font-weight:600;font-size:.78rem;color:var(--muted)}
+.bf-precos a:hover{background:var(--ink);color:#fff}
+.bf-precos a:hover span{color:#e6cfdd}
+@media (max-width:560px){.tile-off{top:6px;left:6px;font-size:.6rem;padding:5px 7px}.tile-off b{font-size:.8rem}
+  .bf-precos{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding-inline:16px}.bf-precos::-webkit-scrollbar{display:none}.bf-precos a{flex:none}.bfp-t{flex:none}}
 
 /* selo de desconto nos produtos */
 .tag.off{background:var(--magenta);color:#fff}
