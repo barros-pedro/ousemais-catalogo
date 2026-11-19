@@ -1,8 +1,11 @@
 {
-  "_como_usar": "Campanha sazonal do site. 'ativa': false desliga tudo (faixa, banner, página /black-friday/). As datas valem no horário de Maceió. 'fim': null = fica no ar até desligar. Para ver antes do início, abra o site com ?bf no final do endereço.",
+  "_como_usar": "Campanha sazonal do site. 'ativa': false desliga tudo (faixa, banner, página /black-friday/). As datas valem no horário de Maceió. 'fim': null = fica no ar até desligar. Para ver antes do início, abra o site com ?bf no final do endereço. 'destaque' é o produto da foto grande (com a etiqueta de preço); 'foto' é a imagem usada.",
   "ativa": true,
   "nome": "Black Friday",
   "inicio": "2026-11-20T00:00:00-03:00",
   "fim": null,
-  "pagina": "black-friday"
+  "pagina": "black-friday",
+  "destaque": "camisola-renda-preta",
+  "foto": "img/camisola-renda-preta.jpg",
+  "foto_alt": "Camisola preta de tule e renda no manequim da loja Ouse Mais"
 }

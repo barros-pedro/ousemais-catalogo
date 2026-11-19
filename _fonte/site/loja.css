@@ -746,67 +746,114 @@ body{overflow-x:clip}
 .vd-dica p{position:relative;margin:0;font-size:.94rem;color:#4b3352}
 @media (max-width:760px){.vd-dicas{grid-template-columns:1fr}}
 
-/* ---------- Campanha: Black Friday (campanha.json; a classe .bf no <html> liga no período) ---------- */
-:root{--bf-ink:#14051c;--bf-ink2:#24082f;--bf-hot:#ff2e8b;--bf-glow:rgba(255,46,139,.55)}
-.bfbar,.slide[data-bf]{display:none}
+/* ---------- Campanha: Black Friday (campanha.json; a classe .bf no <html> liga no período) ----------
+   Linguagem: a vitrine da própria loja. Foto real da loja (parede lilás), etiqueta preta redonda igual
+   à que a Ouse Mais usa nas peças, tinta quase preta tirada do roxo da marca. Magenta só no botão e no desconto. */
+:root{--ink:#1b0a22;--ink-2:#4a3350}
+.bfbar,[data-bf]{display:none}
 .bf .notice{display:none}
-.bf .bfbar{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 14px;margin-inline:-16px;padding:10px 16px;background:var(--bf-ink);color:#fff;text-decoration:none;font-size:.9rem;font-weight:600;border-bottom:2px solid var(--bf-hot);background-image:linear-gradient(90deg,transparent,rgba(255,46,139,.22),transparent);background-size:200% 100%;animation:bfShine 6s linear infinite}
-@keyframes bfShine{from{background-position:200% 0}to{background-position:-200% 0}}
-.bfbar-k{font-family:var(--display);font-weight:900;text-transform:uppercase;letter-spacing:.02em}
-.bfbar-k i{font-style:normal;color:var(--bf-hot)}
-.bfbar b{color:var(--bf-hot);font-weight:800}
-.bfbar-c{background:var(--bf-hot);color:#fff;font-weight:800;font-size:.8rem;padding:4px 12px;border-radius:999px}
-@media (max-width:560px){.bf .bfbar{font-size:.82rem;gap:2px 10px;padding:8px 12px}.bfbar-c{display:none}.bfbar-t{flex-basis:auto}}
 
-/* banner */
-.bf .slide[data-bf]{display:grid}
-.sbf{background:var(--bf-ink);color:#fff;background-image:radial-gradient(520px 340px at 92% 20%,rgba(255,46,139,.38),transparent 70%),radial-gradient(420px 300px at 0% 100%,rgba(122,24,168,.55),transparent 70%)}
-.bf-kick,.slide .bf-kick{font-size:.76rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#ff9fca;margin:0}
-.slide .bf-h,.bfh h1{font-family:var(--display);font-weight:900;text-transform:uppercase;letter-spacing:-.04em;line-height:.92;color:var(--bf-hot);margin:.18em 0 .28em;font-size:clamp(2.6rem,7vw,5rem);text-shadow:0 0 34px var(--bf-glow)}
-.slide .bf-h span,.bfh h1 span{display:block;color:#fff;text-shadow:none}
-.slide p.bf-sub{color:#f3dcea;max-width:44ch}
-.bf-sub b{color:#fff;font-family:var(--display);font-weight:900;font-size:1.2em;background:var(--bf-hot);padding:0 .3em;border-radius:6px;white-space:nowrap}
-.btn.bf-btn{background:var(--bf-hot);box-shadow:0 10px 30px -8px var(--bf-glow)}
-.sbf .facts{color:#d9bfd0}
-.bf-art{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:end;min-height:260px}
-.bfp{position:relative;display:flex;flex-direction:column;background:#fff;color:var(--fg);border-radius:18px;padding:8px 8px 12px;text-decoration:none;box-shadow:0 18px 40px -18px rgba(0,0,0,.7);transition:transform .2s}
-.bfp:hover{transform:translateY(-4px) rotate(0deg)!important}
-.bfp0{transform:rotate(-4deg) translateY(10px)}
-.bfp1{transform:translateY(-14px)}
-.bfp2{transform:rotate(4deg) translateY(10px)}
-.bfp-img{display:block;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#fff}
-.bfp-img img{width:100%;height:100%;object-fit:contain;display:block}
-.bfp-img img.photo{object-fit:cover}
-.bfp-off{position:absolute;top:-10px;right:-8px;background:var(--bf-hot);color:#fff;font-family:var(--display);font-weight:900;font-size:.95rem;padding:6px 9px;border-radius:999px;transform:rotate(8deg);box-shadow:0 6px 16px -6px var(--bf-glow)}
-.bfp-n{font-weight:700;font-size:.8rem;line-height:1.2;margin:8px 4px 4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.bfp-pr{margin:0 4px;font-size:.78rem}
-.bfp-pr s{color:var(--muted)}
-.bfp-pr b{font-family:var(--display);font-size:.95rem}
-@media (max-width:760px){.sbf .bf-art{order:0;min-height:0;gap:8px}.bfp{padding:6px 6px 10px;border-radius:14px}.bfp-n{font-size:.72rem}.bfp-pr s{display:none}.bfp-off{font-size:.78rem;padding:4px 7px}}
+/* faixa do topo */
+.bf .bfbar{display:flex;align-items:baseline;justify-content:center;flex-wrap:wrap;gap:4px 12px;margin-inline:-16px;padding:9px 16px;background:var(--ink);color:#f6e9f1;text-decoration:none;font-size:.9rem;font-weight:500}
+.bfbar-k{font-family:var(--display);font-weight:700;font-size:.82rem;letter-spacing:.02em;text-transform:uppercase;color:#fff}
+.bfbar-k i{font-style:normal;color:#ff7fb6}
+.bfbar b{font-weight:800;color:#fff}
+.bfbar-fim{color:#ff9fca;font-weight:700}
+.bfbar-c{font-weight:700;color:#fff;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px}
+.bfbar-c::after{content:" →"}
+@media (max-width:560px){.bf .bfbar{font-size:.82rem;padding:8px 12px;gap:2px 8px}.bfbar-c{display:none}}
+
+/* hero */
+.bf .banners{display:none}
+.bf .bfx[data-bf]{display:grid}
+.bfx{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:stretch;background:#efe2f3;border-radius:28px;overflow:hidden;margin-bottom:24px;min-height:440px}
+.bfx-page{display:grid;margin-bottom:22px;min-height:360px}
+.bfx-page .bfx-h{font-size:clamp(2.8rem,6.4vw,4.8rem)}
+.bfx-txt{padding:clamp(28px,4.5vw,56px) clamp(24px,5vw,64px);display:flex;flex-direction:column;justify-content:center}
+.bfx-h{font-family:var(--display);font-weight:900;font-size:clamp(3rem,8.2vw,6rem);line-height:.88;letter-spacing:-.035em;color:var(--ink);margin:0 0 .3em;text-wrap:balance;max-width:6.2ch}
+.bfx-sub{font-size:clamp(1.02rem,1.5vw,1.14rem);line-height:1.5;color:var(--ink-2);max-width:40ch;margin:0 0 26px;text-wrap:pretty}
+.bfx-sub b{color:var(--ink);font-weight:800;text-decoration:underline;text-decoration-color:var(--magenta);text-decoration-thickness:.2em;text-underline-offset:.08em;text-decoration-skip-ink:none}
+.bfx-cta{display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px}
+.btn.bfx-btn{padding:15px 26px;font-size:1.04rem}
+.bfx-link{font-weight:700;color:var(--ink);text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px}
+.bfx-link:hover{color:var(--magenta)}
+.bfx-media{position:relative;display:block;min-height:100%;overflow:hidden;text-decoration:none;color:var(--ink)}
+.bfx-media img{position:absolute;top:0;left:0;width:108%;height:100%;object-fit:cover;object-position:left 30%;display:block;transition:transform .6s ease}
+.bfx-media:hover img{transform:scale(1.025)}
+/* etiqueta pendurada: cordão sai do alto da foto */
+.bfx-tag{position:absolute;top:56px;right:clamp(18px,4vw,44px);width:148px;aspect-ratio:1;border-radius:50%;background:var(--ink);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1.1;transform-origin:50% -56px;transform:rotate(-5deg);box-shadow:0 14px 24px -14px rgba(27,10,34,.8);padding-top:12px}
+.bfx-tag[hidden]{display:none}
+.bfx-tag::before{content:"";position:absolute;top:9px;left:50%;width:11px;height:11px;margin-left:-5.5px;border-radius:50%;background:#efe2f3}
+.bfx-tag::after{content:"";position:absolute;bottom:calc(100% - 15px);left:50%;width:1.5px;height:72px;background:var(--ink);transform-origin:bottom}
+.bfx-tag small{font-family:var(--display);font-weight:900;font-size:.62rem;letter-spacing:.04em;color:#ff7fb6}
+.bfx-tag b{font-family:var(--display);font-weight:900;font-size:2rem;letter-spacing:-.03em;margin:2px 0 3px}
+.bfx-tag s{font-size:.74rem;color:#cdb6c8}
+.bfx-tag em{font-style:normal;font-weight:800;font-size:.98rem}
+.bfx-cap{position:absolute;left:16px;bottom:16px;background:rgba(255,255,255,.92);border-radius:8px;padding:6px 10px;font-size:.84rem;font-weight:700}
+.bfx-cap::after{content:" →";color:var(--magenta)}
+@media (prefers-reduced-motion:no-preference){.bfx-tag{animation:bfSway 5s ease-in-out infinite}}
+@keyframes bfSway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(-1.5deg)}}
+@media (prefers-reduced-motion:reduce){.bfx-media img{transition:none}}
+@media (max-width:760px){
+  .bfx{grid-template-columns:1fr;min-height:0;border-radius:24px}
+  .bfx-txt{padding:26px 22px 24px}
+  .bfx-h{font-size:clamp(3rem,15vw,4.2rem)}
+  .bfx-sub{margin-bottom:20px}
+  .bfx-media{min-height:0;aspect-ratio:5/4}
+  .bfx-tag{width:116px;top:44px;transform-origin:50% -44px}
+  .bfx-tag b{font-size:1.55rem}.bfx-tag::after{height:56px}
+  .bfx-page{min-height:0}
+  .bfx-page .bfx-media{display:none}
+  .bfx-page .bfx-txt{padding:22px 20px}
+  .bfx-page .bfx-h{font-size:clamp(2.4rem,12vw,3.2rem)}
+}
+
+/* onde está o desconto */
+.bf .bfm[data-bf]{display:grid}
+.bfm{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:8px clamp(24px,4vw,56px);background:var(--surface);border-radius:20px;padding:clamp(20px,3.4vw,36px);margin-bottom:40px;box-shadow:0 1px 0 var(--line)}
+.bfm-h{grid-column:1/-1;font-family:var(--display);font-weight:700;font-size:clamp(1.3rem,3vw,1.8rem);letter-spacing:-.02em;color:var(--ink);margin:0}
+.bfm-list{list-style:none;margin:0;padding:0;columns:2;column-gap:clamp(20px,3vw,40px)}
+.bfm-list li{break-inside:avoid}
+.bfm-list a{display:flex;align-items:baseline;gap:8px;padding:11px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.bfm-n{font-family:var(--display);font-weight:500;font-size:1rem}
+.bfm-list i{flex:1;align-self:center;border-bottom:2px dotted #d9c3d6;min-width:12px}
+.bfm-q{font-size:.8rem;color:var(--muted);white-space:nowrap}
+.bfm-list b{font-family:var(--display);font-weight:700;font-size:1rem;color:var(--magenta);white-space:nowrap;font-variant-numeric:tabular-nums;min-width:5.6em;text-align:right}
+.bfm-list a:hover .bfm-n{color:var(--magenta)}
+.bfm-bands{display:flex;flex-direction:column;border-left:1px solid var(--line);padding-left:clamp(20px,3vw,40px)}
+.bfm-bt{margin:0;padding:11px 0;border-bottom:1px solid var(--line);font-family:var(--display);font-weight:500;font-size:1rem;color:var(--muted)}
+.bfm-bands a{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:14px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.bfm-bands a b{font-family:var(--display);font-weight:700;font-size:1.18rem;letter-spacing:-.01em}
+.bfm-bands a span{font-size:.84rem;color:var(--muted);white-space:nowrap}
+.bfm-bands a span::after{content:"  →";color:var(--magenta);font-weight:700}
+.bfm-bands a:hover b{color:var(--magenta)}
+@media (max-width:760px){
+  .bfm{grid-template-columns:1fr;border-radius:18px;margin-inline:-6px}
+  .bfm-list{columns:1}
+  .bfm-bands{border-left:0;padding-left:0;margin-top:18px}
+  .bfm-q{display:none}
+}
 
 /* selo de desconto nos produtos */
 .tag.off{background:var(--magenta);color:#fff}
-.bf .tag.off{background:var(--bf-ink);color:#fff;box-shadow:inset 0 0 0 1.5px var(--bf-hot)}
+.bf .tag.off{background:var(--ink)}
 
-/* página inicial: ofertas sobem para logo depois das categorias */
+/* página inicial: ofertas logo depois das categorias */
 .bf #vitrine-home:not([hidden]){display:flex;flex-direction:column}
 .bf #sec-promo{order:-1}
-.hp.is-bf{background:var(--bf-ink);border:0;color:#fff;background-image:radial-gradient(600px 300px at 100% 0%,rgba(255,46,139,.32),transparent 70%)}
-.hp.is-bf .eyebrow{color:#ff9fca}
-.hp.is-bf .hp-n{color:#e6cfdd}
-.hp.is-bf .hp-n a{color:#fff;font-weight:800}
-.hp.is-bf .hp-max{background:var(--bf-hot)}
-.hp.is-bf .hp-card{color:var(--fg)}
-.hp.is-bf .rs-nav{background:#fff;color:var(--bf-ink)}
+.hp-n a{color:var(--plum);font-weight:800}
 
-/* página /black-friday/ */
-.bfh{position:relative;display:grid;grid-template-columns:1fr auto;align-items:center;gap:clamp(16px,4vw,40px);background:var(--bf-ink);color:#fff;border-radius:28px;padding:clamp(24px,4.5vw,48px);overflow:hidden;background-image:radial-gradient(560px 360px at 100% 0%,rgba(255,46,139,.4),transparent 70%),radial-gradient(420px 300px at 0% 100%,rgba(122,24,168,.55),transparent 70%);margin-bottom:22px}
-.bfh-p{color:#f3dcea;max-width:54ch;margin:0 0 12px;font-size:1.04rem}
-.bfh-f{display:flex;flex-wrap:wrap;gap:6px 8px;list-style:none;margin:0;padding:0}
-.bfh-f li{font-size:.8rem;font-weight:700;border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:4px 10px;color:#fff}
-.bf-stamp{display:grid;place-items:center;align-content:center;width:clamp(120px,18vw,180px);aspect-ratio:1;border-radius:50%;background:var(--bf-hot);color:#fff;text-align:center;transform:rotate(-10deg);box-shadow:0 0 0 8px rgba(255,46,139,.18),0 20px 40px -14px var(--bf-glow)}
-.bf-stamp b{font-family:var(--display);font-weight:900;font-size:clamp(1.8rem,4.6vw,2.9rem);line-height:1;letter-spacing:-.05em}
-.bf-stamp small{font-weight:800;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase}
-@media (max-width:640px){.bfh{grid-template-columns:1fr;padding-top:28px}.bf-stamp{position:absolute;top:14px;right:14px;width:92px}.bf-stamp b{font-size:1.45rem}.bf-stamp small{font-size:.6rem}.bfh h1,.bfh .bf-kick{padding-right:84px}}
-.bf-bar-f{margin-bottom:6px}
-@media (prefers-reduced-motion:reduce){.bf .bfbar{animation:none}.bfp0,.bfp1,.bfp2{transform:none}}
+/* página /black-friday/: filtros de categoria e de preço */
+.bf-bar-f .filters{flex-direction:column;align-items:stretch;gap:8px;overflow:visible}
+.bf-bar-f .filters > *{margin:0}
+.ff{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+.ff::-webkit-scrollbar{display:none}
+.ff-p button{background:transparent;border-style:dashed}
+.ff-p button[aria-pressed="true"]{background:var(--ink);border:1.5px solid var(--ink);color:#fff}
+.ff button:disabled{opacity:.4;cursor:default}
+@media (min-width:900px){.ff{flex-wrap:wrap;justify-content:center;overflow:visible}}
+@media (max-width:760px){.bf-bar-f{margin-inline:-16px}.ff{padding-inline:0}}
+
+/* sacola: quanto a pessoa está economizando */
+.total{flex-wrap:wrap}
+.total .saved{flex-basis:100%;font-size:.86rem;font-weight:700;color:#0f7a3a;margin-top:2px}

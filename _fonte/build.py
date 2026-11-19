@@ -209,7 +209,7 @@ if os.path.exists(_imp):
 cats_js = [{k: c.get(k, '') for k in ('id', 'slug', 'label', 'title', 'intro', 'capa', 'cheia', 'cor', 'fileira', 'tileimg', 'trio') if c.get(k)} for c in CATS]
 JS_OUT = JS.replace('/*CATEGORIAS*/[]', json.dumps(cats_js, ensure_ascii=False))
 JS_OUT = JS_OUT.replace('/*CORES*/{}', json.dumps(CORES))
-JS_OUT = JS_OUT.replace('/*CAMPANHA*/null', json.dumps({k: CAMP[k] for k in ('nome', 'inicio', 'fim', 'pagina')} if CAMP else None, ensure_ascii=False))
+JS_OUT = JS_OUT.replace('/*CAMPANHA*/null', json.dumps({k: CAMP.get(k) for k in ('nome', 'inicio', 'fim', 'pagina', 'destaque', 'foto', 'foto_alt')} if CAMP else None, ensure_ascii=False))
 # foto de cada opção (cor, aroma, modelo…), só onde a foto mostra exatamente aquela opção
 JS_OUT = JS_OUT.replace('/*FOTOSCOR*/{}', json.dumps(json.load(open(os.path.join(S, 'fotos-opcao.json'), encoding='utf-8'))))
 assert JS_OUT != JS, 'marcador /*CATEGORIAS*/ não encontrado no loja.js'
@@ -224,7 +224,7 @@ BF_MAX = max((round((1 - p['price'] / p['old']) * 100) for p in OFERTAS), defaul
 def campanha(h):
     """Blocos <!--bf-->…<!--/bf--> só existem com a campanha ativa; {{BF_MAX}} e {{BF_N}} viram números."""
     if not CAMP: return re.sub(r'<!--bf-->.*?<!--/bf-->', '', h, flags=re.S)
-    return h.replace('<!--bf-->', '').replace('<!--/bf-->', '').replace('{{BF_MAX}}', str(BF_MAX)).replace('{{BF_N}}', str(len(OFERTAS))).replace('{{BF_URL}}', '/' + CAMP['pagina'] + '/')
+    return h.replace('<!--bf-->', '').replace('<!--/bf-->', '').replace('{{BF_MAX}}', str(BF_MAX)).replace('{{BF_N}}', str(len(OFERTAS))).replace('{{BF_URL}}', '/' + CAMP['pagina'] + '/').replace('{{BF_FOTO}}', CAMP.get('foto', '')).replace('{{BF_FOTO_ALT}}', e(CAMP.get('foto_alt', ''))).replace('{{BF_DESTAQUE_URL}}', purl(BY[CAMP['destaque']]) if CAMP.get('destaque') in BY else '/' + CAMP['pagina'] + '/').replace('{{BF_DESTAQUE_NOME}}', e(BY[CAMP['destaque']]['name']) if CAMP.get('destaque') in BY else '')
 PARTE = {n: campanha(rd(os.path.join(S, f'parte-{n}.html'))) for n in ('aviso', 'topo', 'rodape', 'fim')}
 # liga a classe "bf" no <html> dentro do período da campanha (ou com ?bf no endereço, para conferir antes)
 BF_HEAD = (f'''<script>(function(){{var n=Date.now(),a=Date.parse("{CAMP['inicio']}"),b={json.dumps(CAMP.get('fim'))};if(/[?&]bf\\b/.test(location.search)||(n>=a&&(!b||n<Date.parse(b)))){{document.documentElement.classList.add("bf");var m=document.querySelector('meta[name="theme-color"]');if(m)m.content="#14051c";}}}})();</script>

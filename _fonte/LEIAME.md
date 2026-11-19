@@ -29,12 +29,15 @@ Esta pasta não é publicada (o GitHub Pages ignora pastas que começam com `_`)
   (de `vendas.json`), promoções (Preço antigo maior que o preço) e informações úteis. `/produtos/` lista tudo.
 
 ## Campanha sazonal (Black Friday)
-- `site/campanha.json` liga a campanha: `ativa`, `nome`, `inicio`, `fim` (null = até desligar) e `pagina` (`black-friday`).
-- No período, um script no `<head>` põe a classe `bf` no `<html>`: troca a faixa de aviso pela faixa da campanha,
-  mostra o banner da Black Friday (com as 3 maiores ofertas de categorias diferentes), sobe as promoções para logo
-  depois das categorias e escreve "Black −X%" nos selos. A mensagem do pedido no WhatsApp cita a campanha.
-- Para conferir fora do período: abra qualquer página com `?bf` no endereço.
-- `/black-friday/`: todos os produtos com Preço antigo maior que o Preço (sem kits nem esgotados), do maior para o
-  menor desconto, com filtro por categoria. Imagem de compartilhamento: `img/black-friday.jpg`.
-- Os números (até X%, N produtos) saem da planilha: mudou preço, muda sozinho. Com `ativa: false`, tudo some e a
-  página `/black-friday/` é apagada na próxima atualização.
+- `site/campanha.json` liga a campanha: `ativa`, `nome`, `inicio`, `fim` (null = até desligar; com data aparece
+  "termina em…" na faixa), `pagina` (`black-friday`), `destaque` (produto da foto grande) e `foto`/`foto_alt`.
+- No período, um script no `<head>` põe a classe `bf` no `<html>`: a faixa de aviso vira a faixa da campanha, o
+  carrossel dá lugar a um hero fixo (foto real da loja com a etiqueta de preço do produto em destaque), entra o bloco
+  "Onde está o desconto" (maior desconto por categoria e faixas de preço) e as promoções sobem para depois das categorias.
+- Fora do período nada disso aparece. Para conferir antes: `?bf` no fim do endereço.
+- `/black-friday/`: produtos com Preço antigo maior que o Preço (sem kits nem esgotados), do maior desconto para o
+  menor, com filtro por categoria e por faixa de preço. Endereços diretos: `/black-friday/#calcinhas`,
+  `/black-friday/#ate-20`, `#20-50`, `#acima-50`. Imagem de compartilhamento: `img/black-friday.jpg`.
+- Valem o ano todo: selo de desconto (−X%), "Só restam N" com 3 ou menos em estoque, no máximo 2 selos por foto,
+  ordenação "Maior desconto" e a economia na sacola e na mensagem do pedido.
+- Os números saem da planilha. Com `ativa: false` tudo some e a página `/black-friday/` é apagada na próxima atualização.
