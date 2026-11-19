@@ -8,7 +8,7 @@ const SITE = "https://ousemaisoficial.com.br/";
 const CATS = [{id:"all", slug:"", label:"Todos", title:"Todos os produtos"}].concat([{"id": "lub", "slug": "lubrificantes", "label": "Lubrificantes", "title": "Lubrificantes", "intro": "Lubrificante deixa tudo mais confortável e gostoso, a sós ou a dois. Tem opção à base de água para o dia a dia, com efeito que esquenta ou refresca, com aroma e à base de silicone, que resiste à água.", "capa": "img/categorias/lubrificantes.jpg", "fileira": "#d6ebff"}, {"id": "anal", "slug": "anais", "label": "Anais", "title": "Produtos para sexo anal", "intro": "Géis feitos para o sexo anal: deslizam mais, diminuem o atrito e ajudam a relaxar. Vá com calma, use bastante produto e respeite o seu tempo."}, {"id": "comestiveis", "slug": "comestiveis", "label": "Comestíveis", "title": "Comestíveis e beijáveis", "intro": "Géis beijáveis e comestíveis com sabor, alguns com efeito que esquenta, gela ou vibra. Feitos para as preliminares e o sexo oral ficarem ainda mais gostosos.", "fileira": "#ffe2c4"}, {"id": "jogos", "slug": "jogos", "label": "Jogos", "title": "Jogos e brincadeiras", "intro": "Jogos para quebrar a rotina a dois e presentes divertidos para chá de lingerie, despedida de solteiro e amigo secreto."}, {"id": "calcinhas", "slug": "calcinhas", "label": "Calcinhas", "title": "Calcinhas", "intro": "Calcinhas sensuais para usar no dia a dia ou para surpreender. Em cada produto você vê as cores, as opções e a numeração que veste.", "cheia": "recorte", "fileira": "#f0dcff"}, {"id": "lingeries", "slug": "lingeries", "label": "Lingeries", "title": "Lingeries", "intro": "Lingeries para se sentir poderosa. Em cada produto você vê as cores e a numeração que veste.", "cheia": "recorte"}, {"id": "fantasias", "slug": "fantasias", "label": "Fantasias", "title": "Fantasias eróticas", "intro": "Fantasias para dar vida à imaginação a dois.", "cheia": true}, {"id": "aneis", "slug": "aneis", "label": "Anéis", "title": "Anéis penianos", "intro": "Anéis para prolongar o momento e intensificar as sensações a dois."}, {"id": "vib", "slug": "vibradores", "label": "Vibradores", "title": "Vibradores", "intro": "Vibradores para explorar o prazer a sós ou a dois. Com brinquedos de silicone, use lubrificante à base de água.", "cor": "#f9c6e3", "tileimg": "img/bullet-controle-estudio.jpg", "trio": ["img/venda/varinha-magica.webp", "img/venda/bullet-controle.webp", "img/venda/sugador-clitoris.webp"]}, {"id": "kit", "slug": "kits", "label": "Kits", "title": "Kits prontos", "intro": "Combinações montadas pela loja para presentear ou estrear a dois. Um toque e o kit inteiro vai para a sacola."}, {"id": "fetiches", "slug": "fetiches", "label": "Fetiches", "title": "Fetiches", "intro": "Acessórios para quem quer explorar fetiches com segurança e combinado a dois.", "cheia": "recorte", "cor": "#dcb8f2"}, {"id": "masturbadores", "slug": "masturbadores", "label": "Masturbadores", "title": "Masturbadores masculinos", "intro": "Masturbadores para momentos a sós, com texturas internas diferentes. Use sempre com lubrificante à base de água."}, {"id": "cuidados", "slug": "cuidados", "label": "Cuidados", "title": "Cuidados íntimos e massagem", "intro": "Higiene íntima, massagem e produtos para despertar as sensações: cuidado com o corpo antes, durante e depois."}]);
 const PAGE = window.OUSE_PAGE || {type:"home"};
 // campanha sazonal (campanha.json): a classe "bf" no <html> é ligada no <head> dentro do período
-const CAMP = {"nome": "Black Friday", "inicio": "2026-11-20T00:00:00-03:00", "fim": null, "pagina": "black-friday"};
+const CAMP = {"nome": "Black Friday", "inicio": "2026-11-20T00:00:00-03:00", "fim": null, "pagina": "black-friday", "destaque": "camisola-renda-preta", "foto": "img/camisola-renda-preta.jpg", "foto_alt": "Camisola preta de tule e renda no manequim da loja Ouse Mais"};
 const BF = !!CAMP && document.documentElement.classList.contains("bf");
 const OFERTAS_CAT = {id:"ofertas", slug:CAMP ? CAMP.pagina : "ofertas", label:CAMP ? CAMP.nome : "Ofertas", title:`Ofertas de ${CAMP ? CAMP.nome : "hoje"}`};
 const CORES = {"kit-a-dois": ["#f69ba7", 1, 1], "kit-love-lub": ["#f69ba7", 1, 1], "kit-beijavel": ["#f69ba7", 1, 1], "kit-descoberta": ["#f69bbe", 1, 1], "calcinha-laco": ["#f69ba7", 0], "calcinha-frase": ["#f69ba7", 0], "love-lub-hot": ["#f69ba7", 1, 1], "love-lub-ice": ["#9bd4f6", 1, 1], "love-lub-neutro": ["#f69bbe", 1, 1], "aqua-silicon": ["#f69bbe", 1, 1], "rilex-morango": ["#f69ba7", 1, 1], "rilex-menta": ["#9bf6be", 1, 1], "d4-morango": ["#f69ba7", 1, 1], "sedenta": ["#f69bbe", 1, 1], "kuloko": ["#eb9bf6", 1, 1], "jato-sex-esquenta": ["#f69ba7", 1, 1], "vibrador-curvo": ["#f69bbe", 1, 1], "yummy-morango": ["#f6a79b", 1, 1], "d4-chiclete": ["#f69bbe", 1, 1], "jato-sex-esquenta-gela": ["#f69bbe", 1, 1], "jato-sex-esquenta-vibra": ["#9bf6a7", 1, 1], "garganta-profunda": ["#f6a79b", 1, 1], "goze": ["#f69bd4", 1, 1], "fogo-da-paixao": ["#f69ba7", 1, 1], "tantrica": ["#f69bd4", 1, 1], "blow-girl-gel": ["#f69bbe", 1, 1], "sete-sensacoes": ["#f69ba7", 1, 1], "lis-in": ["#f6d49b", 1, 1], "sensualize-desodorante": ["#f6d49b", 1, 1], "sabonete-copaiba": ["#9bd4f6", 1, 1], "gravtest": ["#f69bbe", 1, 1], "desejos-e-drinks": ["#f69ba7", 1, 1], "yummy-menta": ["#9bf6d4", 1, 1], "yummy-framboesa": ["#f69ba7", 1, 1], "calcinha-frase-preta": ["#f6be9b", 0], "siri-ryka": ["#f69ba7", 1, 1], "xana-loka": ["#f69bbe", 1, 1], "hot-ball-xana-loka": ["#f69bbe", 1, 1], "hot-ball-plus-esquenta": ["#f6a79b", 1, 1], "perfume-sensual": ["#f69ba7", 1, 1], "luva-esfoliante": ["#f6eb9b", 1, 1], "sedentao-15g": ["#9bd4f6", 1, 1], "sedentao-18g": ["#9bebf6", 1, 1], "garganta-profunda-menta": ["#f6a79b", 1, 1], "capa-soluvel": ["#f6a79b", 1, 1], "cliv": ["#9bd4f6", 1, 1], "plug-coracao": ["#f69beb", 1, 1], "plug-pompom": ["#be9bf6", 1, 1], "egg-masturbador": ["#d49bf6", 1, 1], "venda": ["#f69ba7", 1, 1], "jogo-seducao": ["#f69bbe", 1, 1], "baralho-kama-sutra": ["#f6a79b", 1, 1], "penis-lixa": ["#f6a79b", 1, 1], "penis-faca": ["#f69beb", 1, 1], "penis-abridor": ["#f6be9b", 1, 1], "penis-escova": ["#9bd4f6", 1, 1], "calcinha-brilha-escuro": ["#f69ba7", 0], "calcinha-perolas": ["#f6a79b", 0], "calcinha-borboleta-dourada": ["#f69ba7", 0], "calcinha-corrente-strass": ["#f69ba7", 0], "calcinha-alca-strass": ["#f69ba7", 0], "calcinha-renda-lacinho": ["#9bd4f6", 0], "calcinha-borboleta-strass": ["#f69ba7", 1, 1], "calcinha-cerejinha": ["#f69ba7", 0], "conjunto-coracoes": ["#9bd4f6", 0], "conjunto-cinta-liga-lacos": ["#f69ba7", 1, 1], "conjunto-cinta-liga-meia": ["#f69ba7", 0], "conjunto-tule-fio": ["#f6a79b", 1, 1], "sutia-tomara-que-caia": ["#9bd4f6", 0], "camisola-renda-preta": ["#f69bbe", 0], "fantasia-mulher-gato": ["#f6be9b", 1, 1], "separador-pernas": ["#f6be9b", 1, 1], "harness-maos-pernas": ["#f6a79b", 0], "hot-ball-plus-esfria": ["#9bebf6", 1, 1], "golfinho": ["#f6d49b", 1, 1], "bullet-controle": ["#f69bd4", 1, 1], "varinha-magica": ["#f69bbe", 1, 1], "porquinho": ["#f6a79b", 1, 1], "sugador-clitoris": ["#f69bbe", 1, 1], "pincel-vibratorio": ["#f6a79b", 1, 1], "meu-primeiro-anal": ["#9bd4f6", 1, 1], "lingerie-sophia": ["#f69ba7", 1, 1], "calcinha-tailandesa-plus-sizer": ["#f6be9b", 0], "calcinha-com-nomes-sexy": ["#f6d49b", 0], "saca-rolhas": ["#f6a79b", 1, 1], "calcinha-com-abertura": ["#f69ba7", 1, 1], "acessorio-de-perna-sexy": ["#f6be9b", 0], "lingerie-sexy-de-laco": ["#9bbef6", 1, 1], "rarness-de-pernas-e-bracos-sexy": ["#f6be9b", 1, 1], "corset-brilhante": ["#f69ba7", 1, 1], "corset-de-tule-lilas": ["#f6be9b", 1, 1], "hot-ball-plus-shock": ["#9bf6be", 1, 1], "preservativo-rilex-menta": ["#a7f69b", 1, 1], "preservativo-rilex-lubrificado": ["#9bd4f6", 1, 1], "karamela-coracao": ["#f6a79b", 1, 1], "corset-brilhante-2": ["#f6be9b", 1, 1], "corset-de-renda-forrado": ["#9bbef6", 1, 1], "corset-de-renda-forrado-2": ["#f69ba7", 1, 1], "corset-liso-de-tule": ["#f6be9b", 1, 1], "conjunto-baby-doll": ["#9bebf6", 1, 1], "conjunto-baby-doll-2": ["#f69ba7", 1, 1], "nocucedim": ["#f6a79b", 1, 1], "calcinha-playboy": ["#f69ba7", 1, 1], "esfoliante-corporal-em-gel-blow-girl": ["#f69ba7", 1, 1], "dado-das-posicoes-sexy": ["#f6a79b", 0], "jogo-do-prazer-strip-tease-3-dados": ["#f69bbe", 1, 1], "camisola-kyara": ["#f69bbe", 1, 1], "camisola-kyara-lilas": ["#d49bf6", 1, 1], "calcinha-com-perneira-com-opcao-de-remover": ["#f6be9b", 1, 1], "lingerie-com-3-pecas-sutia-calcinha-perneira": ["#f6be9b", 1, 1], "calcinha-fio-com-renda-na-lateral-e-pingente-de-coracao": ["#f69ba7", 1, 1], "calcinha-de-pompom": ["#f6a79b", 1, 1], "calcinha-de-renda-nobre-semi-fio": ["#f6a79b", 1, 1], "calcinha-sexy-de-renda-nobre-com-detalhe-de-flor-na-frente": ["#f6be9b", 0], "calcinha-fio-de-elastano-com-renda": ["#f6a79b", 1, 1], "calcinha-canelada-fio": ["#f6be9b", 1, 1], "calcinha-com-dupla-alca-e-abertura-na-frente-e-pingente": ["#f6a79b", 1, 1], "calcinha-semi-fio-gg": ["#f6be9b", 1, 1], "sabonete-liquido-blow-girl": ["#f69bbe", 1, 1], "blow-girl-creme-clareador-para-virilha-e-axilas": ["#f69bbe", 1, 1], "kit-clareador": ["#f69bbe", 1, 1], "cliv-black": ["#f6be9b", 0]};
@@ -30,6 +30,12 @@ const brl = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 // desconto em % (preço antigo da planilha); oferta = produto avulso, à venda, com preço menor
 const offPct = p => p && p.price!=null && p.oldPrice>p.price ? Math.round((1-p.price/p.oldPrice)*100) : 0;
 const isOffer = p => !p.items && !p.soldOut && offPct(p)>0;
+// faixas de preço da página de ofertas
+const BANDS = [
+  {id:"ate-20", label:"Até R$ 20", title:"Ofertas até R$ 20", t:p=>p.price<=20},
+  {id:"20-50", label:"De R$ 20 a R$ 50", title:"Ofertas de R$ 20 a R$ 50", t:p=>p.price>20 && p.price<=50},
+  {id:"acima-50", label:"Acima de R$ 50", title:"Ofertas acima de R$ 50", t:p=>p.price>50},
+];
 const wa = msg => `https://wa.me/${WHATS}?text=${encodeURIComponent(msg)}`;
 const byId = id => PRODUCTS.find(p=>p.id===id);
 const catOf = id => CATS.find(c=>c.id===id) || (id==="ofertas" ? OFERTAS_CAT : undefined);
@@ -105,12 +111,13 @@ function buyHTML(p, ctx="c"){
   if (so && so.qty===0 && !q) return varHTML(p,ctx) + price + `<button type="button" class="add" disabled>${p.variants.type==="combo" ? "Esgotado nessa combinação" : `Esgotado nesta ${p.variants.label.toLowerCase()}`}</button>`;
   return varHTML(p,ctx) + price + (q ? qtyHTML(k,q) + (big ? `<button type="button" class="btn ghost seebag" data-cart>Ver sacola e enviar pedido</button>` : "") : `<button type="button" class="add" data-act="inc" data-key="${k}">+ Adicionar${big?" à sacola":""}</button>`);
 }
+const savedOf = ids => ids.reduce((s,k)=>{ const p = P(k); return s + (p && !p.items && p.price!=null && p.oldPrice>p.price ? (p.oldPrice-p.price)*cart[k] : 0); }, 0);
 function orderMsg(){
-  const ids = liveKeys();
+  const ids = liveKeys(), saved = savedOf(ids);
   const known = ids.every(k=>P(k).price!=null);
   const sum = ids.reduce((s,k)=>s+(P(k).price||0)*cart[k],0);
   const lines = ids.map(k=>{ const p=P(k), o=optOf(p,k); return `• ${cart[k]}x ${p.name}${o?` — ${o.msg || `${p.variants.label.toLowerCase()} ${o.name}`}${p.variants.note?` (${p.variants.note})`:""}`:""}${p.items||p.variants||!p.brand||p.name.includes(p.brand)?"":` (${p.brand})`}${p.price!=null?` — ${brl(p.price*cart[k])}`:""}${p.items?`\n   (${p.items.filter(byId).map(i=>byId(i).name).join(" + ")})`:""}`; });
-  return `Olá, Ouse Mais! Montei este pedido pelo catálogo${BF?` na ${CAMP.nome}`:""}:\n\n${lines.join("\n")}${known&&ids.length?`\n\nTotal: ${brl(sum)}`:""}\n\n${known?"Podem me passar as informações de pagamento para eu finalizar?":"Podem me confirmar os valores e as informações de pagamento?"}`;
+  return `Olá, Ouse Mais! Montei este pedido pelo catálogo${BF?` na ${CAMP.nome}`:""}:\n\n${lines.join("\n")}${known&&ids.length?`\n\nTotal: ${brl(sum)}${saved>=1?` (economia de ${brl(saved)})`:""}`:""}\n\n${known?"Podem me passar as informações de pagamento para eu finalizar?":"Podem me confirmar os valores e as informações de pagamento?"}`;
 }
 
 /* ---------- Galeria de fotos e vídeos ---------- */
@@ -169,11 +176,13 @@ function wireGals(root){
 function tagsHTML(p){
   const t = [];
   if (p.soldOut) t.push(`<span class="tag out">Esgotado</span>`);
+  else if (p.qty>0 && p.qty<=3 && !p.items) t.push(`<span class="tag last">${p.qty===1?"Só resta 1":`Só restam ${p.qty}`}</span>`);
   else if (p.lastUnits) t.push(`<span class="tag last">Últimas unidades</span>`);
   if (TOP.has(p.id)) t.push(`<span class="tag best">Mais vendido</span>`);
   if (p.tag) t.push(`<span class="tag${p.items?" kit":""}">${p.tag}</span>`);
-  if (!p.soldOut && offPct(p)>=5) t.unshift(`<span class="tag off">${BF?"Black ":""}−${offPct(p)}%</span>`);
-  return t.length ? `<div class="tags">${t.join("")}</div>` : "";
+  if (!p.soldOut && offPct(p)>=5) t.unshift(`<span class="tag off">−${offPct(p)}%</span>`);
+  // no máximo dois selos por foto (desconto e estoque vêm primeiro)
+  return t.length ? `<div class="tags">${t.slice(0,2).join("")}</div>` : "";
 }
 
 /* ---------- Listas e ordenação ---------- */
@@ -241,15 +250,18 @@ let current = PAGE.type==="cat" ? PAGE.cat : "all";
 if (PAGE.type==="home") try{ const h = location.hash.slice(1); if (CATS.some(c=>c.id===h)) current = h; }catch(e){}
 let query = "";
 
-let bfCat = "all"; // categoria escolhida dentro da página de ofertas
+let bfCat = "all", bfBand = ""; // categoria e faixa de preço escolhidas na página de ofertas
+function readBfHash(){ const h = decodeURIComponent(location.hash.slice(1)); if (BANDS.some(b=>b.id===h)){ bfBand = h; bfCat = "all"; } else if (CATS.some(c=>c.id===h && c.id!=="all")){ bfCat = h; bfBand = ""; } else { bfCat = "all"; bfBand = ""; } }
+if (PAGE.cat==="ofertas"){ readBfHash(); addEventListener("hashchange", ()=>{ readBfHash(); renderFilters(); renderGrid(); }); }
 function renderFilters(){
   const filters = $("filters"); if (!filters) return;
   if (current==="ofertas"){
-    const of = PRODUCTS.filter(isOffer);
-    filters.innerHTML = [{id:"all", label:"Todas"}].concat(CATS.filter(c=>c.id!=="all")).map(c=>{
-      const n = c.id==="all" ? of.length : of.filter(p=>p.cat===c.id).length;
-      return n ? `<button type="button" data-bfcat="${c.id}" aria-pressed="${c.id===bfCat}">${c.label}<span class="n">${n}</span></button>` : "";
-    }).join("");
+    const of = PRODUCTS.filter(isOffer), inB = bfBand ? of.filter(BANDS.find(b=>b.id===bfBand).t) : of;
+    filters.innerHTML = `<div class="ff" role="group" aria-label="Categoria">${[{id:"all", label:"Todas"}].concat(CATS.filter(c=>c.id!=="all")).map(c=>{
+      const n = c.id==="all" ? inB.length : inB.filter(p=>p.cat===c.id).length;
+      return n || c.id===bfCat ? `<button type="button" data-bfcat="${c.id}" aria-pressed="${c.id===bfCat}">${c.label}<span class="n">${n}</span></button>` : "";
+    }).join("")}</div><div class="ff ff-p" role="group" aria-label="Faixa de preço">${BANDS.map(b=>{ const n = of.filter(p=>b.t(p) && (bfCat==="all" || p.cat===bfCat)).length;
+      return `<button type="button" data-bfband="${b.id}" aria-pressed="${b.id===bfBand}"${n?"":" disabled"}>${b.label}<span class="n">${n}</span></button>`; }).join("")}</div>`;
     return;
   }
   filters.innerHTML = CATS.map(c=>{
@@ -267,12 +279,13 @@ function renderGrid(){
     if (b) b.hidden = !searching; if (vh) vh.hidden = searching;
     if (!searching){ grid.innerHTML = ""; return; }
   }
-  const base = current==="ofertas" ? PRODUCTS.filter(p=>isOffer(p) && (searching || bfCat==="all" || p.cat===bfCat))
+  const band = BANDS.find(b=>b.id===bfBand);
+  const base = current==="ofertas" ? PRODUCTS.filter(p=>isOffer(p) && (searching || ((bfCat==="all" || p.cat===bfCat) && (!band || band.t(p)))))
     : searching ? PRODUCTS : (current==="all" ? PRODUCTS : PRODUCTS.filter(p=>p.cat===current));
   const list = base.filter(p=>terms.every(t=>(HAY.get(p.id)||"").includes(t))).sort(SORTS[sortBy]);
   if (filters) filters.setAttribute("aria-disabled", searching);
   const c = catOf(current);
-  if ($("sec-title")) $("sec-title").textContent = searching ? `Resultados para “${query.trim()}”` : current==="ofertas" ? (bfCat==="all" ? "Todas as ofertas" : `Ofertas de ${catOf(bfCat).label.toLowerCase()}`) : (PAGE.type==="cat" && c.id!=="all" ? `Todos os produtos de ${c.label.toLowerCase()}` : c.title);
+  if ($("sec-title")) $("sec-title").textContent = searching ? `Resultados para “${query.trim()}”` : current==="ofertas" ? (bfCat==="all" ? (band ? band.title : "Todas as ofertas") : `Ofertas de ${catOf(bfCat).label.toLowerCase()}${band?`, ${band.label.toLowerCase()}`:""}`) : (PAGE.type==="cat" && c.id!=="all" ? `Todos os produtos de ${c.label.toLowerCase()}` : c.title);
   if ($("count")) $("count").textContent = `${list.length} ${list.length===1?"produto":"produtos"}`;
   const cl = $("cat-link"); if (cl){ cl.hidden = searching || current==="all" || !list.length; if (!cl.hidden){ cl.href = catUrl(current); cl.textContent = `Abrir a página de ${c.label.toLowerCase()} →`; } }
   if (!searching && !list.length && current==="ofertas"){
@@ -330,29 +343,55 @@ function renderCatHero(){
 }
 
 /* ---------- Campanha (Black Friday) ---------- */
-const bfMax = () => PRODUCTS.filter(isOffer).reduce((m,p)=>Math.max(m, offPct(p)), 0);
-// três ofertas de categorias diferentes, as de maior desconto
-function bfPicks(n){
-  const seen = new Set(), out = [];
-  PRODUCTS.filter(p=>isOffer(p) && !p.variants).concat(PRODUCTS.filter(p=>isOffer(p) && p.variants)).sort(SORTS.desconto)
-    .forEach(p=>{ if (out.length<n && !seen.has(p.cat)){ seen.add(p.cat); out.push(p); } });
-  return out;
+const offers = () => PRODUCTS.filter(isOffer);
+const bfMax = () => offers().reduce((m,p)=>Math.max(m, offPct(p)), 0);
+const bfUrl = h => `/${OFERTAS_CAT.slug}/${Q}${h?"#"+h:""}`;
+const plural = (n, a, b) => `${n} ${n===1?a:b}`;
+// etiqueta de preço pendurada na foto do produto em destaque (campanha.json → destaque)
+function bfTagHTML(p){
+  if (!p || !isOffer(p)) return "";
+  return `<small>OUSE+</small><b>−${offPct(p)}%</b><s>${brl(p.oldPrice)}</s><em>${brl(p.price)}</em>`;
 }
-const bfCardHTML = (p,i) => `<a class="bfp bfp${i}" href="${purl(p)}"><span class="bfp-img"><img src="${IMG(p)}" alt="${altOf(p)}"${i?' loading="lazy"':""}${p.imgFull||!(CORES[p.id]||[1,1])[1]?' class="photo"':''}></span><span class="bfp-off">−${offPct(p)}%</span><span class="bfp-n">${p.name}</span><span class="bfp-pr"><s>${brl(p.oldPrice)}</s> <b>${brl(p.price)}</b></span></a>`;
+function bfMediaHTML(){
+  const p = CAMP && CAMP.destaque ? byId(CAMP.destaque) : null;
+  if (!CAMP || !CAMP.foto) return "";
+  return `<a class="bfx-media" href="${p && isOffer(p) ? purl(p) : bfUrl()}"><img src="/${CAMP.foto}" alt="${CAMP.foto_alt||""}" fetchpriority="high" width="900" height="900">${p && isOffer(p) ? `<span class="bfx-tag">${bfTagHTML(p)}</span><span class="bfx-cap">${p.name}</span>` : ""}</a>`;
+}
 function bfHeroHTML(){
-  const of = PRODUCTS.filter(isOffer), cats = [...new Set(of.map(p=>p.cat))].map(catOf).filter(Boolean);
+  const of = offers(), cats = [...new Set(of.map(p=>p.cat))].length;
   return `<nav class="crumbs" aria-label="Você está em"><a href="/${Q}">Início</a><span aria-hidden="true">›</span><span aria-current="page">${OFERTAS_CAT.label}</span></nav>
-    <div class="bfh"><div class="bfh-t"><p class="bf-kick">Ouse Mais · Campestre/AL</p><h1><span>${OFERTAS_CAT.label.split(" ")[0]}</span> ${OFERTAS_CAT.label.split(" ").slice(1).join(" ")}</h1>
-      <p class="bfh-p">${of.length} produtos com preço de ${OFERTAS_CAT.label}, em ${cats.length} categorias. Monte a sacola e mande o pedido pronto no WhatsApp: a loja confirma pagamento e entrega por lá.</p>
-      <ul class="bfh-f"><li>Embalagem sigilosa</li><li>Pix, cartão ou dinheiro na entrega</li><li>Enquanto durar o estoque</li></ul></div>
-      <div class="bf-stamp" aria-label="Até ${bfMax()}% de desconto"><small>até</small><b>−${bfMax()}%</b><small>off</small></div></div>`;
+    <div class="bfx bfx-page"><div class="bfx-txt"><h1 class="bfx-h">${OFERTAS_CAT.label}</h1>
+      <p class="bfx-sub">Até <b>${bfMax()}% off</b> em ${plural(of.length,"produto","produtos")} de ${plural(cats,"categoria","categorias")}. Pedido pelo WhatsApp e embalagem sigilosa, enquanto durar o estoque.</p></div>
+      ${bfMediaHTML()}</div>`;
 }
+function bfMapHTML(){
+  const of = offers();
+  return CATS.filter(c=>c.id!=="all").map(c=>({c, ps:of.filter(p=>p.cat===c.id)})).filter(x=>x.ps.length)
+    .map(x=>({...x, m:Math.max(...x.ps.map(offPct))})).sort((a,b)=>b.m-a.m || b.ps.length-a.ps.length)
+    .map(x=>`<li><a href="${bfUrl(x.c.id)}"><span class="bfm-n">${x.c.label}</span><i aria-hidden="true"></i><span class="bfm-q">${plural(x.ps.length,"oferta","ofertas")}</span><b>até −${x.m}%</b></a></li>`).join("");
+}
+function bfBandsHTML(){
+  const of = offers();
+  return `<h3 class="bfm-bt">Por preço</h3>` + BANDS.map(b=>{ const n = of.filter(b.t).length; return n ? `<a href="${bfUrl(b.id)}"><b>${b.label}</b><span>${plural(n,"oferta","ofertas")}</span></a>` : ""; }).join("");
+}
+let bfTimer = 0;
 function renderBfBits(){
   if (!CAMP || !READY) return;
-  const m = bfMax(), n = PRODUCTS.filter(isOffer).length;
+  const m = bfMax(), n = offers().length;
   document.querySelectorAll("[data-bf-max]").forEach(x=>{ if (m) x.textContent = m; });
   document.querySelectorAll("[data-bf-n]").forEach(x=>{ if (n) x.textContent = n; });
-  const art = $("bf-art"); if (art && art.dataset.v!==String(DATAV)){ art.dataset.v = DATAV; art.innerHTML = bfPicks(3).map(bfCardHTML).join(""); }
+  const p = CAMP.destaque ? byId(CAMP.destaque) : null, tag = $("bfx-tag");
+  if (tag){ tag.innerHTML = bfTagHTML(p); tag.hidden = !tag.innerHTML; const cap = $("bfx-cap"); if (cap) cap.hidden = tag.hidden; const md = $("bfx-media"); if (md && FINAL) md.href = p && isOffer(p) ? purl(p) : bfUrl(); }
+  const ml = $("bfm-list"); if (ml) ml.innerHTML = bfMapHTML();
+  const mb = $("bfm-bands"); if (mb) mb.innerHTML = bfBandsHTML();
+  // contagem regressiva, só quando a campanha tem data para acabar
+  const fe = document.querySelector("[data-bf-fim]");
+  if (fe && CAMP.fim && !bfTimer){
+    const tick = () => { const ms = Date.parse(CAMP.fim) - Date.now(); if (ms <= 0){ fe.hidden = true; return; }
+      const d = Math.floor(ms/864e5), h = Math.floor(ms%864e5/36e5), mi = Math.floor(ms%36e5/6e4);
+      fe.textContent = d ? `termina em ${d}d ${h}h` : `termina em ${h}h ${String(mi).padStart(2,"0")}min`; fe.hidden = false; };
+    tick(); bfTimer = setInterval(tick, 30000);
+  }
 }
 
 /* ---------- Página inicial: kits, mais vendidos e promoções ---------- */
@@ -411,8 +450,8 @@ function renderHome(){
     $("sec-promo").hidden = !promo.length;
     if ($("hp-n")) $("hp-n").textContent = promo.length ? `${promo.length} ${promo.length===1?"produto":"produtos"} com preço menor` : "";
     if ($("hp-max") && promo.length) $("hp-max").innerHTML = `<small>até</small>−${Math.round(pct(promo[0])*100)}%`;
-    if (BF){ $("sec-promo").classList.add("is-bf"); if ($("hp-t")) $("hp-t").textContent = `Ofertas de ${CAMP.nome}`; const ey = $("sec-promo").querySelector(".eyebrow"); if (ey) ey.textContent = `${CAMP.nome} Ouse Mais`;
-      if ($("hp-n")) $("hp-n").innerHTML = `${promo.length} produtos com desconto · <a href="/${CAMP.pagina}/${Q}">Ver todas as ofertas →</a>`; }
+    if (BF){ if ($("hp-t")) $("hp-t").textContent = "Maiores descontos"; const ey = $("sec-promo").querySelector(".eyebrow"); if (ey) ey.textContent = CAMP.nome;
+      if ($("hp-n")) $("hp-n").innerHTML = `${plural(promo.length,"produto","produtos")} com preço de ${CAMP.nome} · <a href="${bfUrl()}">Ver todas →</a>`; }
     keepScroll(hp, promo.map(p=>`<article class="hp-card${keysOf(p).length?" in":""}">
       <a class="hp-img" href="${purl(p)}" aria-label="Ver ${p.name}"><img src="${IMG(p)}" alt="${altOf(p)}" loading="lazy"${p.imgFull||!(CORES[p.id]||[1,1])[1]?' class="photo"':''}></a>
       <div class="hp-b"><span class="hp-off">−${Math.round(pct(p)*100)}%</span><h3 class="hp-name"><a href="${purl(p)}">${p.name}</a></h3>
@@ -593,7 +632,8 @@ function renderCart(){
   $("c-foot").hidden = !ids.length;
   const known = ids.every(k=>P(k).price!=null);
   const sum = ids.reduce((s,k)=>s+(P(k).price||0)*cart[k],0);
-  $("c-total").innerHTML = known ? `<span>Total</span><b>${brl(sum)}</b>` : "";
+  const saved = savedOf(ids);
+  $("c-total").innerHTML = known ? `<span>Total</span><b>${brl(sum)}</b>${saved>=1?`<small class="saved">Você está economizando ${brl(saved)}${BF?` na ${CAMP.nome}`:""}</small>`:""}` : "";
   $("c-total").hidden = !known;
   const ent = ENTREGA, lines = [];
   if (ent.pag) lines.push(`Pagamento: ${ent.pag}${ent.parc?` (${ent.parc})`:""}.`);
@@ -631,7 +671,6 @@ $("cta-bottom").href = $("wa-float").href = wa("Olá! Vi o catálogo da Ouse Mai
 /* ---------- Banners (página inicial) ---------- */
 const track = $("track");
 let go = ()=>{}, start = ()=>{};
-if (track && !BF) track.querySelectorAll("[data-bf]").forEach(s=>s.remove());
 if (track){
   [...track.children].forEach((s,i,a)=>s.setAttribute("aria-label", `${i+1} de ${a.length}`));
   const slides = track.children.length;
@@ -669,7 +708,9 @@ document.addEventListener("click", e=>{
   const g = e.target.closest("[data-go]");
   if (g){ clearQuery(); current = g.dataset.go; renderFilters(); renderGrid(); $("produtos").scrollIntoView({behavior:reduce?"auto":"smooth"}); return; }
   const bc = e.target.closest("[data-bfcat]");
-  if (bc){ bfCat = bc.dataset.bfcat; clearQuery(); renderFilters(); renderGrid(); return; }
+  const bb = e.target.closest("[data-bfband]");
+  if (bc || bb){ if (bc) bfCat = bc.dataset.bfcat; else bfBand = bfBand===bb.dataset.bfband ? "" : bb.dataset.bfband;
+    clearQuery(); renderFilters(); renderGrid(); const h = bfBand || (bfCat!=="all" ? bfCat : ""); try{ history.replaceState(null, "", location.pathname + location.search + (h?"#"+h:"")); }catch(_){} return; }
   const f = e.target.closest("[data-cat]");
   if (f){ current = f.dataset.cat; clearQuery(); renderFilters(); renderGrid(); try{ history.replaceState(null, "", current==="all" ? location.pathname + location.search : "#"+current); }catch(_){} return; }
   const sw = e.target.closest("[data-var]");
