@@ -699,7 +699,7 @@ const clearQuery = () => { if (qIn && query){ qIn.value = ""; query = ""; $("q-c
 document.addEventListener("click", e=>{
   const ws = e.target.closest("#bag-send,#c-send");
   if (ws){ if (liveKeys().length) gaEv("enviar_pedido_whatsapp", gaBag(), {itens:itemsCount()}); }
-  else { const wl = e.target.closest('a[href*="wa.me"]'); if (wl) try{ if (window.gtag && !IS_PREVIEW) gtag("event", "contato_whatsapp", {local:(wl.textContent||"").trim().slice(0,60), pagina:location.pathname}); }catch(_){} try{ if (window.fbq && !IS_PREVIEW) fbq("trackCustom", "ContatoWhatsApp", {pagina:location.pathname}); }catch(_){} }
+  else { const wl = e.target.closest('a[href*="wa.me"]'); if (wl){ try{ if (window.gtag && !IS_PREVIEW) gtag("event", "contato_whatsapp", {local:(wl.textContent||"").trim().slice(0,60), pagina:location.pathname}); }catch(_){} try{ if (window.fbq && !IS_PREVIEW) fbq("trackCustom", "ContatoWhatsApp", {pagina:location.pathname}); }catch(_){} } }
   const gn = e.target.closest("[data-gal-nav]");
   if (gn){ e.preventDefault(); const t = gn.closest("[data-gal]").querySelector(".gal-track"); const n = t.children.length, i = Math.round(t.scrollLeft/t.clientWidth); const j = (i + +gn.dataset.galNav + n) % n; t.scrollTo({left:j*t.clientWidth, behavior:reduce?"auto":"smooth"}); return; }
   const th = e.target.closest("[data-thumb]");
