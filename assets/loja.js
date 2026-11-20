@@ -68,7 +68,10 @@ const save = () => { try{ if (Object.keys(cart).length) localStorage.setItem("ou
 const liveKeys = () => Object.keys(cart).filter(k=>P(k));
 /* ---------- Google Analytics: produto visto, sacola, envio do pedido ---------- */
 const gaItem = (k, q) => { const p = P(k); if (!p) return null; const o = optOf(p,k), c = catOf(p.cat); return {item_id:p.id, item_name:p.name, item_brand:brandOf(p)||undefined, item_category:c?c.label:undefined, item_variant:o?o.name:undefined, price:p.price!=null?p.price:undefined, quantity:q||1}; };
-function gaEv(ev, pairs, extra){ try{ if (!window.gtag || IS_PREVIEW) return; const items = pairs.map(([k,q])=>gaItem(k,q)).filter(Boolean); const value = Math.round(items.reduce((s,i)=>s+(i.price||0)*i.quantity,0)*100)/100; gtag("event", ev, Object.assign({currency:"BRL", value, items}, extra||{})); }catch(e){} }
+function gaEv(ev, pairs, extra){ try{ if (!window.gtag || IS_PREVIEW) return; const items = pairs.map(([k,q])=>gaItem(k,q)).filter(Boolean); const value = Math.round(items.reduce((s,i)=>s+(i.price||0)*i.quantity,0)*100)/100; gtag("event", ev, Object.assign({currency:"BRL", value, items}, extra||{})); }catch(e){} fbEv(ev, pairs); }
+/* ---------- Pixel do Meta: os mesmos momentos do Analytics ---------- */
+const FB_EV = {view_item:"ViewContent", add_to_cart:"AddToCart", begin_checkout:"InitiateCheckout", enviar_pedido_whatsapp:"Contact"};
+function fbEv(ev, pairs){ try{ const nome = FB_EV[ev]; if (!nome || !window.fbq || IS_PREVIEW) return; const items = pairs.map(([k,q])=>gaItem(k,q)).filter(Boolean); if (!items.length) return; const value = Math.round(items.reduce((s,i)=>s+(i.price||0)*i.quantity,0)*100)/100; fbq("track", nome, {currency:"BRL", value, content_type:"product", content_ids:items.map(i=>i.item_id), contents:items.map(i=>({id:i.item_id, quantity:i.quantity, item_price:i.price})), num_items:items.reduce((s,i)=>s+i.quantity,0)}); }catch(e){} }
 const gaBag = () => liveKeys().map(k=>[k, cart[k]]);
 let gaViewed = false;
 const gaView = p => { if (p && !gaViewed){ gaViewed = true; gaEv("view_item", [[p.id,1]]); } };
@@ -696,7 +699,7 @@ const clearQuery = () => { if (qIn && query){ qIn.value = ""; query = ""; $("q-c
 document.addEventListener("click", e=>{
   const ws = e.target.closest("#bag-send,#c-send");
   if (ws){ if (liveKeys().length) gaEv("enviar_pedido_whatsapp", gaBag(), {itens:itemsCount()}); }
-  else { const wl = e.target.closest('a[href*="wa.me"]'); if (wl) try{ if (window.gtag && !IS_PREVIEW) gtag("event", "contato_whatsapp", {local:(wl.textContent||"").trim().slice(0,60), pagina:location.pathname}); }catch(_){} }
+  else { const wl = e.target.closest('a[href*="wa.me"]'); if (wl) try{ if (window.gtag && !IS_PREVIEW) gtag("event", "contato_whatsapp", {local:(wl.textContent||"").trim().slice(0,60), pagina:location.pathname}); }catch(_){} try{ if (window.fbq && !IS_PREVIEW) fbq("trackCustom", "ContatoWhatsApp", {pagina:location.pathname}); }catch(_){} }
   const gn = e.target.closest("[data-gal-nav]");
   if (gn){ e.preventDefault(); const t = gn.closest("[data-gal]").querySelector(".gal-track"); const n = t.children.length, i = Math.round(t.scrollLeft/t.clientWidth); const j = (i + +gn.dataset.galNav + n) % n; t.scrollTo({left:j*t.clientWidth, behavior:reduce?"auto":"smooth"}); return; }
   const th = e.target.closest("[data-thumb]");
