@@ -237,8 +237,10 @@ ICONS = '''<link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">'''
 GA_ID = 'G-DGEWY1BT7V'  # Google Analytics 4 (propriedade Ouse Mais)
+PIXEL_ID = '2248019182726397'  # Pixel do Meta (portfólio Ouse Mais)
 GA = f'''<script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments);}}gtag('js',new Date());if(!/[?&]previa\\b/.test(location.search))gtag('config','{GA_ID}');</script>'''
+<script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments);}}gtag('js',new Date());if(!/[?&]previa\\b/.test(location.search))gtag('config','{GA_ID}');</script>
+<script>if(!/[?&]previa\\b/.test(location.search)){{!function(f,b,e,v,n,t,s){{if(f.fbq)return;n=f.fbq=function(){{n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)}};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','{PIXEL_ID}');fbq('track','PageView');}}</script>'''
 def ld(obj): return '<script type="application/ld+json">' + json.dumps(obj, ensure_ascii=False).replace('</', '<\\/') + '</script>'
 def page(*, title, desc, path, image, main, cfg, lds=(), og_type='website', robots='index, follow, max-image-preview:large', extra=''):
     url = SITE + path.lstrip('/')
